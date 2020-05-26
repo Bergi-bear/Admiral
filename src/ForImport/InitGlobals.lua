@@ -40,6 +40,7 @@ function InitHEROTable()
 			ReleaseW=false,
 			ReleaseE=false,
 			ReleaseR=false,
+			Anchor=nil,
 		}
 	end
 end

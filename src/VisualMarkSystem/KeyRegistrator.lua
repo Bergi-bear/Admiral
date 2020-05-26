@@ -15,10 +15,10 @@ function KeyRegistration()
 		local pid = GetPlayerId(GetTriggerPlayer())
 		local data = HERO[pid]
 		--print("anypressed")
-		data.MarkIsActivated=false
+		data.MarkIsActivated = false
 	end)
 
-	-----------------------------------------------------------------OSKEY_W
+	-----------------------------------------------------------------OSKEY_W --в это карте это якорь
 	local gg_trg_EventUpW = CreateTrigger()
 	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
 		BlzTriggerRegisterPlayerKeyEvent(gg_trg_EventUpW, Player(i), OSKEY_W, 0, true)
@@ -29,6 +29,26 @@ function KeyRegistration()
 		local data = HERO[pid]
 		if not data.ReleaseW then
 			data.ReleaseW = true
+			data.MarkIsActivated=true-- временно, потом создать нормальынй маркер
+			print("Создаём вращающийся якорь")
+			data.Anchor=AddSpecialEffect("AdmiralAssets\\Anchor",GetUnitXY(data.UnitHero))
+			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
+			BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
+			local a=0
+			TimerStart(CreateTimer(),TIMER_PERIOD, true, function()
+				local z,x,y=GetUnitZ(data.UnitHero)+200,GetUnitXY(data.UnitHero)
+				BlzSetSpecialEffectPosition(data.Anchor,x,y,z)
+				if a>=360 then a=a-360 end
+				a=a+40
+				print(a)
+				BlzSetSpecialEffectYaw(data.Anchor,math.rad(a))
+				if not data.MarkIsActivated then
+					--print("уничтожем якорь")
+					DestroyTimer(GetExpiredTimer())
+					DestroyEffect(data.Anchor)
+					BlzSetSpecialEffectPosition(data.Anchor,6000,6000,0)
+				end
+			end)
 		end
 	end)
 	local TrigDepressW = CreateTrigger()
@@ -88,7 +108,32 @@ function KeyRegistration()
 		local data = HERO[pid]
 		data.ReleaseE = false
 	end)
-end
+
+	-----------------------------------------------------------------OSKEY_ESC
+	local gg_trg_EventUpESC = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(gg_trg_EventUpESC, Player(i), OSKEY_ESCAPE, 0, true)
+	end
+	TriggerAddAction(gg_trg_EventUpESC, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		if not data.ReleaseE then
+			data.ReleaseE = true
+			--data.MarkIsActivated=false
+			--print("Q is Pressed Mark Creation")
+			data.MarkIsActivated = false
+		end
+	end)
+	local TrigDepressESC = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(TrigDepressESC, Player(i), OSKEY_ESCAPE, 0, false)
+	end
+	TriggerAddAction(TrigDepressESC, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		data.ReleaseE = false
+	end)
+end-- do not copyend
 ------------------------------------------------------------------------------------------- EVENT_PLAYER_UNIT_SELECTED
 function InitSelectionRegister()
 	local this = CreateTrigger()
@@ -96,10 +141,11 @@ function InitSelectionRegister()
 		TriggerRegisterPlayerUnitEvent(this, Player(i), EVENT_PLAYER_UNIT_SELECTED, nil)
 	end
 	TriggerAddAction(this, function()
-		local hero=GetTriggerUnit()
-		if IsUnitType(hero,UNIT_TYPE_HERO) and GetOwningPlayer(hero)==GetTriggerPlayer() then
-			local data=HERO[GetPlayerId(GetTriggerPlayer())]
-			data.UnitHero=hero
+		local hero = GetTriggerUnit()
+		if IsUnitType(hero, UNIT_TYPE_HERO) and GetOwningPlayer(hero) == GetTriggerPlayer() then
+			local data = HERO[GetPlayerId(GetTriggerPlayer())]
+			data.UnitHero = hero
+			data.MarkIsActivated = false
 			--print("Выбрал своего нужного героя")
 		end
 	end)

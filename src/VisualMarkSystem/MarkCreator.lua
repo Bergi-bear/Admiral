@@ -25,7 +25,7 @@ function MarkCreatorE(data)
 	end
 	if UnitHaveReadyAbility(hero,SpellIDE) then
 		if not data.MarkIsActivated then
-			CreateVisualConusForUnitBySplat(hero,1,360,1,150,90) --180 времено в иделе 235
+			CreateVisualConusForUnitBySplat(hero,1,360,1,150,235) --180 времено в иделе 235
 			data.MarkIsActivated=true
 		end
 	end

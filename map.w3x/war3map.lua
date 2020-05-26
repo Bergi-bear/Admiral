@@ -128,6 +128,7 @@ function InitHEROTable()
 			ReleaseW=false,
 			ReleaseE=false,
 			ReleaseR=false,
+			Anchor=nil,
 		}
 	end
 end
@@ -148,74 +149,91 @@ function InitSpellTrigger()
 		local spellId = GetSpellAbilityId()
 		local angleCast=AngleBetweenXY(casterX, casterY, x, y)/bj_DEGTORAD
 
-		if spellId == FourCC('A000') then-- Выстрел
+		if spellId == SpellIDQ then-- Выстрел
 			BlzPauseUnitEx(caster,true)
 			TimerStart(CreateTimer(), 0.1, false, function()
-				SetUnitAnimationByIndex(caster,17)
-				TimerStart(CreateTimer(), 0.4, false, function()
-					--print("момент вылета пули")
-					local xs,ys=MoveXY(casterX, casterY,80,angleCast)
-					CreateAndForceBullet(caster,angleCast,30,"Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile",xs,ys,10)
-				end)
+				if UnitAlive(caster) then
+					SetUnitAnimationByIndex(caster,17)
+					TimerStart(CreateTimer(), 0.4, false, function()
+						--print("момент вылета пули")
+						local xs,ys=MoveXY(casterX, casterY,80,angleCast)
+						CreateAndForceBullet(caster,angleCast,50,"Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile",xs,ys,10)
+					end)
 
-				TimerStart(CreateTimer(), 1, false, function()
-					ResetUnitAnimation(caster)
-					BlzPauseUnitEx(caster,false)
-				end)
+					TimerStart(CreateTimer(), 1, false, function()
+						if UnitAlive(caster) then
+							ResetUnitAnimation(caster)
+						end
+						BlzPauseUnitEx(caster,false)
+					end)
+				end
 			end)
 		end
-		if spellId == FourCC('A002') then-- Удар саблей
+		if spellId == SpellIDW then-- Бросок якоря
+			print("Бросок якоря")
+			local anchor=AddSpecialEffect("AdmiralAssets\\Anchor",casterX,casterY)
+			local chanElement={}
+			local dist=DistanceBetweenXY(x,y,casterX,casterY)
+			BlzSetSpecialEffectYaw(anchor,math.rad(angleCast))
+			BlzSetSpecialEffectPitch(anchor,math.rad(-90))
+			BlzSetSpecialEffectZ(anchor,GetUnitZ(caster)+200)
+			--CreateArtToss(caster,"AdmiralAssets\\Anchor",angleCast,dist)
+			JumpEffect(anchor, 25, 300, angleCast, dist, caster, 2)
+		end
+
+		if spellId == SpellIDE then-- Удар саблей
 			BlzPauseUnitEx(caster,true)
 			TimerStart(CreateTimer(), 0.01, false, function()
-				SetUnitAnimationByIndex(caster,4)
-				local eff=nil
-				TimerStart(CreateTimer(), 0.2, false, function()
-					eff=AddSpecialEffectTarget("animeslashfinal",caster,"weapon")
-					print("момент урона")
-					local e=nil
-					local k=0
-					local damage=BlzGetUnitBaseDamage(caster,0)
-					local multiplier=1
-					local totalDamage=0
-					--сначала считаем юнитов
-					GroupEnumUnitsInRange(perebor,casterX, casterY,150,nil)
-					while true do
-						e = FirstOfGroup(perebor)
-						if e == nil then break end
-						if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e,GetOwningPlayer(caster))  and IsPointInSector(GetUnitX(e),GetUnitY(e),casterX, casterY,angleCast,90,150) then
-							k=k+1
+				if UnitAlive(caster) then
+					SetUnitAnimationByIndex(caster,4)
+					local eff=nil
+					TimerStart(CreateTimer(), 0.2, false, function()
+						eff=AddSpecialEffectTarget("animeslashfinal",caster,"weapon")
+						--print("момент урона")
+						local e=nil
+						local k=0
+						local damage=BlzGetUnitBaseDamage(caster,0)
+						local multiplier=1
+						local totalDamage=0
+						--сначала считаем юнитов
+						GroupEnumUnitsInRange(perebor,casterX, casterY,150,nil)
+						while true do
+							e = FirstOfGroup(perebor)
+							if e == nil then break end
+							if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e,GetOwningPlayer(caster))  and IsPointInSector(GetUnitX(e),GetUnitY(e),casterX, casterY,angleCast,235//2,150) then
+								k=k+1
+							end
+							GroupRemoveUnit(perebor,e)
 						end
-						GroupRemoveUnit(perebor,e)
-					end
-					print("Насчитано юнитов "..k)
-					multiplier=multiplier+1*k
-					totalDamage=damage*multiplier
-					--наносит урон тем же юнитам
-					GroupEnumUnitsInRange(perebor,casterX, casterY,150,nil)
-					while true do
-						e = FirstOfGroup(perebor)
-						if e == nil then break end
-						if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e,GetOwningPlayer(caster))  and IsPointInSector(GetUnitX(e),GetUnitY(e),casterX, casterY,angleCast,90,150) then
+						--print("Насчитано юнитов "..k)
+						multiplier=multiplier+1*k
+						totalDamage=damage*multiplier
+						--наносит урон тем же юнитам
+						GroupEnumUnitsInRange(perebor,casterX, casterY,150,nil)
+						while true do
+							e = FirstOfGroup(perebor)
+							if e == nil then break end
+							if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e,GetOwningPlayer(caster))  and IsPointInSector(GetUnitX(e),GetUnitY(e),casterX, casterY,angleCast,235//2,150) then
 
-							--UnitDamageArea(caster,totalDamage,casterX, casterY, 150)
-							UnitDamageTarget( caster, e, totalDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS )
-							FlyTextTagCriticalStrike(caster,R2I(totalDamage),GetOwningPlayer(caster))
+								--UnitDamageArea(caster,totalDamage,casterX, casterY, 150)
+								UnitDamageTarget( caster, e, totalDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS )
+								FlyTextTagCriticalStrike(caster,R2I(totalDamage).."!",GetOwningPlayer(caster))
+							end
+							GroupRemoveUnit(perebor,e)
 						end
-						GroupRemoveUnit(perebor,e)
-					end
 
 
-				end)
-				TimerStart(CreateTimer(), 0.5, false, function()
-					DestroyEffect(eff)
-					ResetUnitAnimation(caster)
-					BlzPauseUnitEx(caster,false)
-				end)
-
-
+					end)
+					TimerStart(CreateTimer(), 0.5, false, function()
+						if UnitAlive(caster) then
+							DestroyEffect(eff)
+							ResetUnitAnimation(caster)
+						end
+						BlzPauseUnitEx(caster,false)
+					end)
+				end
 			end)
 		end
-
 	end)
 end
 
@@ -230,6 +248,8 @@ function IsPointInSector(x1,y1,x2,y2,orientation,width,radius)
 	local angle=Acos(Cos(orientation*bj_DEGTORAD)*(x1-x2)/lenght+Sin(orientation*bj_DEGTORAD)*(y1-y2)/lenght )*bj_RADTODEG
 	return angle<=width and lenght<=radius
 end
+
+
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
 --- Created by Bergi.
@@ -535,58 +555,21 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		local zGround = GetTerrainZ(nx, ny)
 		BlzSetSpecialEffectPosition(eff, nx, ny, f)
 		i = i + 1
-		if i == 10 then
-			if flag == 4 then
-				EffectAddRegistrationCollision(eff, hero, 150, 0, 1)
-			end
+		if flag==3 then
+
 		end
 
-		if z <= zGround and i > 5 then
-			if flag == nil then
-				-- без флага
-
-			end
-
+		if z <= zGround and i > 5 and flag~=3 then
 			if flag == 1 then
-				-- бочка со взрывчаткой и таймером
-				BlzPlaySpecialEffect(eff, ANIM_TYPE_STAND)
-				if CreateTorrent(nx, ny) then
-					WaveEffect(eff)
-					EffectAddExplodedTimer(eff, 3, hero)
-				else
-					--BlzSetSpecialEffectZ(eff,z+30)
-					ExplodeEffect(eff, 3)
-					UnitDamageArea(hero, 500, nx, ny, 250)
-				end
-			elseif flag == 2 then
-				-- навесной разделяющийся
-				CreateTorrent(nx, ny)
-				if ExplodeEffect(eff, 3) == false then
-					-- взрыв не на воде
-					--print("разделяемся")
-					--[[for i=1,7 do
-						local cluster=AddSpecialEffect("Abilities/Spells/Other/Volcano/VolcanoMissile.mdl",nx,ny)
-						BlzSetSpecialEffectZ(cluster,z)
-						BlzSetSpecialEffectScale(cluster,0.4)
-						JumpEffect(cluster,10,GetRandomInt(50,150),GetRandomInt(0,359),GetRandomInt(50,200),hero,3)
-					end]]
-				end
-				DestroyEffect(eff)
+			elseif flag == 2 then --заменён на обычныя якорь
+				print("место где приземлился якорь, эффект приземления")
+				DestroyTimer(GetExpiredTimer())
+				DestroyEffect(AddSpecialEffect("",nx,ny))
+				JumpEffect(eff, 30, 0, angle-180, distance, hero, 3)
+				--CreateTorrent(nx, ny)
+				--DestroyEffect(eff)
 				UnitDamageArea(hero, 210, nx, ny, 150 )
 				--print("урон прошел")
-			elseif flag == 3 then
-				-- осколки
-				CreateTorrent(nx, ny)
-				DestroyEffect(eff)
-				UnitDamageArea(hero, 100, nx, ny, 200)
-			elseif flag == 4 then
-				-- выпрыгнул гоблин
-				if CreateTorrent(nx, ny, 0.1) then
-					BlzSetSpecialEffectZ(eff, -90)
-
-				else
-					DestroyEffect(eff)
-				end
 			end
 			DestroyTimer(GetExpiredTimer())
 		end
@@ -2770,10 +2753,10 @@ function KeyRegistration()
 		local pid = GetPlayerId(GetTriggerPlayer())
 		local data = HERO[pid]
 		--print("anypressed")
-		data.MarkIsActivated=false
+		data.MarkIsActivated = false
 	end)
 
-	-----------------------------------------------------------------OSKEY_W
+	-----------------------------------------------------------------OSKEY_W --в это карте это якорь
 	local gg_trg_EventUpW = CreateTrigger()
 	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
 		BlzTriggerRegisterPlayerKeyEvent(gg_trg_EventUpW, Player(i), OSKEY_W, 0, true)
@@ -2784,6 +2767,26 @@ function KeyRegistration()
 		local data = HERO[pid]
 		if not data.ReleaseW then
 			data.ReleaseW = true
+			data.MarkIsActivated=true-- временно, потом создать нормальынй маркер
+			print("Создаём вращающийся якорь")
+			data.Anchor=AddSpecialEffect("AdmiralAssets\\Anchor",GetUnitXY(data.UnitHero))
+			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
+			BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
+			local a=0
+			TimerStart(CreateTimer(),TIMER_PERIOD, true, function()
+				local z,x,y=GetUnitZ(data.UnitHero)+200,GetUnitXY(data.UnitHero)
+				BlzSetSpecialEffectPosition(data.Anchor,x,y,z)
+				if a>=360 then a=a-360 end
+				a=a+40
+				print(a)
+				BlzSetSpecialEffectYaw(data.Anchor,math.rad(a))
+				if not data.MarkIsActivated then
+					--print("уничтожем якорь")
+					DestroyTimer(GetExpiredTimer())
+					DestroyEffect(data.Anchor)
+					BlzSetSpecialEffectPosition(data.Anchor,6000,6000,0)
+				end
+			end)
 		end
 	end)
 	local TrigDepressW = CreateTrigger()
@@ -2843,7 +2846,32 @@ function KeyRegistration()
 		local data = HERO[pid]
 		data.ReleaseE = false
 	end)
-end
+
+	-----------------------------------------------------------------OSKEY_ESC
+	local gg_trg_EventUpESC = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(gg_trg_EventUpESC, Player(i), OSKEY_ESCAPE, 0, true)
+	end
+	TriggerAddAction(gg_trg_EventUpESC, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		if not data.ReleaseE then
+			data.ReleaseE = true
+			--data.MarkIsActivated=false
+			--print("Q is Pressed Mark Creation")
+			data.MarkIsActivated = false
+		end
+	end)
+	local TrigDepressESC = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(TrigDepressESC, Player(i), OSKEY_ESCAPE, 0, false)
+	end
+	TriggerAddAction(TrigDepressESC, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		data.ReleaseE = false
+	end)
+end-- do not copyend
 ------------------------------------------------------------------------------------------- EVENT_PLAYER_UNIT_SELECTED
 function InitSelectionRegister()
 	local this = CreateTrigger()
@@ -2851,10 +2879,11 @@ function InitSelectionRegister()
 		TriggerRegisterPlayerUnitEvent(this, Player(i), EVENT_PLAYER_UNIT_SELECTED, nil)
 	end
 	TriggerAddAction(this, function()
-		local hero=GetTriggerUnit()
-		if IsUnitType(hero,UNIT_TYPE_HERO) and GetOwningPlayer(hero)==GetTriggerPlayer() then
-			local data=HERO[GetPlayerId(GetTriggerPlayer())]
-			data.UnitHero=hero
+		local hero = GetTriggerUnit()
+		if IsUnitType(hero, UNIT_TYPE_HERO) and GetOwningPlayer(hero) == GetTriggerPlayer() then
+			local data = HERO[GetPlayerId(GetTriggerPlayer())]
+			data.UnitHero = hero
+			data.MarkIsActivated = false
 			--print("Выбрал своего нужного героя")
 		end
 	end)
@@ -2886,7 +2915,7 @@ function MarkCreatorE(data)
 	end
 	if UnitHaveReadyAbility(hero,SpellIDE) then
 		if not data.MarkIsActivated then
-			CreateVisualConusForUnitBySplat(hero,1,360,1,150,90) --180 времено в иделе 235
+			CreateVisualConusForUnitBySplat(hero,1,360,1,150,235) --180 времено в иделе 235
 			data.MarkIsActivated=true
 		end
 	end
@@ -2924,7 +2953,7 @@ function CreateVisualConusForUnitBySplat(hero,flag,long,step,range,angleSector)
 	local r40=50//size
 	local LastMouseX=0
 
-	for i=1,long do
+	for i=1,long*2 do
 		image[i]=CreateImage("AdmiralAssets\\pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
 		SetImageColor(image[i],0,255,0,128)
 		SetImageRenderAlways(image[i], true)
@@ -3010,21 +3039,36 @@ function CreateVisualConusForUnitBySplat(hero,flag,long,step,range,angleSector)
 		--print(block)
 		local k=0
 		local k2=0
-		local a=step
+		local a=0
+		local k3=0
+		local pointToRange=range
+		local pointToRange2=range*.87
 		for i=1,#image do
 			if i<=angleSector then
+				--рисуем полукруг
 				a=a+step
 				k=k+1
 				local nx,ny=MoveXY(xs,ys,range,-angleSector/2+curAngle+a)
 				SetImagePosition(image[i],nx,ny,0)
 			else
+				--рисуем диагональ от края до центра
 				local rxs,rys=MoveXY(xs,ys,range,-angleSector/2+curAngle+k*step)
 				local angleR=AngleBetweenXY(rxs,rys,xs, ys)/bj_DEGTORAD
-				--print(angleR)
 				k2=k2+1
-				local nx,ny=MoveXY(rxs,rys,step*k2,angleR)
-				SetImagePosition(image[i],nx,ny,0)
-				--SetImagePosition(image[i],6000,6000,0)
+				pointToRange=pointToRange-step
+				if pointToRange>0 then
+					local nx,ny=MoveXY(rxs,rys,step*k2,angleR)
+					SetImagePosition(image[i],nx,ny,0)
+				else
+					k3=k3+1
+					pointToRange2=pointToRange2-step
+					if pointToRange2>0 then
+						local nx,ny=MoveXY(rxs,rys,step*k2,angleR)
+						local nx2,ny2=MoveXY(nx,ny,step*k3,angleR-angleSector*2)
+						SetImagePosition(image[i],nx2,ny2,0)
+					end
+
+				end
 			end
 		end
 

@@ -303,58 +303,21 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		local zGround = GetTerrainZ(nx, ny)
 		BlzSetSpecialEffectPosition(eff, nx, ny, f)
 		i = i + 1
-		if i == 10 then
-			if flag == 4 then
-				EffectAddRegistrationCollision(eff, hero, 150, 0, 1)
-			end
+		if flag==3 then
+
 		end
 
-		if z <= zGround and i > 5 then
-			if flag == nil then
-				-- без флага
-
-			end
-
+		if z <= zGround and i > 5 and flag~=3 then
 			if flag == 1 then
-				-- бочка со взрывчаткой и таймером
-				BlzPlaySpecialEffect(eff, ANIM_TYPE_STAND)
-				if CreateTorrent(nx, ny) then
-					WaveEffect(eff)
-					EffectAddExplodedTimer(eff, 3, hero)
-				else
-					--BlzSetSpecialEffectZ(eff,z+30)
-					ExplodeEffect(eff, 3)
-					UnitDamageArea(hero, 500, nx, ny, 250)
-				end
-			elseif flag == 2 then
-				-- навесной разделяющийся
-				CreateTorrent(nx, ny)
-				if ExplodeEffect(eff, 3) == false then
-					-- взрыв не на воде
-					--print("разделяемся")
-					--[[for i=1,7 do
-						local cluster=AddSpecialEffect("Abilities/Spells/Other/Volcano/VolcanoMissile.mdl",nx,ny)
-						BlzSetSpecialEffectZ(cluster,z)
-						BlzSetSpecialEffectScale(cluster,0.4)
-						JumpEffect(cluster,10,GetRandomInt(50,150),GetRandomInt(0,359),GetRandomInt(50,200),hero,3)
-					end]]
-				end
-				DestroyEffect(eff)
+			elseif flag == 2 then --заменён на обычныя якорь
+				print("место где приземлился якорь, эффект приземления")
+				DestroyTimer(GetExpiredTimer())
+				DestroyEffect(AddSpecialEffect("",nx,ny))
+				JumpEffect(eff, 30, 0, angle-180, distance, hero, 3)
+				--CreateTorrent(nx, ny)
+				--DestroyEffect(eff)
 				UnitDamageArea(hero, 210, nx, ny, 150 )
 				--print("урон прошел")
-			elseif flag == 3 then
-				-- осколки
-				CreateTorrent(nx, ny)
-				DestroyEffect(eff)
-				UnitDamageArea(hero, 100, nx, ny, 200)
-			elseif flag == 4 then
-				-- выпрыгнул гоблин
-				if CreateTorrent(nx, ny, 0.1) then
-					BlzSetSpecialEffectZ(eff, -90)
-
-				else
-					DestroyEffect(eff)
-				end
 			end
 			DestroyTimer(GetExpiredTimer())
 		end
