@@ -3,8 +3,8 @@
 --- Created by Bergi.
 --- DateTime: 16.01.2020 23:40
 ---
-GetPlayerMouseX={0,0,0,0}
-GetPlayerMouseY={0,0,0,0}
+GetPlayerMouseX={}
+GetPlayerMouseY={}
 function InitMouseMoveTrigger()
 	local MouseMoveTrigger = CreateTrigger()
 	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
@@ -17,15 +17,12 @@ function InitMouseMoveTrigger()
 			--print("ismove")
 			--print("x="..BlzGetTriggerPlayerMouseX().." y="..BlzGetTriggerPlayerMouseY())
 			local id=GetPlayerId(GetTriggerPlayer())
-			HERO[id].IsMouseMove=true
-			local xs,ys=GetUnitXY(HERO[id].UnitHero)
-			--HERO[id].LastMouseX=BlzGetTriggerPlayerMouseX()
+			local x,y=GetUnitXY(HERO[id].UnitHero)
 			if BlzGetTriggerPlayerMouseX()~=0 then
 				GetPlayerMouseX[id]=BlzGetTriggerPlayerMouseX()
 				GetPlayerMouseY[id]=BlzGetTriggerPlayerMouseY()
 			end
-			HERO[id].AngleMouse=AngleBetweenXY(xs, ys, GetPlayerMouseX[id], GetPlayerMouseY[id])/bj_DEGTORAD
-
+			HERO[id].AngleMouse=AngleBetweenXY(x, y, GetPlayerMouseX[id], GetPlayerMouseY[id])/bj_DEGTORAD
 		end)
 end
 

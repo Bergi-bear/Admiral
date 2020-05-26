@@ -16,6 +16,11 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 	local CollisionEnemy = false
 	local CollisisonDestr = false
 	local DamagingUnit = nil
+	if effectmodel== "Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile" then
+		--print("Пуля из мушкета капитана")
+		BlzSetSpecialEffectScale(bullet, 0.1)
+		zhero = GetUnitZ(hero) + 120
+	end
 	BlzSetSpecialEffectScale(bam, 0.1)
 	BlzSetSpecialEffectScale(cloud, 0.02)
 	DestroyEffect(bam)

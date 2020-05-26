@@ -230,7 +230,6 @@ function repeatN(t, m)
 	return math.clamp(t - math.floor(t / m) * m, 0, m)
 end
 
-
 function lerpTheta(a, b, t)
 	local dt = repeatN(b - a, 360)
 	if dt>180 then	dt=dt-360 end
