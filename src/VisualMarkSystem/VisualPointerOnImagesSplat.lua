@@ -22,7 +22,7 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 	local LastMouseX=0
 
 	for i=1,long do
-		image[i]=CreateImage("pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
+		image[i]=CreateImage("AdmiralAssets\\pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
 		SetImageColor(image[i],0,255,0,128)
 		SetImageRenderAlways(image[i], true)
 		if GetLocalPlayer()~=Player(pid) then
@@ -31,7 +31,7 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 			ShowImage(image[i],true)
 		end
 
-		image2[i]=CreateImage("pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
+		image2[i]=CreateImage("AdmiralAssets\\pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
 		SetImageColor(image2[i],0,255,0,128)
 		SetImageRenderAlways(image2[i], true)
 		if GetLocalPlayer()~=Player(pid) then

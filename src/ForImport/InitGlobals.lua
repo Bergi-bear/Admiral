@@ -34,9 +34,12 @@ function InitHEROTable()
 		HERO[i]={
 			pid=i,
 			UnitHero=nil,
-			MarkIsActivated=false,
 			AngleMouse=0,
 			MarkIsActivated=false,
+			ReleaseQ=false,
+			ReleaseW=false,
+			ReleaseE=false,
+			ReleaseR=false,
 		}
 	end
 end

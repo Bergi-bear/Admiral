@@ -52,7 +52,7 @@ function KeyRegistration()
 			data.ReleaseQ = true
 			--data.MarkIsActivated=false
 			--print("Q is Pressed Mark Creation")
-			MarkCreator(data)
+			MarkCreatorQ(data)
 		end
 	end)
 	local TrigDepressQ = CreateTrigger()
@@ -63,6 +63,30 @@ function KeyRegistration()
 		local pid = GetPlayerId(GetTriggerPlayer())
 		local data = HERO[pid]
 		data.ReleaseQ = false
+	end)
+	-----------------------------------------------------------------OSKEY_E
+	local gg_trg_EventUpE = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(gg_trg_EventUpE, Player(i), OSKEY_E, 0, true)
+	end
+	TriggerAddAction(gg_trg_EventUpE, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		if not data.ReleaseE then
+			data.ReleaseE = true
+			--data.MarkIsActivated=false
+			--print("Q is Pressed Mark Creation")
+			MarkCreatorE(data)
+		end
+	end)
+	local TrigDepressE = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(TrigDepressE, Player(i), OSKEY_E, 0, false)
+	end
+	TriggerAddAction(TrigDepressE, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		data.ReleaseE = false
 	end)
 end
 ------------------------------------------------------------------------------------------- EVENT_PLAYER_UNIT_SELECTED

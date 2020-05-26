@@ -10,13 +10,26 @@ function CreateUnitsForPlayer0()
     u = BlzCreateUnitWithSkin(p, FourCC("H000"), -1457.6, -2554.9, 222.698, FourCC("H000"))
 end
 
-function CreateNeutralHostile()
-    local p = Player(PLAYER_NEUTRAL_AGGRESSIVE)
+function CreateUnitsForPlayer1()
+    local p = Player(1)
     local u
     local unitID
     local t
     local life
     u = BlzCreateUnitWithSkin(p, FourCC("hpea"), -682.8, -2048.0, 152.460, FourCC("hpea"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1953.3, -1037.9, 202.902, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1993.7, -1115.7, 349.673, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1978.7, -1239.1, 343.168, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1925.7, -1311.5, 62.976, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1865.3, -1347.3, 122.545, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1842.2, -1180.2, 82.719, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1740.7, -1355.3, 109.032, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -521.3, -2484.6, 312.615, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -531.8, -2578.8, 133.675, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -504.1, -2649.4, 40.607, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1362.3, -1252.8, 40.607, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1390.0, -1182.2, 133.675, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1379.5, -1088.0, 312.615, FourCC("hfoo"))
 end
 
 function CreatePlayerBuildings()
@@ -24,11 +37,11 @@ end
 
 function CreatePlayerUnits()
     CreateUnitsForPlayer0()
+    CreateUnitsForPlayer1()
 end
 
 function CreateAllUnits()
     CreatePlayerBuildings()
-    CreateNeutralHostile()
     CreatePlayerUnits()
 end
 
@@ -109,9 +122,12 @@ function InitHEROTable()
 		HERO[i]={
 			pid=i,
 			UnitHero=nil,
-			MarkIsActivated=false,
 			AngleMouse=0,
 			MarkIsActivated=false,
+			ReleaseQ=false,
+			ReleaseW=false,
+			ReleaseE=false,
+			ReleaseR=false,
 		}
 	end
 end
@@ -133,7 +149,6 @@ function InitSpellTrigger()
 		local angleCast=AngleBetweenXY(casterX, casterY, x, y)/bj_DEGTORAD
 
 		if spellId == FourCC('A000') then-- Выстрел
-
 			BlzPauseUnitEx(caster,true)
 			TimerStart(CreateTimer(), 0.1, false, function()
 				SetUnitAnimationByIndex(caster,17)
@@ -148,11 +163,72 @@ function InitSpellTrigger()
 					BlzPauseUnitEx(caster,false)
 				end)
 			end)
+		end
+		if spellId == FourCC('A002') then-- Удар саблей
+			BlzPauseUnitEx(caster,true)
+			TimerStart(CreateTimer(), 0.01, false, function()
+				SetUnitAnimationByIndex(caster,4)
+				local eff=nil
+				TimerStart(CreateTimer(), 0.2, false, function()
+					eff=AddSpecialEffectTarget("animeslashfinal",caster,"weapon")
+					print("момент урона")
+					local e=nil
+					local k=0
+					local damage=BlzGetUnitBaseDamage(caster,0)
+					local multiplier=1
+					local totalDamage=0
+					--сначала считаем юнитов
+					GroupEnumUnitsInRange(perebor,casterX, casterY,150,nil)
+					while true do
+						e = FirstOfGroup(perebor)
+						if e == nil then break end
+						if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e,GetOwningPlayer(caster))  and IsPointInSector(GetUnitX(e),GetUnitY(e),casterX, casterY,angleCast,90,150) then
+							k=k+1
+						end
+						GroupRemoveUnit(perebor,e)
+					end
+					print("Насчитано юнитов "..k)
+					multiplier=multiplier+1*k
+					totalDamage=damage*multiplier
+					--наносит урон тем же юнитам
+					GroupEnumUnitsInRange(perebor,casterX, casterY,150,nil)
+					while true do
+						e = FirstOfGroup(perebor)
+						if e == nil then break end
+						if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e,GetOwningPlayer(caster))  and IsPointInSector(GetUnitX(e),GetUnitY(e),casterX, casterY,angleCast,90,150) then
 
+							--UnitDamageArea(caster,totalDamage,casterX, casterY, 150)
+							UnitDamageTarget( caster, e, totalDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS )
+							FlyTextTagCriticalStrike(caster,R2I(totalDamage),GetOwningPlayer(caster))
+						end
+						GroupRemoveUnit(perebor,e)
+					end
+
+
+				end)
+				TimerStart(CreateTimer(), 0.5, false, function()
+					DestroyEffect(eff)
+					ResetUnitAnimation(caster)
+					BlzPauseUnitEx(caster,false)
+				end)
+
+
+			end)
 		end
 
-
 	end)
+end
+
+-- x1, x2 - координаты проверяемой точки
+-- x2, y2 - координаты вершины сектора
+-- orientation - ориентация сектора в мировых координатах
+-- width - уголовой размер сектора в градусах
+-- radius - окружности которой принадлежит сектор
+
+function IsPointInSector(x1,y1,x2,y2,orientation,width,radius)
+	local lenght=DistanceBetweenXY(x1,y1,x2,y2)
+	local angle=Acos(Cos(orientation*bj_DEGTORAD)*(x1-x2)/lenght+Sin(orientation*bj_DEGTORAD)*(y1-y2)/lenght )*bj_RADTODEG
+	return angle<=width and lenght<=radius
 end
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
@@ -2731,7 +2807,7 @@ function KeyRegistration()
 			data.ReleaseQ = true
 			--data.MarkIsActivated=false
 			--print("Q is Pressed Mark Creation")
-			MarkCreator(data)
+			MarkCreatorQ(data)
 		end
 	end)
 	local TrigDepressQ = CreateTrigger()
@@ -2742,6 +2818,30 @@ function KeyRegistration()
 		local pid = GetPlayerId(GetTriggerPlayer())
 		local data = HERO[pid]
 		data.ReleaseQ = false
+	end)
+	-----------------------------------------------------------------OSKEY_E
+	local gg_trg_EventUpE = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(gg_trg_EventUpE, Player(i), OSKEY_E, 0, true)
+	end
+	TriggerAddAction(gg_trg_EventUpE, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		if not data.ReleaseE then
+			data.ReleaseE = true
+			--data.MarkIsActivated=false
+			--print("Q is Pressed Mark Creation")
+			MarkCreatorE(data)
+		end
+	end)
+	local TrigDepressE = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(TrigDepressE, Player(i), OSKEY_E, 0, false)
+	end
+	TriggerAddAction(TrigDepressE, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		data.ReleaseE = false
 	end)
 end
 ------------------------------------------------------------------------------------------- EVENT_PLAYER_UNIT_SELECTED
@@ -2764,23 +2864,35 @@ end
 --- Created by Bergi.
 --- DateTime: 20.05.2020 0:45
 ---
-function MarkCreator(data)
+function MarkCreatorQ(data)
 	local hero=data.UnitHero
 	if not hero then
 		--print("Has not Hero")
 		return
 	end
 	if UnitHaveReadyAbility(hero,SpellIDQ) then
-		--print("Место и время когда пора создавать маркер")
-		--=true
 		if not data.MarkIsActivated then
 			CreateVisualPointerForUnitBySplat(hero,1,1200//5,5,1200//5)
 			data.MarkIsActivated=true
-			else
-			print("объект не создан, потому что он уже есть")
 		end
 	end
 end
+
+function MarkCreatorE(data)
+	local hero=data.UnitHero
+	if not hero then
+		--print("Has not Hero")
+		return
+	end
+	if UnitHaveReadyAbility(hero,SpellIDE) then
+		if not data.MarkIsActivated then
+			CreateVisualConusForUnitBySplat(hero,1,360,1,150,90) --180 времено в иделе 235
+			data.MarkIsActivated=true
+		end
+	end
+end
+
+
 --есть мана, не в кд, юнит жив
 function  UnitHaveReadyAbility(hero,abiID)
 	local isReady=false
@@ -2793,6 +2905,135 @@ function  UnitHaveReadyAbility(hero,abiID)
 		isReady=true
 	end
 	return isReady
+end
+---
+--- Generated by EmmyLua(https://github.com/EmmyLua)
+--- Created by Bergi.
+--- DateTime: 18.05.2020 21:36
+---
+
+
+---CreateVisualPointerForUnit
+function CreateVisualConusForUnitBySplat(hero,flag,long,step,range,angleSector)
+	local image={}
+	local image2={}
+	local pid=GetPlayerId(GetOwningPlayer(hero))
+	local data=HERO[pid]
+	local size=step/3
+	local r60=70//size
+	local r40=50//size
+	local LastMouseX=0
+
+	for i=1,long do
+		image[i]=CreateImage("AdmiralAssets\\pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
+		SetImageColor(image[i],0,255,0,128)
+		SetImageRenderAlways(image[i], true)
+		if GetLocalPlayer()~=Player(pid) then
+			ShowImage(image[i],false)
+		else
+			ShowImage(image[i],true)
+		end
+
+	end
+
+
+
+	local distance=0
+	local mouseMoving=false
+	local savedDistance=0
+	local lastAngle=0
+	local delta=0
+	local angle=0
+
+
+
+	local function Destroy()
+		DestroyTimer(GetExpiredTimer())
+		--data.MarkIsActivated=true
+		--print("destroy")
+		for i=1,#image do
+			DestroyImage(image[i])
+			DestroyImage(image2[i])
+		end
+	end
+	local curAngle=GetUnitFacing(hero)
+	local iter=0
+	local curBlock=0
+	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+		--angle=GetUnitFacing(hero)
+		--local xs,ys=MoveXY(GetUnitX(hero),GetUnitY(hero),10,angle-30)
+		local xs,ys=MoveXY(GetUnitX(hero)-16,GetUnitY(hero)-16,0,curAngle)--стартовое смещение и это центр юнита
+		--local xs2,ys2=0,0
+		iter=iter+1
+
+			--xs,ys=MoveXY(xs,ys,0,curAngle+)
+			--xs2,ys2=MoveXY(xs,ys,80,curAngle-90)
+
+
+		angle=AngleBetweenXY(xs, ys, GetPlayerMouseX[pid], GetPlayerMouseY[pid])/bj_DEGTORAD--data.AngleMouse
+
+		curAngle=lerpTheta(curAngle,angle,TIMER_PERIOD*8)
+
+		if LastMouseX == GetPlayerMouseX[pid] then
+			mouseMoving=false
+			--savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
+		else
+			mouseMoving=true
+			--print("движется")
+		end
+		LastMouseX = GetPlayerMouseX[pid]
+		delta=curAngle-lastAngle
+		lastAngle=curAngle
+
+
+		--angle=data.LastTurn--/bj_DEGTORAD
+
+
+		--print(delta)
+		if mouseMoving then
+			distance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
+			savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
+		else
+			distance=savedDistance
+		end
+		local block=0
+
+		for _=1,#image do
+			distance=distance-step
+			if distance>=0 then
+				block=block+1
+			end
+		end
+
+
+
+		--print(block)
+		local k=0
+		local k2=0
+		local a=step
+		for i=1,#image do
+			if i<=angleSector then
+				a=a+step
+				k=k+1
+				local nx,ny=MoveXY(xs,ys,range,-angleSector/2+curAngle+a)
+				SetImagePosition(image[i],nx,ny,0)
+			else
+				local rxs,rys=MoveXY(xs,ys,range,-angleSector/2+curAngle+k*step)
+				local angleR=AngleBetweenXY(rxs,rys,xs, ys)/bj_DEGTORAD
+				--print(angleR)
+				k2=k2+1
+				local nx,ny=MoveXY(rxs,rys,step*k2,angleR)
+				SetImagePosition(image[i],nx,ny,0)
+				--SetImagePosition(image[i],6000,6000,0)
+			end
+		end
+
+		if flag==1 then
+			if not data.MarkIsActivated then
+				Destroy()
+			end
+		end
+	end)
 end
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
@@ -2818,7 +3059,7 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 	local LastMouseX=0
 
 	for i=1,long do
-		image[i]=CreateImage("pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
+		image[i]=CreateImage("AdmiralAssets\\pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
 		SetImageColor(image[i],0,255,0,128)
 		SetImageRenderAlways(image[i], true)
 		if GetLocalPlayer()~=Player(pid) then
@@ -2827,7 +3068,7 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 			ShowImage(image[i],true)
 		end
 
-		image2[i]=CreateImage("pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
+		image2[i]=CreateImage("AdmiralAssets\\pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
 		SetImageColor(image2[i],0,255,0,128)
 		SetImageRenderAlways(image2[i], true)
 		if GetLocalPlayer()~=Player(pid) then

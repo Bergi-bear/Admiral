@@ -3,23 +3,35 @@
 --- Created by Bergi.
 --- DateTime: 20.05.2020 0:45
 ---
-function MarkCreator(data)
+function MarkCreatorQ(data)
 	local hero=data.UnitHero
 	if not hero then
 		--print("Has not Hero")
 		return
 	end
 	if UnitHaveReadyAbility(hero,SpellIDQ) then
-		--print("Место и время когда пора создавать маркер")
-		--=true
 		if not data.MarkIsActivated then
 			CreateVisualPointerForUnitBySplat(hero,1,1200//5,5,1200//5)
 			data.MarkIsActivated=true
-		else
-			--print("объект не создан, потому что он уже есть")
 		end
 	end
 end
+
+function MarkCreatorE(data)
+	local hero=data.UnitHero
+	if not hero then
+		--print("Has not Hero")
+		return
+	end
+	if UnitHaveReadyAbility(hero,SpellIDE) then
+		if not data.MarkIsActivated then
+			CreateVisualConusForUnitBySplat(hero,1,360,1,150,90) --180 времено в иделе 235
+			data.MarkIsActivated=true
+		end
+	end
+end
+
+
 --есть мана, не в кд, юнит жив
 function  UnitHaveReadyAbility(hero,abiID)
 	local isReady=false
