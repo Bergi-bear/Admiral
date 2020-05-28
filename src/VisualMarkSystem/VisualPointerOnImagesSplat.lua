@@ -113,7 +113,9 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 		curBlock=R2I(lerpTheta(curBlock,block,TIMER_PERIOD*16))
 
 		if minlong~=nil then
-			curBlock=minlong
+			if minlong>=curBlock then
+				curBlock=minlong
+			end
 		end
 		--print(block)
 		local k=0

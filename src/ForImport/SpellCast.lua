@@ -12,7 +12,7 @@ function InitSpellTrigger()
 		local x, y = GetSpellTargetX(), GetSpellTargetY()
 		local spellId = GetSpellAbilityId()
 		local angleCast=AngleBetweenXY(casterX, casterY, x, y)/bj_DEGTORAD
-
+		local r=0
 		if spellId == SpellIDQ then-- Выстрел
 			BlzPauseUnitEx(caster,true)
 			TimerStart(CreateTimer(), 0.1, false, function()
@@ -34,15 +34,17 @@ function InitSpellTrigger()
 			end)
 		end
 		if spellId == SpellIDW then-- Бросок якоря
-			print("Бросок якоря")
+		--	print("Бросок якоря")
+			--GetUnitGreenAttackBonus(caster)
 			local anchor=AddSpecialEffect("AdmiralAssets\\Anchor",casterX,casterY)
 			local chanElement={}
+
 			local dist=DistanceBetweenXY(x,y,casterX,casterY)
 			BlzSetSpecialEffectYaw(anchor,math.rad(angleCast))
 			BlzSetSpecialEffectPitch(anchor,math.rad(-90))
 			BlzSetSpecialEffectZ(anchor,GetUnitZ(caster)+200)
 			--CreateArtToss(caster,"AdmiralAssets\\Anchor",angleCast,dist)
-			JumpEffect(anchor, 25, 300, angleCast, dist, caster, 2)
+			JumpEffect(anchor, 20, 300, angleCast, dist, caster, 2,GetUnitZ(caster)+200)
 		end
 
 		if spellId == SpellIDE then-- Удар саблей
@@ -78,7 +80,6 @@ function InitSpellTrigger()
 							e = FirstOfGroup(perebor)
 							if e == nil then break end
 							if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e,GetOwningPlayer(caster))  and IsPointInSector(GetUnitX(e),GetUnitY(e),casterX, casterY,angleCast,235//2,150) then
-
 								--UnitDamageArea(caster,totalDamage,casterX, casterY, 150)
 								UnitDamageTarget( caster, e, totalDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS )
 								FlyTextTagCriticalStrike(caster,R2I(totalDamage).."!",GetOwningPlayer(caster))
@@ -100,7 +101,7 @@ function InitSpellTrigger()
 		end
 	end)
 end
-
+-- функия принадлежности точки сектора
 -- x1, x2 - координаты проверяемой точки
 -- x2, y2 - координаты вершины сектора
 -- orientation - ориентация сектора в мировых координатах

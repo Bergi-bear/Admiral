@@ -29,26 +29,7 @@ function KeyRegistration()
 		local data = HERO[pid]
 		if not data.ReleaseW then
 			data.ReleaseW = true
-			data.MarkIsActivated=true-- временно, потом создать нормальынй маркер
-			print("Создаём вращающийся якорь")
-			data.Anchor=AddSpecialEffect("AdmiralAssets\\Anchor",GetUnitXY(data.UnitHero))
-			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
-			BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
-			local a=0
-			TimerStart(CreateTimer(),TIMER_PERIOD, true, function()
-				local z,x,y=GetUnitZ(data.UnitHero)+200,GetUnitXY(data.UnitHero)
-				BlzSetSpecialEffectPosition(data.Anchor,x,y,z)
-				if a>=360 then a=a-360 end
-				a=a+40
-				print(a)
-				BlzSetSpecialEffectYaw(data.Anchor,math.rad(a))
-				if not data.MarkIsActivated then
-					--print("уничтожем якорь")
-					DestroyTimer(GetExpiredTimer())
-					DestroyEffect(data.Anchor)
-					BlzSetSpecialEffectPosition(data.Anchor,6000,6000,0)
-				end
-			end)
+			MarkCreatorW(data)
 		end
 	end)
 	local TrigDepressW = CreateTrigger()

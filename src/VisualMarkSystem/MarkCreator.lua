@@ -17,6 +17,38 @@ function MarkCreatorQ(data)
 	end
 end
 
+function MarkCreatorW(data)
+	local hero=data.UnitHero
+	if not hero then
+		--print("Has not Hero")
+		return
+	end
+	if UnitHaveReadyAbility(hero,SpellIDW) then
+		if not data.MarkIsActivated then
+			CreateVisualPointerForUnitBySplat(hero,1,900//5,5,450//5)
+			data.MarkIsActivated=true--
+			data.Anchor=AddSpecialEffect("AdmiralAssets\\Anchor",GetUnitXY(data.UnitHero))
+			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
+			BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
+			local a=0
+			TimerStart(CreateTimer(),TIMER_PERIOD, true, function()
+				local z,x,y=GetUnitZ(data.UnitHero)+200,GetUnitXY(data.UnitHero)
+				BlzSetSpecialEffectPosition(data.Anchor,x,y,z)
+				if a>=360 then a=a-360 end
+				a=a+40
+				--print(a)
+				BlzSetSpecialEffectYaw(data.Anchor,math.rad(a))
+				if not data.MarkIsActivated then
+					--print("уничтожем якорь")
+					DestroyTimer(GetExpiredTimer())
+					DestroyEffect(data.Anchor)
+					BlzSetSpecialEffectPosition(data.Anchor,6000,6000,0)
+				end
+			end)
+		end
+	end
+end
+
 function MarkCreatorE(data)
 	local hero=data.UnitHero
 	if not hero then

@@ -16,7 +16,7 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 	local CollisionEnemy = false
 	local CollisisonDestr = false
 	local DamagingUnit = nil
-	if effectmodel== "Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile" then
+	if effectmodel == "Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile" then
 		--print("Пуля из мушкета капитана")
 		BlzSetSpecialEffectScale(bullet, 0.1)
 		zhero = GetUnitZ(hero) + 120
@@ -33,7 +33,7 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 		dist = dist + speed
 		local x, y, z = BlzGetLocalSpecialEffectX(bullet), BlzGetLocalSpecialEffectY(bullet), BlzGetLocalSpecialEffectZ(bullet)
 		local zGround = GetTerrainZ(MoveX(x, speed * 2, angleCurrent), MoveY(y, speed * 2, angleCurrent))
-		BlzSetSpecialEffectYaw(bullet,math.rad(angleCurrent))
+		BlzSetSpecialEffectYaw(bullet, math.rad(angleCurrent))
 		if GetUnitTypeId(heroCurrent) == FourCC('e009') then
 			-- у горного великана тиника нет потери высоты
 			BlzSetSpecialEffectPosition(bullet, MoveX(x, speed, angleCurrent), MoveY(y, speed, angleCurrent), z)
@@ -51,13 +51,13 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 		--print("zGround ="..zGround.."z= "..z)
 		--BlzSetSpecialEffectPosition(bam,MoveX(GetUnitX(hero),120,GetUnitFacing(hero)),MoveY(GetUnitY(hero),120,GetUnitFacing(hero)),z)
 		CollisionEnemy, DamagingUnit = UnitDamageArea(heroCurrent, damage, x, y, CollisionRange, ZBullet)
-		if  GetUnitTypeId(DamagingUnit) == FourCC('e009')  then
+		if GetUnitTypeId(DamagingUnit) == FourCC('e009') then
 			--print("Есть пробитие")
-			if effectmodel==Special then
-				HealUnit(DamagingUnit,-200)
+			if effectmodel == Special then
+				HealUnit(DamagingUnit, -200)
 			end
-			if effectmodel==stoneEffModel then
-				HealUnit(DamagingUnit,-10)
+			if effectmodel == stoneEffModel then
+				HealUnit(DamagingUnit, -10)
 			end
 		end
 		CollisisonDestr = PointContentDestructable(x, y, CollisionRange, false)
@@ -69,22 +69,24 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 				--CreateTorrent(x,y)
 				--BlzSetSpecialEffectPosition(bullet,4000,4000,0)
 			end
-			--print("Условие урона прошло")
-			UnitDamageArea(hero,CollisionRange,x,y,CollisionRange,ZBullet)
+			--print("Условие урона прошло для"..GetUnitName(DamagingUnit))
+			local stunDuration=1
+			StanArea(hero,x,y,CollisionRange,stunDuration)
+			UnitDamageArea(hero, CollisionRange, x, y, CollisionRange, ZBullet)
 			if IsUnitType(hero, UNIT_TYPE_HERO) then
 				local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
 				if data.Perk16 and IsUnitEnemy(hero, GetOwningPlayer(DamagingUnit)) and DamagingUnit and data.FBIsReady then
 					--print("фаерболим "..GetUnitName(DamagingUnit))
-					local cd=5
+					local cd = 5
 					local dummy = CreateUnit(GetOwningPlayer(hero), DummyID, x, y, 0)--
 					UnitAddAbility(dummy, FourCC('A00G'))
 					UnitApplyTimedLife(dummy, FourCC('BTLF'), 0.1)
 					if Cast(dummy, 0, 0, DamagingUnit) then
-						data.FBIsReady=false
-						StartFrameCD(cd, data,16)
+						data.FBIsReady = false
+						StartFrameCD(cd, data, 16)
 						TimerStart(CreateTimer(), cd, false, function()
 							DestroyTimer(GetExpiredTimer())
-							data.FBIsReady=true
+							data.FBIsReady = true
 						end)
 					end
 
@@ -106,8 +108,8 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 						--print("Отклонение снаряда щитом")
 						angleCurrent = GetUnitFacing(DamagingUnit)
 
-						if effectmodel==Special or effectmodel==stoneEffModel then
-							heroCurrent=DamagingUnit
+						if effectmodel == Special or effectmodel == stoneEffModel then
+							heroCurrent = DamagingUnit
 						end
 
 						BlzSetSpecialEffectPosition(bullet, MoveX(x, speed * 2, angleCurrent), MoveY(y, speed * 2, angleCurrent), z - 2)
@@ -292,35 +294,144 @@ end
 
 function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 	local i = 0
+	local chainElement={}
 	if ZStart == nil then
 		ZStart = GetUnitZ(hero)
 	end
+	if flag == 2 then
+		if distance <= 300 then
+			distance = 300
+		end
+		if distance >= 900 then
+			distance = 900
+		end
+		speed = distance / speed
+		for i2=1,50 do
+			chainElement[i2]=AddSpecialEffect("AdmiralAssets\\ChainElement",GetUnitXY(hero))
+			--print("создан элемент цепи"..i2)
+		end
+	end
+	local HookGroup = CreateGroup()
+
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+		--xpcall(function()
 		local x, y = BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff)
+		if flag == 3 then
+			angle = AngleBetweenXY(x, y, GetUnitXY(hero)) / bj_DEGTORAD
+			BlzSetSpecialEffectYaw(eff, math.rad(angle - 180))
+		end
+
 		local nx, ny = MoveXY(x, y, speed, angle)
 		local f = ParabolaZ(maxHeight, distance, i * speed) + ZStart
+		--if f<=GetTerrainZ(nx,ny) then f=GetTerrainZ(nx,ny) end --правка проваливания в землю
 		local z = BlzGetLocalSpecialEffectZ(eff)
 		local zGround = GetTerrainZ(nx, ny)
+
+		if flag == 3 then
+			--Движение якоря на обратном ходу
+			local e = nil
+			--DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
+			--эффект поврежденное земли
+			GroupEnumUnitsInRange(perebor, x, y, 150 / 2, nil)
+			while true do
+				e = FirstOfGroup(perebor)
+
+				if e == nil then
+					break
+				end
+				if IsUnitEnemy(e, GetOwningPlayer(hero)) and not IsUnitType(e, UNIT_TYPE_STRUCTURE) then
+					--UnitAlive(e) and
+					--if IsUnitInGroup(HookGroup,e)
+					GroupAddUnit(HookGroup, e)
+				end
+				GroupRemoveUnit(perebor, e)
+			end
+
+			ForGroup(HookGroup, function()
+				local enum = GetEnumUnit()
+				if not IsUnitInRange(enum,hero,120) then
+					local nxe, nye = MoveXY(GetUnitX(enum), GetUnitY(enum), speed, angle)
+					--SetUnitPositionSmooth(enum,nxe,nye)
+					SetUnitX(enum, nxe)
+					SetUnitY(enum, nye)
+				end
+			end)
+		end
+
+
 		BlzSetSpecialEffectPosition(eff, nx, ny, f)
 		i = i + 1
-		if flag==3 then
+
+		if flag == 2 then
+			--прямое движение
+			--отрисовка цепи
+			local step=20
+			local eStart=GetUnitZ(hero)+200
+			local chainCount=DistanceBetweenXYZ(GetUnitX(hero),GetUnitY(hero),eStart-100,nx,ny,f)//step
+			--local chainCount=DistanceBetweenXY(nx,ny,GetUnitXY(hero))//step
+			--print(chainCount)
+			if chainCount>=#chainElement then chainCount=#chainElement end
+
+
+			local AB=math.sqrt((f*f)+(i * speed*i * speed))
+			--print("AB="..AB.." f="..f)
+
+			local angleZ=math.asin(f/AB)/bj_DEGTORAD
+			--AngleBetweenXY(GetUnitY(hero), 0, ny, f) / bj_DEGTORAD
+			--print(angleZ)
+			--print(step/(math.acos(angleZ)/bj_DEGTORAD))
+			local k=0
+			for i2=1,#chainElement do
+				if chainCount>=i2 then
+					local xs,ys=GetUnitXY(hero)
+					local xe,ye=MoveXY(xs,ys,speed*i2*.5,angle)--верная функция, вычисляет местоположеие следующей точки
+					local nf= MoveY(0,speed*i2,angleZ)
+					BlzSetSpecialEffectPosition(chainElement[i2], xe,ye,GetUnitZ(hero)+100+nf )-- тоже всё верно
+					BlzSetSpecialEffectPitch(chainElement[i2],math.rad(360-angleZ))--верная, если угол верный
+					BlzSetSpecialEffectYaw(chainElement[i2],math.rad(angle))--верно
+				else
+					BlzSetSpecialEffectPosition(chainElement[i2], 6000,6000,0 )
+				end
+			end
+		end
+
+		if flag == 3 then -- обратное движение
+			if IsUnitInRangeXY(hero, nx, ny, 50) then
+				--конец, вернулся к юниту
+				for i2=1,#chainElement do
+					BlzSetSpecialEffectPosition(chainElement[i2], 6000, 6000, 0)
+					DestroyEffect(chainElement[i2])
+				end
+				DestroyGroup(HookGroup)
+				BlzSetSpecialEffectPosition(eff, 6000, 6000, 0)
+				DestroyEffect(eff)
+				DestroyTimer(GetExpiredTimer())
+			end
 
 		end
 
-		if z <= zGround and i > 5 and flag~=3 then
-			if flag == 1 then
-			elseif flag == 2 then --заменён на обычныя якорь
-				print("место где приземлился якорь, эффект приземления")
+		if z <= zGround and i > 5 and flag ~= 3 then
+			--print(z)
+			if flag == 2 then
+				--заменён на обычныя якорь
+				--print("место где приземлился якорь, эффект приземления")
+				local damage = GetHeroStr(hero, true) * 10
 				DestroyTimer(GetExpiredTimer())
-				DestroyEffect(AddSpecialEffect("",nx,ny))
-				JumpEffect(eff, 30, 0, angle-180, distance, hero, 3)
+				StanArea(hero, nx, ny, 150, 2)
+				DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",nx,ny))
+				JumpEffect(eff, 30, 0, angle - 180, distance, hero, 3)
 				--CreateTorrent(nx, ny)
 				--DestroyEffect(eff)
-				UnitDamageArea(hero, 210, nx, ny, 150 )
+				UnitDamageArea(hero, damage, nx, ny, 150)
+				for i2=1,#chainElement do
+					BlzSetSpecialEffectPosition(chainElement[i2], 6000, 6000, 0)
+					DestroyEffect(chainElement[i2])
+				end
 				--print("урон прошел")
 			end
 			DestroyTimer(GetExpiredTimer())
 		end
+	--end,ehandler)
 	end)
 end
 
@@ -434,13 +545,13 @@ function SawActivated(hero)
 		end
 
 		local nx, ny = MoveXY(x, y, 130, angle)
-	-- вроде как и было отключено
+		-- вроде как и было отключено
 		--if UnitDamageArea(hero, 30, nx, ny, 150, GetUnitZ(hero) + 50, "Abilities/Weapons/AncestralGuardianMissile/AncestralGuardianMissile.mdl") then -- это и бло отключено
-			--[[if HeroUpdateWeaponCharges(hero,8,1) then
-			else
-				DestroyTimer(GetExpiredTimer())
-				DestroyEffect(saw)
-			end]]
+		--[[if HeroUpdateWeaponCharges(hero,8,1) then
+		else
+			DestroyTimer(GetExpiredTimer())
+			DestroyEffect(saw)
+		end]]
 		--end
 
 		BlzSetSpecialEffectPosition(saw, nx, ny, GetUnitZ(hero) + 20)
