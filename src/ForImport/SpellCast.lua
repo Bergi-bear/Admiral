@@ -99,6 +99,23 @@ function InitSpellTrigger()
 				end
 			end)
 		end
+		if spellId == SpellIDR then-- Пушки
+			--TODO id
+			if not HERO[0].ReleaseLMB then
+				print("мгновенно отпустили")
+			end
+
+			if not HERO[0].ReleaseR then
+				print("клик мышью")
+			end
+
+
+			TimerStart(CreateTimer(), 0.02, false, function()
+				if not HERO[0].ReleaseLMB then
+				--	print("быстро отпустили")
+				end
+			end)
+		end
 	end)
 end
 -- функия принадлежности точки сектора

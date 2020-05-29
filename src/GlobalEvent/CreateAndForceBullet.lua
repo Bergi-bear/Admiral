@@ -358,7 +358,6 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			end)
 		end
 
-
 		BlzSetSpecialEffectPosition(eff, nx, ny, f)
 		i = i + 1
 

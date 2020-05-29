@@ -6,17 +6,35 @@
 
 function KeyRegistration()
 
-	-----------------------------------------------------------------AnyMouse
+
+	-----------------------------------------------------------------LMB and Any Mouse
 	local TrigPressLMB = CreateTrigger()
 	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
 		TriggerRegisterPlayerEvent(TrigPressLMB, Player(i), EVENT_PLAYER_MOUSE_DOWN)
 	end
 	TriggerAddAction(TrigPressLMB, function()
+		--print("any")
 		local pid = GetPlayerId(GetTriggerPlayer())
 		local data = HERO[pid]
-		--print("anypressed")
 		data.MarkIsActivated = false
+		if BlzGetTriggerPlayerMouseButton() == MOUSE_BUTTON_TYPE_LEFT then
+			--это леваый клик всё внутри LMB
+			data.ReleaseLMB = true
+		end
 	end)
+	local TrigDePressLMB = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		TriggerRegisterPlayerEvent(TrigDePressLMB, Player(i), EVENT_PLAYER_MOUSE_UP)
+	end
+
+	TriggerAddAction(TrigDePressLMB, function()
+		if BlzGetTriggerPlayerMouseButton() == MOUSE_BUTTON_TYPE_LEFT then
+			local pid = GetPlayerId(GetTriggerPlayer())
+			local data = HERO[pid]
+			data.ReleaseLMB = false
+		end
+	end)
+
 
 	-----------------------------------------------------------------OSKEY_W --в это карте это якорь
 	local gg_trg_EventUpW = CreateTrigger()
@@ -88,6 +106,30 @@ function KeyRegistration()
 		local pid = GetPlayerId(GetTriggerPlayer())
 		local data = HERO[pid]
 		data.ReleaseE = false
+	end)
+	-----------------------------------------------------------------OSKEY_R
+	local gg_trg_EventUpR = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(gg_trg_EventUpR, Player(i), OSKEY_R, 0, true)
+	end
+	TriggerAddAction(gg_trg_EventUpR, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		if not data.ReleaseR then
+			data.ReleaseR = true
+			--data.MarkIsActivated=false
+			--print("Q is Pressed Mark Creation")
+			MarkCreatorR(data)
+		end
+	end)
+	local TrigDepressR = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(TrigDepressR, Player(i), OSKEY_R, 0, false)
+	end
+	TriggerAddAction(TrigDepressR, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		data.ReleaseR = false
 	end)
 
 	-----------------------------------------------------------------OSKEY_ESC

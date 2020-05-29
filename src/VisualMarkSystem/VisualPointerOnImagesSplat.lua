@@ -61,27 +61,41 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 			DestroyImage(image2[i])
 		end
 	end
-	local curAngle=GetUnitFacing(hero)
+	local curAngle=180+AngleBetweenXY( GetPlayerMouseX[pid], GetPlayerMouseY[pid],GetUnitXY(hero))/bj_DEGTORAD--GetUnitFacing(hero)
+	--print(curAngle)
 	local iter=0
 	local curBlock=0
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		--angle=GetUnitFacing(hero)
 		--local xs,ys=MoveXY(GetUnitX(hero),GetUnitY(hero),10,angle-30)
-		local xs,ys=MoveXY(GetUnitX(hero)-16,GetUnitY(hero)-16,40,curAngle)--стартовое смещение и это центр юнита
+		local rxs,rys=GetUnitXY(hero)
+		if flag==2 then
+			rxs,rys=data.xStand,data.yStand
+		end
+		local xs,ys=MoveXY(rxs-16,rys-16,40,curAngle)--стартовое смещение и это центр юнита
+
+
+
 		local xs2,ys2=0,0
 		iter=iter+1
 
 			xs,ys=MoveXY(xs,ys,40,curAngle+90)
 			xs2,ys2=MoveXY(xs,ys,80,curAngle-90)
+		local errAngle=2.5
+		if flag==2 then
+			errAngle=5
+		end
 
-
-		angle=2.5+AngleBetweenXY(xs, ys, GetPlayerMouseX[pid], GetPlayerMouseY[pid])/bj_DEGTORAD--data.AngleMouse
-
-		curAngle=lerpTheta(curAngle,angle,TIMER_PERIOD*8)
+		angle=errAngle+AngleBetweenXY(xs, ys, GetPlayerMouseX[pid], GetPlayerMouseY[pid])/bj_DEGTORAD--data.AngleMouse
+		local distMouse=DistanceBetweenXY(GetPlayerMouseX[pid], GetPlayerMouseY[pid],rxs,rys)
+		--print(distMouse)
+		if distMouse>=90 then
+			curAngle=lerpTheta(curAngle,angle,TIMER_PERIOD*8)
+		end
 
 		if LastMouseX == GetPlayerMouseX[pid] then
 			mouseMoving=false
-			--savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
+			--savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],rxs,rys)
 		else
 			mouseMoving=true
 			--print("движется")
@@ -96,13 +110,14 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 
 		--print(delta)
 		if mouseMoving then
-			distance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
-			savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
+			distance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],rxs,rys)
+			savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],rxs,rys)
 		else
 			distance=savedDistance
 		end
 		local block=0
 
+		--print(distance)
 		for _=1,#image do
 			distance=distance-step
 			if distance>=0 then
@@ -110,6 +125,10 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 			end
 		end
 
+		if block<=61 then
+			block=61
+		end
+		--print(block)
 		curBlock=R2I(lerpTheta(curBlock,block,TIMER_PERIOD*16))
 
 		if minlong~=nil then
@@ -187,6 +206,10 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 
 		if flag==1 then
 			if not data.MarkIsActivated then
+				Destroy()
+			end
+		elseif flag==2 then
+			if data.StartCanon then
 				Destroy()
 			end
 		end

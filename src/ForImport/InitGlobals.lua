@@ -36,11 +36,15 @@ function InitHEROTable()
 			UnitHero=nil,
 			AngleMouse=0,
 			MarkIsActivated=false,
+			ReleaseLMB=false,
 			ReleaseQ=false,
 			ReleaseW=false,
 			ReleaseE=false,
 			ReleaseR=false,
 			Anchor=nil,
+			xStand=0,
+			yStand=0,
+			StartCanon=false
 		}
 	end
 end

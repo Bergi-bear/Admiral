@@ -133,11 +133,15 @@ function InitHEROTable()
 			UnitHero=nil,
 			AngleMouse=0,
 			MarkIsActivated=false,
+			ReleaseLMB=false,
 			ReleaseQ=false,
 			ReleaseW=false,
 			ReleaseE=false,
 			ReleaseR=false,
 			Anchor=nil,
+			xStand=0,
+			yStand=0,
+			StartCanon=false
 		}
 	end
 end
@@ -241,6 +245,23 @@ function InitSpellTrigger()
 						end
 						BlzPauseUnitEx(caster,false)
 					end)
+				end
+			end)
+		end
+		if spellId == SpellIDR then-- Пушки
+			--TODO id
+			if not HERO[0].ReleaseLMB then
+				print("мгновенно отпустили")
+			end
+
+			if not HERO[0].ReleaseR then
+				print("клик мышью")
+			end
+
+
+			TimerStart(CreateTimer(), 0.02, false, function()
+				if not HERO[0].ReleaseLMB then
+					print("быстро отпустили")
 				end
 			end)
 		end
@@ -619,7 +640,6 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 				end
 			end)
 		end
-
 
 		BlzSetSpecialEffectPosition(eff, nx, ny, f)
 		i = i + 1
@@ -2985,17 +3005,35 @@ wGeometry = wGeometryInit()
 
 function KeyRegistration()
 
-	-----------------------------------------------------------------AnyMouse
+
+	-----------------------------------------------------------------LMB and Any Mouse
 	local TrigPressLMB = CreateTrigger()
 	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
 		TriggerRegisterPlayerEvent(TrigPressLMB, Player(i), EVENT_PLAYER_MOUSE_DOWN)
 	end
 	TriggerAddAction(TrigPressLMB, function()
+		--print("any")
 		local pid = GetPlayerId(GetTriggerPlayer())
 		local data = HERO[pid]
-		--print("anypressed")
 		data.MarkIsActivated = false
+		if BlzGetTriggerPlayerMouseButton() == MOUSE_BUTTON_TYPE_LEFT then
+			--это леваый клик всё внутри LMB
+			data.ReleaseLMB = true
+		end
 	end)
+	local TrigDePressLMB = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		TriggerRegisterPlayerEvent(TrigDePressLMB, Player(i), EVENT_PLAYER_MOUSE_UP)
+	end
+
+	TriggerAddAction(TrigDePressLMB, function()
+		if BlzGetTriggerPlayerMouseButton() == MOUSE_BUTTON_TYPE_LEFT then
+			local pid = GetPlayerId(GetTriggerPlayer())
+			local data = HERO[pid]
+			data.ReleaseLMB = false
+		end
+	end)
+
 
 	-----------------------------------------------------------------OSKEY_W --в это карте это якорь
 	local gg_trg_EventUpW = CreateTrigger()
@@ -3067,6 +3105,30 @@ function KeyRegistration()
 		local pid = GetPlayerId(GetTriggerPlayer())
 		local data = HERO[pid]
 		data.ReleaseE = false
+	end)
+	-----------------------------------------------------------------OSKEY_R
+	local gg_trg_EventUpR = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(gg_trg_EventUpR, Player(i), OSKEY_R, 0, true)
+	end
+	TriggerAddAction(gg_trg_EventUpR, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		if not data.ReleaseR then
+			data.ReleaseR = true
+			--data.MarkIsActivated=false
+			--print("Q is Pressed Mark Creation")
+			MarkCreatorR(data)
+		end
+	end)
+	local TrigDepressR = CreateTrigger()
+	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
+		BlzTriggerRegisterPlayerKeyEvent(TrigDepressR, Player(i), OSKEY_R, 0, false)
+	end
+	TriggerAddAction(TrigDepressR, function()
+		local pid = GetPlayerId(GetTriggerPlayer())
+		local data = HERO[pid]
+		data.ReleaseR = false
 	end)
 
 	-----------------------------------------------------------------OSKEY_ESC
@@ -3174,20 +3236,159 @@ function MarkCreatorE(data)
 		end
 	end
 end
+function MarkCreatorR(data)
+	local hero=data.UnitHero
+	if not hero then
+		--print("Has not Hero")
+		return
+	end
+	if UnitHaveReadyAbility(hero,SpellIDR) then
+		if not data.MarkIsActivated then
+			--CreateVisualPointerForUnitBySplat(hero,1,1200//5,5,1200//5)
+			CreateVisualCannon(data)
+			data.MarkIsActivated=true
+		end
+	end
+end
 
 
 --есть мана, не в кд, юнит жив
 function  UnitHaveReadyAbility(hero,abiID)
 	local isReady=false
+	--print(BlzGetUnitAbilityManaCost(hero,abiID,1-GetUnitAbilityLevel(hero,abiID)))
 	if GetUnitAbilityLevel(hero,abiID)>0
-		and BlzGetUnitAbilityCooldownRemaining(hero,abiID)<=.1
+		and BlzGetUnitAbilityCooldownRemaining(hero,abiID)<=.01
 		and UnitAlive(hero)
-		and GetUnitState(hero,UNIT_STATE_MANA)>=BlzGetUnitAbilityManaCost(hero,abiID,GetUnitAbilityLevel(hero,abiID))
+		and GetUnitState(hero,UNIT_STATE_MANA)>=BlzGetUnitAbilityManaCost(hero,abiID,GetUnitAbilityLevel(hero,abiID)-1)
 		and IsUnitSelected(hero,GetOwningPlayer(hero))
 	then
 		isReady=true
 	end
 	return isReady
+end
+
+function CreateVisualCannon(data)
+	local cannon={}
+	for i=1,6 do
+		cannon[i]=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",6000,6000)
+		BlzSetSpecialEffectAlpha(cannon[i],40)
+		BlzSetSpecialEffectColor(cannon[i],0,255,0)
+	end
+	local function Destroy()
+		DestroyTimer(GetExpiredTimer())
+		--data.MarkIsActivated=true
+		--print("destroy")
+		for i=1,#cannon do
+			BlzSetSpecialEffectPosition(cannon[i],6000,6000,0)
+			DestroyEffect(cannon[i])
+		end
+	end
+	local curAngle=180+AngleBetweenXY(GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid],GetUnitXY(data.UnitHero))/bj_DEGTORAD
+	--local curDistance=0
+	local fix=false
+	local xStand,yStand=0,0
+	local xEnd,yEnd= {},{}
+	local StandSwitcher=true
+	data.StartCanon=false
+	local fast=true
+	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+		if fast and not data.ReleaseLMB and fix then
+			fast=false
+			print("бытрый клик")
+		end
+		local x,y=GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]
+		local angle=180+AngleBetweenXY(x,y,GetUnitXY(data.UnitHero))/bj_DEGTORAD
+		if data.ReleaseLMB then
+			local nx,ny=MoveXY(x,y,40,angle)
+			angle=180+AngleBetweenXY(nx,ny,xStand,yStand)/bj_DEGTORAD
+			--print("новый угол "..angle)
+		else
+
+		end
+		curAngle=lerpTheta(curAngle,angle,TIMER_PERIOD*8)
+		--local xs,ys=MoveXY(x,y,300,angle-90)
+		local distance=DistanceBetweenXY(x,y,GetUnitXY(data.UnitHero))
+		if distance>=900 then distance=900 end
+		if distance<=0 then distance=0 end
+		--print(distance)
+
+		--curDistance=lerpTheta(curDistance,distance,TIMER_PERIOD*16)
+		--print(curDistance)
+
+		local xs,ys=MoveXY(GetUnitX(data.UnitHero),GetUnitY(data.UnitHero),distance,curAngle)
+		if data.ReleaseLMB then
+			if xStand~=0 then
+				xs,ys=xStand,yStand
+				--xs,ys=MoveXY(xStand,yStand,75*(-1),curAngle)
+			end
+			--PingMinimap(xs,ys,10)
+		end
+		--BlzSetSpecialEffectPosition(cannon[6],xs,ys,GetTerrainZ(xs,ys))
+		--BlzSetSpecialEffectYaw(cannon[6],math.rad(curAngle))
+
+		for i=1,5 do
+
+			local nx,ny=MoveXY(xs,ys,75*(i-3),curAngle-90)
+			if data.ReleaseLMB then
+
+				xEnd[i],yEnd[i]=nx,ny
+				--if fix and not StandSwitcher then
+					BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny))
+				--end
+				fix=true
+				BlzStartUnitAbilityCooldown(data.UnitHero,SpellIDR,4)
+
+				if StandSwitcher  then --выполняется 1 раз
+					xStand,yStand=BlzGetLocalSpecialEffectX(cannon[3]),BlzGetLocalSpecialEffectY(cannon[3])
+					data.xStand,data.yStand=xStand,yStand
+					StandSwitcher=false
+					--print("switch")
+					--CreateVisualPointerForUnitBySplat(data.UnitHero,2,500//5,5,500//5) --плохо работает
+					--local sx,sy=MoveXY(xStand,yStand,40,curAngle)
+					--curAngle=180+AngleBetweenXY(sx,sy,GetUnitXY(data.UnitHero))/bj_DEGTORAD
+					local nx2,ny2=MoveXY(x,y,40,angle)
+					--curAngle=180+AngleBetweenXY(nx2,ny2,xStand,yStand)/bj_DEGTORAD
+					curAngle=180+AngleBetweenXY(x,y,GetUnitXY(data.UnitHero))/bj_DEGTORAD
+				end
+				--print("кнопка хажата")
+			else
+
+				BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny))
+			end
+
+			if fix and not data.ReleaseLMB then
+				--print("Роняем пушки")
+				data.StartCanon=true
+				CreateFallCannonOnEffectPosition(cannon[i],curAngle,xEnd[i],yEnd[i])
+			end
+
+			BlzSetSpecialEffectYaw(cannon[i],math.rad(curAngle))
+		end
+
+		if not data.MarkIsActivated and fix and not data.ReleaseLMB  then
+			Destroy()
+		end
+	end)
+end
+
+function CreateFallCannonOnEffectPosition(eff,angle,x,y)
+	--local x,y=BlzGetLocalSpecialEffectX(eff),BlzGetLocalSpecialEffectY(eff)
+	local canon=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",6000,6000)
+	--Abilities\\\Spells\\\NightElf\\\Starfall\\\StarfallTarget
+	DestroyEffect(AddSpecialEffect("Abilities\\Spells\\NightElf\\Starfall\\StarfallTarget",x,y))
+	BlzSetSpecialEffectYaw(canon,math.rad(angle))
+	local z=1150
+	local speed=40
+	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+		z=z-speed
+		if z<=GetTerrainZ(x,y) then
+			z=GetTerrainZ(x,y)
+			DestroyTimer(GetExpiredTimer())
+			DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
+		end
+		BlzSetSpecialEffectPosition(canon,x,y,z)
+	end)
+
 end
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
@@ -3396,27 +3597,41 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 			DestroyImage(image2[i])
 		end
 	end
-	local curAngle=GetUnitFacing(hero)
+	local curAngle=180+AngleBetweenXY( GetPlayerMouseX[pid], GetPlayerMouseY[pid],GetUnitXY(hero))/bj_DEGTORAD--GetUnitFacing(hero)
+	--print(curAngle)
 	local iter=0
 	local curBlock=0
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		--angle=GetUnitFacing(hero)
 		--local xs,ys=MoveXY(GetUnitX(hero),GetUnitY(hero),10,angle-30)
-		local xs,ys=MoveXY(GetUnitX(hero)-16,GetUnitY(hero)-16,40,curAngle)--стартовое смещение и это центр юнита
+		local rxs,rys=GetUnitXY(hero)
+		if flag==2 then
+			rxs,rys=data.xStand,data.yStand
+		end
+		local xs,ys=MoveXY(rxs-16,rys-16,40,curAngle)--стартовое смещение и это центр юнита
+
+
+
 		local xs2,ys2=0,0
 		iter=iter+1
 
 			xs,ys=MoveXY(xs,ys,40,curAngle+90)
 			xs2,ys2=MoveXY(xs,ys,80,curAngle-90)
+		local errAngle=2.5
+		if flag==2 then
+			errAngle=5
+		end
 
-
-		angle=2.5+AngleBetweenXY(xs, ys, GetPlayerMouseX[pid], GetPlayerMouseY[pid])/bj_DEGTORAD--data.AngleMouse
-
-		curAngle=lerpTheta(curAngle,angle,TIMER_PERIOD*8)
+		angle=errAngle+AngleBetweenXY(xs, ys, GetPlayerMouseX[pid], GetPlayerMouseY[pid])/bj_DEGTORAD--data.AngleMouse
+		local distMouse=DistanceBetweenXY(GetPlayerMouseX[pid], GetPlayerMouseY[pid],rxs,rys)
+		--print(distMouse)
+		if distMouse>=90 then
+			curAngle=lerpTheta(curAngle,angle,TIMER_PERIOD*8)
+		end
 
 		if LastMouseX == GetPlayerMouseX[pid] then
 			mouseMoving=false
-			--savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
+			--savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],rxs,rys)
 		else
 			mouseMoving=true
 			--print("движется")
@@ -3431,13 +3646,14 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 
 		--print(delta)
 		if mouseMoving then
-			distance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
-			savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
+			distance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],rxs,rys)
+			savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],rxs,rys)
 		else
 			distance=savedDistance
 		end
 		local block=0
 
+		--print(distance)
 		for _=1,#image do
 			distance=distance-step
 			if distance>=0 then
@@ -3445,6 +3661,10 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 			end
 		end
 
+		if block<=61 then
+			block=61
+		end
+		--print(block)
 		curBlock=R2I(lerpTheta(curBlock,block,TIMER_PERIOD*16))
 
 		if minlong~=nil then
@@ -3522,6 +3742,10 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 
 		if flag==1 then
 			if not data.MarkIsActivated then
+				Destroy()
+			end
+		elseif flag==2 then
+			if data.StartCanon then
 				Destroy()
 			end
 		end
