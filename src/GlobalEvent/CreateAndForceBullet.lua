@@ -312,7 +312,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		end
 	end
 	local HookGroup = CreateGroup()
-
+	local data=HERO[GetPlayerId(GetOwningPlayer(hero))]
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		--xpcall(function()
 		local x, y = BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff)
@@ -366,32 +366,8 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			--отрисовка цепи
 			local step=20
 			local eStart=GetUnitZ(hero)+200
-			local chainCount=DistanceBetweenXYZ(GetUnitX(hero),GetUnitY(hero),eStart-100,nx,ny,f)//step
-			--local chainCount=DistanceBetweenXY(nx,ny,GetUnitXY(hero))//step
-			--print(chainCount)
-			if chainCount>=#chainElement then chainCount=#chainElement end
-
-
-			local AB=math.sqrt((f*f)+(i * speed*i * speed))
-			--print("AB="..AB.." f="..f)
-
-			local angleZ=math.asin(f/AB)/bj_DEGTORAD
-			--AngleBetweenXY(GetUnitY(hero), 0, ny, f) / bj_DEGTORAD
-			--print(angleZ)
-			--print(step/(math.acos(angleZ)/bj_DEGTORAD))
-			local k=0
-			for i2=1,#chainElement do
-				if chainCount>=i2 then
-					local xs,ys=GetUnitXY(hero)
-					local xe,ye=MoveXY(xs,ys,speed*i2*.5,angle)--верная функция, вычисляет местоположеие следующей точки
-					local nf= MoveY(0,speed*i2,angleZ)
-					BlzSetSpecialEffectPosition(chainElement[i2], xe,ye,GetUnitZ(hero)+100+nf )-- тоже всё верно
-					BlzSetSpecialEffectPitch(chainElement[i2],math.rad(360-angleZ))--верная, если угол верный
-					BlzSetSpecialEffectYaw(chainElement[i2],math.rad(angle))--верно
-				else
-					BlzSetSpecialEffectPosition(chainElement[i2], 6000,6000,0 )
-				end
-			end
+			--local fStart=
+			MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),eStart,nx, ny, f,step,data.ChainEff)
 		end
 
 		if flag == 3 then -- обратное движение
@@ -405,6 +381,10 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 				BlzSetSpecialEffectPosition(eff, 6000, 6000, 0)
 				DestroyEffect(eff)
 				DestroyTimer(GetExpiredTimer())
+				DestroyEffectLighting3D(data.ChainEff)
+			else
+				local step=20
+				MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),GetUnitZ(hero)+50,nx, ny, f,step,data.ChainEff)
 			end
 
 		end

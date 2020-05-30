@@ -240,8 +240,18 @@ function AngleBetweenXYZ(x1, y1,z1, x2, y2,z2)
 	local a=x1*x2+y1*y2+z1*z2
 	local b=math.sqrt(x1*x1+y1*y1+z1*z1)
 	local c=math.sqrt(x2*x2+y2*y2+z2*z2)
---	print("a"..a)
---	print("b"..b)
---	print("c"..c)
 	return math.acos(a/(b*c))
+end
+
+-- функия принадлежности точки сектора
+-- x1, x2 - координаты проверяемой точки
+-- x2, y2 - координаты вершины сектора
+-- orientation - ориентация сектора в мировых координатах
+-- width - уголовой размер сектора в градусах
+-- radius - окружности которой принадлежит сектор
+
+function IsPointInSector(x1,y1,x2,y2,orientation,width,radius)
+	local lenght=DistanceBetweenXY(x1,y1,x2,y2)
+	local angle=Acos(Cos(orientation*bj_DEGTORAD)*(x1-x2)/lenght+Sin(orientation*bj_DEGTORAD)*(y1-y2)/lenght )*bj_RADTODEG
+	return angle<=width and lenght<=radius
 end

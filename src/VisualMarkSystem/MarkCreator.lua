@@ -71,7 +71,7 @@ function MarkCreatorR(data)
 	if UnitHaveReadyAbility(hero,SpellIDR) then
 		if not data.MarkIsActivated then
 			--CreateVisualPointerForUnitBySplat(hero,1,1200//5,5,1200//5)
-			CreateVisualCannon(data)
+			--CreateVisualCannon(data)
 			data.MarkIsActivated=true
 		end
 	end
@@ -117,10 +117,12 @@ function CreateVisualCannon(data)
 	local StandSwitcher=true
 	data.StartCanon=false
 	local fast=true
+	local switchXY=false
+	local fastDestroy=false
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		if fast and not data.ReleaseLMB and fix then
 			fast=false
-			print("бытрый клик")
+		--	print("бытрый клик")
 		end
 		local x,y=GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]
 		local angle=180+AngleBetweenXY(x,y,GetUnitXY(data.UnitHero))/bj_DEGTORAD
@@ -142,12 +144,15 @@ function CreateVisualCannon(data)
 		--print(curDistance)
 
 		local xs,ys=MoveXY(GetUnitX(data.UnitHero),GetUnitY(data.UnitHero),distance,curAngle)
-		if data.ReleaseLMB then
-			if xStand~=0 then
-				xs,ys=xStand,yStand
-				--xs,ys=MoveXY(xStand,yStand,75*(-1),curAngle)
+		if data.RClick then
+			data.RClick=false
+			xs,ys=x,y
+		end
+		if data.ReleaseLMB  and false then
+			xs,ys=xStand,yStand
+			if data.RClick then
+				xs,ys=x,y
 			end
-			--PingMinimap(xs,ys,10)
 		end
 		--BlzSetSpecialEffectPosition(cannon[6],xs,ys,GetTerrainZ(xs,ys))
 		--BlzSetSpecialEffectYaw(cannon[6],math.rad(curAngle))
@@ -159,9 +164,12 @@ function CreateVisualCannon(data)
 
 				xEnd[i],yEnd[i]=nx,ny
 				--if fix and not StandSwitcher then
-					BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny))
+				BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny)) --ВОТ ТУТ ОНО ДЁРГАЕТСЯ
 				--end
 				fix=true
+				if data.RClick then
+					PingMinimap(nx,ny,1)
+				end
 				BlzStartUnitAbilityCooldown(data.UnitHero,SpellIDR,4)
 
 				if StandSwitcher  then --выполняется 1 раз
@@ -177,32 +185,36 @@ function CreateVisualCannon(data)
 					curAngle=180+AngleBetweenXY(x,y,GetUnitXY(data.UnitHero))/bj_DEGTORAD
 				end
 				--print("кнопка хажата")
-			else
-
+			else-- пока кнопка не нажата выполняется вот это
+				xEnd[i],yEnd[i]=nx,ny
 				BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny))
 			end
 
-			if fix and not data.ReleaseLMB then
+			if ( fix and not data.ReleaseLMB) or fastDestroy  then
 				--print("Роняем пушки")
+				--data.RClick=false
 				data.StartCanon=true
-				CreateFallCannonOnEffectPosition(cannon[i],curAngle,xEnd[i],yEnd[i])
+				CreateFallCannonOnEffectPosition(curAngle,xEnd[i],yEnd[i])
 			end
 
 			BlzSetSpecialEffectYaw(cannon[i],math.rad(curAngle))
 		end
-
+		if not data.MarkIsActivated and  not fast and not data.ReleaseLMB then
+			fastDestroy=true
+			print("быстрый destroy")
+		end
 		if not data.MarkIsActivated and fix and not data.ReleaseLMB  then
 			Destroy()
 		end
 	end)
 end
 
-function CreateFallCannonOnEffectPosition(eff,angle,x,y)
+function CreateFallCannonOnEffectPosition(angle,x,y)
 	--local x,y=BlzGetLocalSpecialEffectX(eff),BlzGetLocalSpecialEffectY(eff)
-	local canon=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",6000,6000)
+
 	--Abilities\\\Spells\\\NightElf\\\Starfall\\\StarfallTarget
 	DestroyEffect(AddSpecialEffect("Abilities\\Spells\\NightElf\\Starfall\\StarfallTarget",x,y))
-	BlzSetSpecialEffectYaw(canon,math.rad(angle))
+
 	local z=1150
 	local speed=40
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
@@ -211,8 +223,11 @@ function CreateFallCannonOnEffectPosition(eff,angle,x,y)
 			z=GetTerrainZ(x,y)
 			DestroyTimer(GetExpiredTimer())
 			DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
+			local canon=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",x,y)
+			BlzSetSpecialEffectYaw(canon,math.rad(angle))
+			BlzSetSpecialEffectPosition(canon,x,y,z)
 		end
-		BlzSetSpecialEffectPosition(canon,x,y,z)
+
 	end)
 
 end

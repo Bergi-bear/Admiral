@@ -44,8 +44,63 @@ function InitHEROTable()
 			Anchor=nil,
 			xStand=0,
 			yStand=0,
-			StartCanon=false
+			StartCanon=false,
+			RClick=false,
+			ChainEff=nil,
 		}
 	end
+
+	TimerStart(CreateTimer(), 1, false, function()
+		--CreateGlue()
+
+	end)
 end
 
+
+function CreateGlue()
+
+	local frameMove=BlzGetFrameByName("CommandButton_0", 0)
+	local trigger0 = CreateTrigger()
+	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_DOUBLECLICK)
+	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_DOWN)
+	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_CONTROL_CLICK)-- работает только это и то весьма странно
+	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_ENTER)
+	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_WHEEL)
+	--print("все события добавлены")
+	TriggerAddAction(trigger0, function()
+		print("Любое событие по кнопке")
+	end)
+
+
+
+	local  buttonFrame = BlzCreateFrameByType("GLUEBUTTON", "FaceButton",  BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0), "", 0)
+	--local  buttonFrame = BlzCreateFrameByType("GLUEBUTTON", "FaceButton",  BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0), "", 0)
+	local  buttonIconFrame = BlzCreateFrameByType("BACKDROP", "FaceButtonIcon", buttonFrame, "", 0)
+	BlzFrameSetAllPoints(buttonIconFrame, buttonFrame)
+	BlzFrameSetTexture(buttonIconFrame, "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn", 0, true)
+	local trigger = CreateTrigger()
+	BlzTriggerRegisterFrameEvent ( trigger , buttonFrame, FRAMEEVENT_CONTROL_CLICK )
+	BlzTriggerRegisterFrameEvent(trigger, buttonFrame, FRAMEEVENT_MOUSE_ENTER)
+
+	TriggerAddAction ( trigger , function ( )
+		print ( "click" , BlzFrameGetName ( BlzGetTriggerFrame ( ) ) )
+	end )
+
+	BlzFrameClearAllPoints(buttonFrame) --хз зачем
+	BlzFrameSetAbsPoint(buttonFrame,FRAMEPOINT_CENTER,0.4,0.3)
+
+	BlzFrameClearAllPoints(BlzGetFrameByName("CommandButtonBackground_0", 0)) --кнопку
+	BlzFrameSetAbsPoint(BlzGetFrameByName("CommandButtonBackground_0", 0),FRAMEPOINT_CENTER,0.4,0.3)
+
+	BlzFrameSetSize(buttonFrame,0.04,0.04)
+	print(BlzGetFrameByName("CommandButtonBackground", 0))
+	print(BlzGetFrameByName("CommandButtonBackground_0", 0))
+	print(BlzGetFrameByName("CommandButton_0", 0))
+	print(BlzGetFrameByName("123", 0))
+	--BlzFrameSetParent(buttonFrame,BlzGetFrameByName("CommandButton_0", 0))
+
+
+	print ( "Родитель" , BlzFrameGetName ( BlzFrameGetParent(BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)) ) )
+end
+
+--BlzCreateFrame

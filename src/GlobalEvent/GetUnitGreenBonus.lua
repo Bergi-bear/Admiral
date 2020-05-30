@@ -9,7 +9,6 @@ function ehandler( err )
 end
 
 function GetUnitGreenAttackBonus(hero)
-	--xpcall(function()
 		local bonus=0
 		if IsUnitSelected(hero,GetOwningPlayer(hero)) then
 			local frame=BlzGetFrameByName("InfoPanelIconValue",0)
@@ -20,7 +19,6 @@ function GetUnitGreenAttackBonus(hero)
 			bonus=tonumber(bonus)
 		end
 		return bonus
-	--end,ehandler)
 end
 
 --[[function PlayerPlaying(text)

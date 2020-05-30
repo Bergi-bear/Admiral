@@ -141,12 +141,66 @@ function InitHEROTable()
 			Anchor=nil,
 			xStand=0,
 			yStand=0,
-			StartCanon=false
+			StartCanon=false,
+			RClick=false,
+			ChainEff=nil,
 		}
 	end
+
+	TimerStart(CreateTimer(), 1, false, function()
+		--CreateGlue()
+
+	end)
 end
 
 
+function CreateGlue()
+
+	local frameMove=BlzGetFrameByName("CommandButton_0", 0)
+	local trigger0 = CreateTrigger()
+	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_DOUBLECLICK)
+	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_DOWN)
+	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_CONTROL_CLICK)-- работает только это и то весьма странно
+	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_ENTER)
+	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_WHEEL)
+	--print("все события добавлены")
+	TriggerAddAction(trigger0, function()
+		print("Любое событие по кнопке")
+	end)
+
+
+
+	local  buttonFrame = BlzCreateFrameByType("GLUEBUTTON", "FaceButton",  BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0), "", 0)
+	--local  buttonFrame = BlzCreateFrameByType("GLUEBUTTON", "FaceButton",  BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0), "", 0)
+	local  buttonIconFrame = BlzCreateFrameByType("BACKDROP", "FaceButtonIcon", buttonFrame, "", 0)
+	BlzFrameSetAllPoints(buttonIconFrame, buttonFrame)
+	BlzFrameSetTexture(buttonIconFrame, "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn", 0, true)
+	local trigger = CreateTrigger()
+	BlzTriggerRegisterFrameEvent ( trigger , buttonFrame, FRAMEEVENT_CONTROL_CLICK )
+	BlzTriggerRegisterFrameEvent(trigger, buttonFrame, FRAMEEVENT_MOUSE_ENTER)
+
+	TriggerAddAction ( trigger , function ( )
+		print ( "click" , BlzFrameGetName ( BlzGetTriggerFrame ( ) ) )
+	end )
+
+	BlzFrameClearAllPoints(buttonFrame) --хз зачем
+	BlzFrameSetAbsPoint(buttonFrame,FRAMEPOINT_CENTER,0.4,0.3)
+
+	BlzFrameClearAllPoints(BlzGetFrameByName("CommandButtonBackground_0", 0)) --кнопку
+	BlzFrameSetAbsPoint(BlzGetFrameByName("CommandButtonBackground_0", 0),FRAMEPOINT_CENTER,0.4,0.3)
+
+	BlzFrameSetSize(buttonFrame,0.04,0.04)
+	print(BlzGetFrameByName("CommandButtonBackground", 0))
+	print(BlzGetFrameByName("CommandButtonBackground_0", 0))
+	print(BlzGetFrameByName("CommandButton_0", 0))
+	print(BlzGetFrameByName("123", 0))
+	--BlzFrameSetParent(buttonFrame,BlzGetFrameByName("CommandButton_0", 0))
+
+
+	print ( "Родитель" , BlzFrameGetName ( BlzFrameGetParent(BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)) ) )
+end
+
+--BlzCreateFrame
 function InitSpellTrigger()
 	local SpellTrigger = CreateTrigger()
 	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
@@ -161,7 +215,9 @@ function InitSpellTrigger()
 		local x, y = GetSpellTargetX(), GetSpellTargetY()
 		local spellId = GetSpellAbilityId()
 		local angleCast=AngleBetweenXY(casterX, casterY, x, y)/bj_DEGTORAD
-		local r=0
+		local data=HERO[GetPlayerId(GetOwningPlayer(caster))]
+
+
 		if spellId == SpellIDQ then-- Выстрел
 			BlzPauseUnitEx(caster,true)
 			TimerStart(CreateTimer(), 0.1, false, function()
@@ -193,6 +249,10 @@ function InitSpellTrigger()
 			BlzSetSpecialEffectPitch(anchor,math.rad(-90))
 			BlzSetSpecialEffectZ(anchor,GetUnitZ(caster)+200)
 			--CreateArtToss(caster,"AdmiralAssets\\Anchor",angleCast,dist)
+
+			--CreateEffectLighting3D(casterX,casterY,GetUnitZ(caster)+50,x,y,GetUnitZ(caster)+500,20,"AdmiralAssets\\ChainElement")
+			data.ChainEff=CreateEffectLighting3D(0,0,0,0,0,0,0,"AdmiralAssets\\ChainElement")
+
 			JumpEffect(anchor, 20, 300, angleCast, dist, caster, 2,GetUnitZ(caster)+200)
 		end
 
@@ -250,34 +310,48 @@ function InitSpellTrigger()
 		end
 		if spellId == SpellIDR then-- Пушки
 			--TODO id
-			if not HERO[0].ReleaseLMB then
-				print("мгновенно отпустили")
+			local data=HERO[GetPlayerId(GetOwningPlayer(caster))]
+			--data.ReleaseLMB=true
+			local cannon={}
+			for i=1,5 do
+				cannon[i]=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",6000,6000)
+				BlzSetSpecialEffectAlpha(cannon[i],40)
+				--BlzSetSpecialEffectColor(cannon[i],0,255,0)
 			end
+			--print("клик")
+			local curAngle=angleCast
+			local angleCast2=angleCast
+			TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 
-			if not HERO[0].ReleaseR then
-				print("клик мышью")
-			end
+				if data.ReleaseLMB then
+					BlzStartUnitAbilityCooldown(caster,SpellIDR,4)
+					local xEnd,yEnd=MoveXY(x,y,-40,angleCast2)
+					angleCast=AngleBetweenXY(xEnd,yEnd,GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid])/bj_DEGTORAD
+					curAngle=lerpTheta(curAngle,angleCast,TIMER_PERIOD*8)
+					--print(curAngle)
+					for i=1,5 do
+						local nx,ny=MoveXY(x,y,75*(i-3),curAngle-90)
+						BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny))
+						BlzSetSpecialEffectYaw(cannon[i],math.rad(curAngle))
+						--DestroyEffect(cannon[i])
+					end
 
+				end
 
-			TimerStart(CreateTimer(), 0.02, false, function()
-				if not HERO[0].ReleaseLMB then
-					print("быстро отпустили")
+ 				if not data.ReleaseLMB  then
+					--print("отпустил")
+					DestroyTimer(GetExpiredTimer())
+					for i=1,5 do
+						local nx,ny=MoveXY(x,y,75*(i-3),curAngle-90)
+						CreateFallCannonOnEffectPosition(curAngle,nx,ny)
+						BlzSetSpecialEffectPosition(cannon[i],6000,6000,0)
+						DestroyEffect(cannon[i])
+					end
 				end
 			end)
+
 		end
 	end)
-end
--- функия принадлежности точки сектора
--- x1, x2 - координаты проверяемой точки
--- x2, y2 - координаты вершины сектора
--- orientation - ориентация сектора в мировых координатах
--- width - уголовой размер сектора в градусах
--- radius - окружности которой принадлежит сектор
-
-function IsPointInSector(x1,y1,x2,y2,orientation,width,radius)
-	local lenght=DistanceBetweenXY(x1,y1,x2,y2)
-	local angle=Acos(Cos(orientation*bj_DEGTORAD)*(x1-x2)/lenght+Sin(orientation*bj_DEGTORAD)*(y1-y2)/lenght )*bj_RADTODEG
-	return angle<=width and lenght<=radius
 end
 
 
@@ -595,7 +669,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		end
 	end
 	local HookGroup = CreateGroup()
-
+	local data=HERO[GetPlayerId(GetOwningPlayer(hero))]
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		--xpcall(function()
 		local x, y = BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff)
@@ -649,32 +723,8 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			--отрисовка цепи
 			local step=20
 			local eStart=GetUnitZ(hero)+200
-			local chainCount=DistanceBetweenXYZ(GetUnitX(hero),GetUnitY(hero),eStart-100,nx,ny,f)//step
-			--local chainCount=DistanceBetweenXY(nx,ny,GetUnitXY(hero))//step
-			--print(chainCount)
-			if chainCount>=#chainElement then chainCount=#chainElement end
-
-
-			local AB=math.sqrt((f*f)+(i * speed*i * speed))
-			--print("AB="..AB.." f="..f)
-
-			local angleZ=math.asin(f/AB)/bj_DEGTORAD
-			--AngleBetweenXY(GetUnitY(hero), 0, ny, f) / bj_DEGTORAD
-			--print(angleZ)
-			--print(step/(math.acos(angleZ)/bj_DEGTORAD))
-			local k=0
-			for i2=1,#chainElement do
-				if chainCount>=i2 then
-					local xs,ys=GetUnitXY(hero)
-					local xe,ye=MoveXY(xs,ys,speed*i2*.5,angle)--верная функция, вычисляет местоположеие следующей точки
-					local nf= MoveY(0,speed*i2,angleZ)
-					BlzSetSpecialEffectPosition(chainElement[i2], xe,ye,GetUnitZ(hero)+100+nf )-- тоже всё верно
-					BlzSetSpecialEffectPitch(chainElement[i2],math.rad(360-angleZ))--верная, если угол верный
-					BlzSetSpecialEffectYaw(chainElement[i2],math.rad(angle))--верно
-				else
-					BlzSetSpecialEffectPosition(chainElement[i2], 6000,6000,0 )
-				end
-			end
+			--local fStart=
+			MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),eStart,nx, ny, f,step,data.ChainEff)
 		end
 
 		if flag == 3 then -- обратное движение
@@ -688,6 +738,10 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 				BlzSetSpecialEffectPosition(eff, 6000, 6000, 0)
 				DestroyEffect(eff)
 				DestroyTimer(GetExpiredTimer())
+				DestroyEffectLighting3D(data.ChainEff)
+			else
+				local step=20
+				MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),GetUnitZ(hero)+50,nx, ny, f,step,data.ChainEff)
 			end
 
 		end
@@ -1282,7 +1336,6 @@ function ehandler( err )
 end
 
 function GetUnitGreenAttackBonus(hero)
-	--xpcall(function()
 		local bonus=0
 		if IsUnitSelected(hero,GetOwningPlayer(hero)) then
 			local frame=BlzGetFrameByName("InfoPanelIconValue",0)
@@ -1293,7 +1346,6 @@ function GetUnitGreenAttackBonus(hero)
 			bonus=tonumber(bonus)
 		end
 		return bonus
-	--end,ehandler)
 end
 
 --[[function PlayerPlaying(text)
@@ -1776,11 +1828,22 @@ function AngleBetweenXYZ(x1, y1,z1, x2, y2,z2)
 	local a=x1*x2+y1*y2+z1*z2
 	local b=math.sqrt(x1*x1+y1*y1+z1*z1)
 	local c=math.sqrt(x2*x2+y2*y2+z2*z2)
---	print("a"..a)
---	print("b"..b)
---	print("c"..c)
 	return math.acos(a/(b*c))
 end
+
+-- функия принадлежности точки сектора
+-- x1, x2 - координаты проверяемой точки
+-- x2, y2 - координаты вершины сектора
+-- orientation - ориентация сектора в мировых координатах
+-- width - уголовой размер сектора в градусах
+-- radius - окружности которой принадлежит сектор
+
+function IsPointInSector(x1,y1,x2,y2,orientation,width,radius)
+	local lenght=DistanceBetweenXY(x1,y1,x2,y2)
+	local angle=Acos(Cos(orientation*bj_DEGTORAD)*(x1-x2)/lenght+Sin(orientation*bj_DEGTORAD)*(y1-y2)/lenght )*bj_RADTODEG
+	return angle<=width and lenght<=radius
+end
+
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
 --- Created by Bergi.
@@ -3245,7 +3308,7 @@ function MarkCreatorR(data)
 	if UnitHaveReadyAbility(hero,SpellIDR) then
 		if not data.MarkIsActivated then
 			--CreateVisualPointerForUnitBySplat(hero,1,1200//5,5,1200//5)
-			CreateVisualCannon(data)
+			--CreateVisualCannon(data)
 			data.MarkIsActivated=true
 		end
 	end
@@ -3291,10 +3354,12 @@ function CreateVisualCannon(data)
 	local StandSwitcher=true
 	data.StartCanon=false
 	local fast=true
+	local switchXY=false
+	local fastDestroy=false
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		if fast and not data.ReleaseLMB and fix then
 			fast=false
-			print("бытрый клик")
+		--	print("бытрый клик")
 		end
 		local x,y=GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]
 		local angle=180+AngleBetweenXY(x,y,GetUnitXY(data.UnitHero))/bj_DEGTORAD
@@ -3316,12 +3381,15 @@ function CreateVisualCannon(data)
 		--print(curDistance)
 
 		local xs,ys=MoveXY(GetUnitX(data.UnitHero),GetUnitY(data.UnitHero),distance,curAngle)
-		if data.ReleaseLMB then
-			if xStand~=0 then
-				xs,ys=xStand,yStand
-				--xs,ys=MoveXY(xStand,yStand,75*(-1),curAngle)
+		if data.RClick then
+			data.RClick=false
+			xs,ys=x,y
+		end
+		if data.ReleaseLMB  and false then
+			xs,ys=xStand,yStand
+			if data.RClick then
+				xs,ys=x,y
 			end
-			--PingMinimap(xs,ys,10)
 		end
 		--BlzSetSpecialEffectPosition(cannon[6],xs,ys,GetTerrainZ(xs,ys))
 		--BlzSetSpecialEffectYaw(cannon[6],math.rad(curAngle))
@@ -3333,9 +3401,12 @@ function CreateVisualCannon(data)
 
 				xEnd[i],yEnd[i]=nx,ny
 				--if fix and not StandSwitcher then
-					BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny))
+				BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny)) --ВОТ ТУТ ОНО ДЁРГАЕТСЯ
 				--end
 				fix=true
+				if data.RClick then
+					PingMinimap(nx,ny,1)
+				end
 				BlzStartUnitAbilityCooldown(data.UnitHero,SpellIDR,4)
 
 				if StandSwitcher  then --выполняется 1 раз
@@ -3351,32 +3422,36 @@ function CreateVisualCannon(data)
 					curAngle=180+AngleBetweenXY(x,y,GetUnitXY(data.UnitHero))/bj_DEGTORAD
 				end
 				--print("кнопка хажата")
-			else
-
+			else-- пока кнопка не нажата выполняется вот это
+				xEnd[i],yEnd[i]=nx,ny
 				BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny))
 			end
 
-			if fix and not data.ReleaseLMB then
+			if ( fix and not data.ReleaseLMB) or fastDestroy  then
 				--print("Роняем пушки")
+				--data.RClick=false
 				data.StartCanon=true
-				CreateFallCannonOnEffectPosition(cannon[i],curAngle,xEnd[i],yEnd[i])
+				CreateFallCannonOnEffectPosition(curAngle,xEnd[i],yEnd[i])
 			end
 
 			BlzSetSpecialEffectYaw(cannon[i],math.rad(curAngle))
 		end
-
+		if not data.MarkIsActivated and  not fast and not data.ReleaseLMB then
+			fastDestroy=true
+			print("быстрый destroy")
+		end
 		if not data.MarkIsActivated and fix and not data.ReleaseLMB  then
 			Destroy()
 		end
 	end)
 end
 
-function CreateFallCannonOnEffectPosition(eff,angle,x,y)
+function CreateFallCannonOnEffectPosition(angle,x,y)
 	--local x,y=BlzGetLocalSpecialEffectX(eff),BlzGetLocalSpecialEffectY(eff)
-	local canon=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",6000,6000)
+
 	--Abilities\\\Spells\\\NightElf\\\Starfall\\\StarfallTarget
 	DestroyEffect(AddSpecialEffect("Abilities\\Spells\\NightElf\\Starfall\\StarfallTarget",x,y))
-	BlzSetSpecialEffectYaw(canon,math.rad(angle))
+
 	local z=1150
 	local speed=40
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
@@ -3385,10 +3460,124 @@ function CreateFallCannonOnEffectPosition(eff,angle,x,y)
 			z=GetTerrainZ(x,y)
 			DestroyTimer(GetExpiredTimer())
 			DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
+			local canon=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",x,y)
+			BlzSetSpecialEffectYaw(canon,math.rad(angle))
+			BlzSetSpecialEffectPosition(canon,x,y,z)
 		end
-		BlzSetSpecialEffectPosition(canon,x,y,z)
+
 	end)
 
+end
+do
+	Vector = {}
+	Vector.__index = Vector
+end
+
+
+function Vector:new(x, y, z)
+	local v = {x = x, y = y, z = z}
+	setmetatable(v, self)
+	return v
+end
+
+function Vector:copy()
+	return Vector:new(self.x, self.y, self.z)
+end
+
+function Vector:dot(other)
+	return self.x * other.x + self.y * other.y + self.z * other.z
+end
+
+function Vector:length()
+	return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
+end
+
+function Vector:length2d()
+	return math.sqrt(self.x * self.x + self.y * self.y)
+end
+
+function Vector:__mul(num)
+	return Vector:new(self.x * num, self.y * num, self.z * num)
+end
+
+function Vector:__div(num)
+	return Vector:new(self.x / num, self.y / num, self.z / num)
+end
+
+function Vector:__div(num)
+	return Vector:new(self.x / num, self.y / num, self.z / num)
+end
+
+function Vector:normalize(clone)
+	if clone then
+		return self / self:length()
+	end
+	local l = self:length()
+	self.x = self.x / l
+	self.y = self.y / l
+	self.z = self.z / l
+	return self
+end
+
+function Vector:angleBetween(other)
+	return math.acos(self:dot(other) / other:length() / self:length())
+end
+
+function Vector:yaw()
+	return math.atan(self.y, self.x)
+end
+
+function Vector:pitch()
+	return math.atan(self.z, self:length2d())
+end
+
+function CreateEffectLighting3D(x1, y1, z1, x2, y2, z2, step, effModel)
+	local vector = Vector:new(x2 - x1, y2 - y1, z2 - z1)
+	local normalized = vector:normalize(true)
+	local chainCount = math.floor(vector:length() / step)
+	local pitch = vector:pitch()
+	local yaw = vector:yaw()
+	local eff = {}
+	--print(chainCount)
+	for i = 1, 100 do
+		if i<=chainCount then
+			eff[i] = AddSpecialEffect(effModel, 0, 0)
+			local v = normalized * (step * i)
+			BlzSetSpecialEffectPosition(eff[i], x1 + v.x, y1 + v.y, z1 + v.z)
+			BlzSetSpecialEffectPitch(eff[i], -pitch)
+			BlzSetSpecialEffectYaw(eff[i], yaw)
+		else
+			eff[i] = AddSpecialEffect(effModel, 6000, 600)
+		end
+	end
+	return eff
+end
+
+function MoveEffectLighting3D(x1, y1, z1, x2, y2, z2, step, eff)
+	local vector = Vector:new(x2 - x1, y2 - y1, z2 - z1)
+	local normalized = vector:normalize(true)
+	local chainCount = math.floor(vector:length() / step)
+	local pitch = vector:pitch()
+	local yaw = vector:yaw()
+
+	for i = 1, #eff do
+		local v = normalized * (step * i)
+		if i<=chainCount then
+			BlzSetSpecialEffectPosition(eff[i], x1 + v.x, y1 + v.y, z1 + v.z)
+			BlzSetSpecialEffectPitch(eff[i], -pitch)
+			BlzSetSpecialEffectYaw(eff[i], yaw)
+		else
+			BlzSetSpecialEffectPosition(eff[i], 6000, 6000, 0)
+		end
+
+	end
+end
+
+function DestroyEffectLighting3D(eff)
+	for i = 1, #eff do
+		BlzSetSpecialEffectPosition(eff[i], 6000, 6000, 0)
+		DestroyEffect(eff[i])
+	end
 end
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)

@@ -12,7 +12,9 @@ function InitSpellTrigger()
 		local x, y = GetSpellTargetX(), GetSpellTargetY()
 		local spellId = GetSpellAbilityId()
 		local angleCast=AngleBetweenXY(casterX, casterY, x, y)/bj_DEGTORAD
-		local r=0
+		local data=HERO[GetPlayerId(GetOwningPlayer(caster))]
+
+
 		if spellId == SpellIDQ then-- Выстрел
 			BlzPauseUnitEx(caster,true)
 			TimerStart(CreateTimer(), 0.1, false, function()
@@ -44,6 +46,10 @@ function InitSpellTrigger()
 			BlzSetSpecialEffectPitch(anchor,math.rad(-90))
 			BlzSetSpecialEffectZ(anchor,GetUnitZ(caster)+200)
 			--CreateArtToss(caster,"AdmiralAssets\\Anchor",angleCast,dist)
+
+			--CreateEffectLighting3D(casterX,casterY,GetUnitZ(caster)+50,x,y,GetUnitZ(caster)+500,20,"AdmiralAssets\\ChainElement")
+			data.ChainEff=CreateEffectLighting3D(0,0,0,0,0,0,0,"AdmiralAssets\\ChainElement")
+
 			JumpEffect(anchor, 20, 300, angleCast, dist, caster, 2,GetUnitZ(caster)+200)
 		end
 
@@ -101,33 +107,47 @@ function InitSpellTrigger()
 		end
 		if spellId == SpellIDR then-- Пушки
 			--TODO id
-			if not HERO[0].ReleaseLMB then
-				print("мгновенно отпустили")
+			local data=HERO[GetPlayerId(GetOwningPlayer(caster))]
+			--data.ReleaseLMB=true
+			local cannon={}
+			for i=1,5 do
+				cannon[i]=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",6000,6000)
+				BlzSetSpecialEffectAlpha(cannon[i],40)
+				--BlzSetSpecialEffectColor(cannon[i],0,255,0)
 			end
+			--print("клик")
+			local curAngle=angleCast
+			local angleCast2=angleCast
+			TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 
-			if not HERO[0].ReleaseR then
-				print("клик мышью")
-			end
+				if data.ReleaseLMB then
+					BlzStartUnitAbilityCooldown(caster,SpellIDR,4)
+					local xEnd,yEnd=MoveXY(x,y,-40,angleCast2)
+					angleCast=AngleBetweenXY(xEnd,yEnd,GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid])/bj_DEGTORAD
+					curAngle=lerpTheta(curAngle,angleCast,TIMER_PERIOD*8)
+					--print(curAngle)
+					for i=1,5 do
+						local nx,ny=MoveXY(x,y,75*(i-3),curAngle-90)
+						BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny))
+						BlzSetSpecialEffectYaw(cannon[i],math.rad(curAngle))
+						--DestroyEffect(cannon[i])
+					end
 
+				end
 
-			TimerStart(CreateTimer(), 0.02, false, function()
-				if not HERO[0].ReleaseLMB then
-				--	print("быстро отпустили")
+ 				if not data.ReleaseLMB  then
+					--print("отпустил")
+					DestroyTimer(GetExpiredTimer())
+					for i=1,5 do
+						local nx,ny=MoveXY(x,y,75*(i-3),curAngle-90)
+						CreateFallCannonOnEffectPosition(curAngle,nx,ny)
+						BlzSetSpecialEffectPosition(cannon[i],6000,6000,0)
+						DestroyEffect(cannon[i])
+					end
 				end
 			end)
+
 		end
 	end)
-end
--- функия принадлежности точки сектора
--- x1, x2 - координаты проверяемой точки
--- x2, y2 - координаты вершины сектора
--- orientation - ориентация сектора в мировых координатах
--- width - уголовой размер сектора в градусах
--- radius - окружности которой принадлежит сектор
-
-function IsPointInSector(x1,y1,x2,y2,orientation,width,radius)
-	local lenght=DistanceBetweenXY(x1,y1,x2,y2)
-	local angle=Acos(Cos(orientation*bj_DEGTORAD)*(x1-x2)/lenght+Sin(orientation*bj_DEGTORAD)*(y1-y2)/lenght )*bj_RADTODEG
-	return angle<=width and lenght<=radius
 end
 
