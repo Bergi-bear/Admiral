@@ -683,13 +683,19 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		--if f<=GetTerrainZ(nx,ny) then f=GetTerrainZ(nx,ny) end --правка проваливания в землю
 		local z = BlzGetLocalSpecialEffectZ(eff)
 		local zGround = GetTerrainZ(nx, ny)
+		local zn=f
+		if f<=GetTerrainZ(nx,ny) then zn=GetTerrainZ(nx,ny) end --правка проваливания в землю
+
+		BlzSetSpecialEffectPosition(eff, nx, ny, zn)
+		i = i + 1
 
 		if flag == 3 then
 			--Движение якоря на обратном ходу
 			local e = nil
 			--DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
 			--эффект поврежденное земли
-			GroupEnumUnitsInRange(perebor, x, y, 150 / 2, nil)
+			local xs,ys=MoveXY(BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff), -speed, angle)
+			GroupEnumUnitsInRange(perebor, x, y, 75, nil)
 			while true do
 				e = FirstOfGroup(perebor)
 
@@ -699,6 +705,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 				if IsUnitEnemy(e, GetOwningPlayer(hero)) and not IsUnitType(e, UNIT_TYPE_STRUCTURE) then
 					--UnitAlive(e) and
 					--if IsUnitInGroup(HookGroup,e)
+					PauseUnit(e,true)
 					GroupAddUnit(HookGroup, e)
 				end
 				GroupRemoveUnit(perebor, e)
@@ -706,7 +713,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 
 			ForGroup(HookGroup, function()
 				local enum = GetEnumUnit()
-				if not IsUnitInRange(enum,hero,120) then
+				if not IsUnitInRange(enum,hero,75) then
 					local nxe, nye = MoveXY(GetUnitX(enum), GetUnitY(enum), speed, angle)
 					--SetUnitPositionSmooth(enum,nxe,nye)
 					SetUnitX(enum, nxe)
@@ -715,16 +722,15 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			end)
 		end
 
-		BlzSetSpecialEffectPosition(eff, nx, ny, f)
-		i = i + 1
 
 		if flag == 2 then
 			--прямое движение
 			--отрисовка цепи
 			local step=20
-			local eStart=GetUnitZ(hero)+200
-			--local fStart=
-			MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),eStart,nx, ny, f,step,data.ChainEff)
+			--local eStart=GetUnitZ(hero)+100
+			local fStart= GetUnitZ(hero)+70
+			--print(fStart)
+			MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),fStart,nx, ny,BlzGetLocalSpecialEffectZ(eff),step,data.ChainEff)
 		end
 
 		if flag == 3 then -- обратное движение
@@ -734,14 +740,21 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 					BlzSetSpecialEffectPosition(chainElement[i2], 6000, 6000, 0)
 					DestroyEffect(chainElement[i2])
 				end
-				DestroyGroup(HookGroup)
 				BlzSetSpecialEffectPosition(eff, 6000, 6000, 0)
 				DestroyEffect(eff)
 				DestroyTimer(GetExpiredTimer())
 				DestroyEffectLighting3D(data.ChainEff)
+				ForGroup(HookGroup, function()
+					local enum = GetEnumUnit()
+					PauseUnit(enum,false)
+				end)
+				DestroyGroup(HookGroup)
+
 			else
 				local step=20
-				MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),GetUnitZ(hero)+50,nx, ny, f,step,data.ChainEff)
+				local fStart= GetUnitZ(hero)+70
+				print("fStart="..fStart-zn)
+				MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),fStart,nx, ny, zn,step,data.ChainEff)
 			end
 
 		end
@@ -3563,7 +3576,12 @@ function MoveEffectLighting3D(x1, y1, z1, x2, y2, z2, step, eff)
 	for i = 1, #eff do
 		local v = normalized * (step * i)
 		if i<=chainCount then
-			BlzSetSpecialEffectPosition(eff[i], x1 + v.x, y1 + v.y, z1 + v.z)
+			local z = z1 + v.z
+			--if i==5 then
+			--	print(z)
+			--end
+			--if z<=GetTerrainZ(x1 + v.x, y1 + v.y) then z=GetTerrainZ(x1 + v.x, y1 + v.y)+50 end
+			BlzSetSpecialEffectPosition(eff[i], x1 + v.x, y1 + v.y, z)
 			BlzSetSpecialEffectPitch(eff[i], -pitch)
 			BlzSetSpecialEffectYaw(eff[i], yaw)
 		else

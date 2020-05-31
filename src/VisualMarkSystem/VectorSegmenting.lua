@@ -93,7 +93,12 @@ function MoveEffectLighting3D(x1, y1, z1, x2, y2, z2, step, eff)
 	for i = 1, #eff do
 		local v = normalized * (step * i)
 		if i<=chainCount then
-			BlzSetSpecialEffectPosition(eff[i], x1 + v.x, y1 + v.y, z1 + v.z)
+			local z = z1 + v.z
+			--if i==5 then
+			--	print(z)
+			--end
+			--if z<=GetTerrainZ(x1 + v.x, y1 + v.y) then z=GetTerrainZ(x1 + v.x, y1 + v.y)+50 end
+			BlzSetSpecialEffectPosition(eff[i], x1 + v.x, y1 + v.y, z)
 			BlzSetSpecialEffectPitch(eff[i], -pitch)
 			BlzSetSpecialEffectYaw(eff[i], yaw)
 		else
