@@ -170,32 +170,14 @@ function InitSelectionRegister()
 			if not data.UnitHero then
 				data.UnitHero = hero
 				data.MarkIsActivated = false
-
-				--[[TimerStart(CreateTimer(), 0.1, true, function()
-					local bonus=0
-					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDQ)>=0.1 then
-						bonus=bonus+20
+				--
+				TimerStart(CreateTimer(), 0.1, true, function()
+					AllAbilityRefresh(hero)
+					if IsUnitSelected(hero,GetOwningPlayer(hero)) then
+						data.HeroGreenDamage=GetUnitGreenAttackBonus(hero)
 					end
-					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDW)>=0.1 then
-						bonus=bonus+20
-					end
-					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDE)>=0.1 then
-						bonus=bonus+20
-					end
-					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDR)>=0.1 then
-						bonus=bonus+20
-					end
-					if bonus >0 then
-						--print("текущий бонус атаки="..bonus)
-					else
-						data
-					end
-					BlzSetUnitBaseDamage(hero,BlzGetUnitBaseDamage(hero,0)+bonus,0)
-					--SetUnitGreenAttackBonus(hero,bonus)
-
-				end)]]
+				end)
 			end
-			--print("Выбрал своего нужного героя")
 		end
 	end)
 end

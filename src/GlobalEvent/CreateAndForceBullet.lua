@@ -50,7 +50,7 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 		local ZBullet = BlzGetLocalSpecialEffectZ(bullet)
 		--print("zGround ="..zGround.."z= "..z)
 		--BlzSetSpecialEffectPosition(bam,MoveX(GetUnitX(hero),120,GetUnitFacing(hero)),MoveY(GetUnitY(hero),120,GetUnitFacing(hero)),z)
-		CollisionEnemy, DamagingUnit = UnitDamageArea(heroCurrent, damage, x, y, CollisionRange, ZBullet)
+		CollisionEnemy, DamagingUnit = UnitDamageArea(heroCurrent, 0, x, y, CollisionRange, ZBullet)
 		if GetUnitTypeId(DamagingUnit) == FourCC('e009') then
 			--print("Есть пробитие")
 			if effectmodel == Special then
@@ -71,8 +71,11 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 			end
 			--print("Условие урона прошло для"..GetUnitName(DamagingUnit))
 			local stunDuration=1
-			StanArea(hero,x,y,CollisionRange,stunDuration)
-			UnitDamageArea(hero, CollisionRange, x, y, CollisionRange, ZBullet)
+			StunArea(hero,x,y,CollisionRange,stunDuration)
+			if UnitDamageArea(hero, damage, x, y, CollisionRange, ZBullet) and IsUnitType(hero,UNIT_TYPE_HERO) then
+				FlyTextTagCriticalStrike(DamagingUnit,R2I(damage).."!",GetOwningPlayer(hero))
+			end
+
 			if IsUnitType(hero, UNIT_TYPE_HERO) then
 				local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
 				if data.Perk16 and IsUnitEnemy(hero, GetOwningPlayer(DamagingUnit)) and DamagingUnit and data.FBIsReady then
@@ -255,12 +258,15 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 				--print("место где приземлился якорь, эффект приземления")
 				local damage = GetHeroStr(hero, true) * 10
 				DestroyTimer(GetExpiredTimer())
-				StanArea(hero, nx, ny, 150, 2)
+				StunArea(hero, nx, ny, 150, 2)
 				DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",nx,ny))
 				JumpEffect(eff, 30, 0, angle - 180, distance, hero, 3)
 				--CreateTorrent(nx, ny)
 				--DestroyEffect(eff)
-				UnitDamageArea(hero, damage, nx, ny, 150)
+				local d,du=UnitDamageArea(hero, damage, nx, ny, 150)
+				if d then
+					FlyTextTagCriticalStrike(du,R2I(damage).."!",GetOwningPlayer(hero))
+				end
 				for i2=1,#chainElement do
 					BlzSetSpecialEffectPosition(chainElement[i2], 6000, 6000, 0)
 					DestroyEffect(chainElement[i2])

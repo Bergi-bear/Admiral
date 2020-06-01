@@ -48,6 +48,8 @@ function InitHEROTable()
 			RClick=false,
 			ChainEff=nil,
 			AttackOriginal=0,
+			bonusCD=0,
+			HeroGreenDamage=0,
 		}
 	end
 

@@ -17,11 +17,12 @@ function InitSpellTrigger()
 		if GetUnitAbilityLevel(caster,SpellIDS)>0 then
 			local bonusAttack=20
 			local cd=BlzGetUnitAbilityCooldown(caster,spellId,GetUnitAbilityLevel(caster,spellId)-1)
-
-			print("Атака увеличена")
+			data.bonusCD=data.bonusCD+bonusAttack
+			--print("Атака увеличена")
 			BlzSetUnitBaseDamage(caster,BlzGetUnitBaseDamage(caster,0)+bonusAttack,0)
 			TimerStart(CreateTimer(), cd, false, function()
 				BlzSetUnitBaseDamage(caster,BlzGetUnitBaseDamage(caster,0)-bonusAttack,0)
+				data.bonusCD=data.bonusCD-bonusAttack
 			--	print("Атака уменьшена")
 			end)
 		end
@@ -31,9 +32,10 @@ function InitSpellTrigger()
 				if UnitAlive(caster) then
 					SetUnitAnimationByIndex(caster,17)
 					TimerStart(CreateTimer(), 0.4, false, function()
+						local damage=(BlzGetUnitBaseDamage(caster,0)+data.HeroGreenDamage)*5
 						--print("момент вылета пули")
 						local xs,ys=MoveXY(casterX, casterY,80,angleCast)
-						CreateAndForceBullet(caster,angleCast,50,"Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile",xs,ys,10)
+						CreateAndForceBullet(caster,angleCast,50,"Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile",xs,ys,damage)
 					end)
 
 					TimerStart(CreateTimer(), 1, false, function()
@@ -59,6 +61,7 @@ function InitSpellTrigger()
 		end
 
 		if spellId == SpellIDE then-- Удар саблей
+			local attackRange=180
 			BlzPauseUnitEx(caster,true)
 			TimerStart(CreateTimer(), 0.01, false, function()
 				if UnitAlive(caster) then
@@ -73,11 +76,11 @@ function InitSpellTrigger()
 						local multiplier=1
 						local totalDamage=0
 						--сначала считаем юнитов
-						GroupEnumUnitsInRange(perebor,casterX, casterY,150,nil)
+						GroupEnumUnitsInRange(perebor,casterX, casterY,attackRange,nil)
 						while true do
 							e = FirstOfGroup(perebor)
 							if e == nil then break end
-							if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e,GetOwningPlayer(caster))  and IsPointInSector(GetUnitX(e),GetUnitY(e),casterX, casterY,angleCast,235//2,150) then
+							if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e,GetOwningPlayer(caster))  and IsPointInSector(GetUnitX(e),GetUnitY(e),casterX, casterY,angleCast,235//2,attackRange) then
 								k=k+1
 							end
 							GroupRemoveUnit(perebor,e)
@@ -86,11 +89,11 @@ function InitSpellTrigger()
 						multiplier=multiplier+1*k
 						totalDamage=damage*multiplier
 						--наносит урон тем же юнитам
-						GroupEnumUnitsInRange(perebor,casterX, casterY,150,nil)
+						GroupEnumUnitsInRange(perebor,casterX, casterY,attackRange,nil)
 						while true do
 							e = FirstOfGroup(perebor)
 							if e == nil then break end
-							if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e,GetOwningPlayer(caster))  and IsPointInSector(GetUnitX(e),GetUnitY(e),casterX, casterY,angleCast,235//2,150) then
+							if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e,GetOwningPlayer(caster))  and IsPointInSector(GetUnitX(e),GetUnitY(e),casterX, casterY,angleCast,235//2,attackRange) then
 								--UnitDamageArea(caster,totalDamage,casterX, casterY, 150)
 								UnitDamageTarget( caster, e, totalDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS )
 								FlyTextTagCriticalStrike(caster,R2I(totalDamage).."!",GetOwningPlayer(caster))
@@ -126,7 +129,8 @@ function InitSpellTrigger()
 			TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 
 				if data.ReleaseLMB then
-					BlzStartUnitAbilityCooldown(caster,SpellIDR,4)
+
+					BlzStartUnitAbilityCooldown(caster,SpellIDR,BlzGetUnitAbilityCooldown(caster,SpellIDR,GetUnitAbilityLevel(caster,SpellIDR)-1))
 					local xEnd,yEnd=MoveXY(x,y,-40,angleCast2)
 					angleCast=AngleBetweenXY(xEnd,yEnd,GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid])/bj_DEGTORAD
 					curAngle=lerpTheta(curAngle,angleCast,TIMER_PERIOD*8)
@@ -145,7 +149,7 @@ function InitSpellTrigger()
 					DestroyTimer(GetExpiredTimer())
 					for i=1,5 do
 						local nx,ny=MoveXY(x,y,75*(i-3),curAngle-90)
-						CreateFallCannonOnEffectPosition(curAngle,nx,ny)
+						CreateFallCannonOnEffectPosition(data,curAngle,nx,ny)
 						BlzSetSpecialEffectPosition(cannon[i],6000,6000,0)
 						DestroyEffect(cannon[i])
 					end

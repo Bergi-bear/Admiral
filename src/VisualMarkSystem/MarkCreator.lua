@@ -93,141 +93,49 @@ function  UnitHaveReadyAbility(hero,abiID)
 	return isReady
 end
 
-function CreateVisualCannon(data)
-	local cannon={}
-	for i=1,6 do
-		cannon[i]=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",6000,6000)
-		BlzSetSpecialEffectAlpha(cannon[i],40)
-		BlzSetSpecialEffectColor(cannon[i],0,255,0)
-	end
-	local function Destroy()
-		DestroyTimer(GetExpiredTimer())
-		--data.MarkIsActivated=true
-		--print("destroy")
-		for i=1,#cannon do
-			BlzSetSpecialEffectPosition(cannon[i],6000,6000,0)
-			DestroyEffect(cannon[i])
-		end
-	end
-	local curAngle=180+AngleBetweenXY(GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid],GetUnitXY(data.UnitHero))/bj_DEGTORAD
-	--local curDistance=0
-	local fix=false
-	local xStand,yStand=0,0
-	local xEnd,yEnd= {},{}
-	local StandSwitcher=true
-	data.StartCanon=false
-	local fast=true
-	local switchXY=false
-	local fastDestroy=false
-	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
-		if fast and not data.ReleaseLMB and fix then
-			fast=false
-		--	print("бытрый клик")
-		end
-		local x,y=GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]
-		local angle=180+AngleBetweenXY(x,y,GetUnitXY(data.UnitHero))/bj_DEGTORAD
-		if data.ReleaseLMB then
-			local nx,ny=MoveXY(x,y,40,angle)
-			angle=180+AngleBetweenXY(nx,ny,xStand,yStand)/bj_DEGTORAD
-			--print("новый угол "..angle)
-		else
 
-		end
-		curAngle=lerpTheta(curAngle,angle,TIMER_PERIOD*8)
-		--local xs,ys=MoveXY(x,y,300,angle-90)
-		local distance=DistanceBetweenXY(x,y,GetUnitXY(data.UnitHero))
-		if distance>=900 then distance=900 end
-		if distance<=0 then distance=0 end
-		--print(distance)
 
-		--curDistance=lerpTheta(curDistance,distance,TIMER_PERIOD*16)
-		--print(curDistance)
-
-		local xs,ys=MoveXY(GetUnitX(data.UnitHero),GetUnitY(data.UnitHero),distance,curAngle)
-		if data.RClick then
-			data.RClick=false
-			xs,ys=x,y
-		end
-		if data.ReleaseLMB  and false then
-			xs,ys=xStand,yStand
-			if data.RClick then
-				xs,ys=x,y
-			end
-		end
-		--BlzSetSpecialEffectPosition(cannon[6],xs,ys,GetTerrainZ(xs,ys))
-		--BlzSetSpecialEffectYaw(cannon[6],math.rad(curAngle))
-
-		for i=1,5 do
-
-			local nx,ny=MoveXY(xs,ys,75*(i-3),curAngle-90)
-			if data.ReleaseLMB then
-
-				xEnd[i],yEnd[i]=nx,ny
-				--if fix and not StandSwitcher then
-				BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny)) --ВОТ ТУТ ОНО ДЁРГАЕТСЯ
-				--end
-				fix=true
-				if data.RClick then
-					PingMinimap(nx,ny,1)
-				end
-				BlzStartUnitAbilityCooldown(data.UnitHero,SpellIDR,4)
-
-				if StandSwitcher  then --выполняется 1 раз
-					xStand,yStand=BlzGetLocalSpecialEffectX(cannon[3]),BlzGetLocalSpecialEffectY(cannon[3])
-					data.xStand,data.yStand=xStand,yStand
-					StandSwitcher=false
-					--print("switch")
-					--CreateVisualPointerForUnitBySplat(data.UnitHero,2,500//5,5,500//5) --плохо работает
-					--local sx,sy=MoveXY(xStand,yStand,40,curAngle)
-					--curAngle=180+AngleBetweenXY(sx,sy,GetUnitXY(data.UnitHero))/bj_DEGTORAD
-					local nx2,ny2=MoveXY(x,y,40,angle)
-					--curAngle=180+AngleBetweenXY(nx2,ny2,xStand,yStand)/bj_DEGTORAD
-					curAngle=180+AngleBetweenXY(x,y,GetUnitXY(data.UnitHero))/bj_DEGTORAD
-				end
-				--print("кнопка хажата")
-			else-- пока кнопка не нажата выполняется вот это
-				xEnd[i],yEnd[i]=nx,ny
-				BlzSetSpecialEffectPosition(cannon[i],nx,ny,GetTerrainZ(nx,ny))
-			end
-
-			if ( fix and not data.ReleaseLMB) or fastDestroy  then
-				--print("Роняем пушки")
-				--data.RClick=false
-				data.StartCanon=true
-				CreateFallCannonOnEffectPosition(curAngle,xEnd[i],yEnd[i])
-			end
-
-			BlzSetSpecialEffectYaw(cannon[i],math.rad(curAngle))
-		end
-		if not data.MarkIsActivated and  not fast and not data.ReleaseLMB then
-			fastDestroy=true
-			print("быстрый destroy")
-		end
-		if not data.MarkIsActivated and fix and not data.ReleaseLMB  then
-			Destroy()
-		end
-	end)
-end
-
-function CreateFallCannonOnEffectPosition(angle,x,y)
+function CreateFallCannonOnEffectPosition(data,angle,x,y)
 	--local x,y=BlzGetLocalSpecialEffectX(eff),BlzGetLocalSpecialEffectY(eff)
 
 	--Abilities\\\Spells\\\NightElf\\\Starfall\\\StarfallTarget
+	local hero=data.UnitHero
 	DestroyEffect(AddSpecialEffect("Abilities\\Spells\\NightElf\\Starfall\\StarfallTarget",x,y))
-
+	local zTerr=GetTerrainZ(x,y)
 	local z=1150
 	local speed=40
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		z=z-speed
-		if z<=GetTerrainZ(x,y) then
-			z=GetTerrainZ(x,y)
+		if z<=zTerr then
+			z=zTerr
 			DestroyTimer(GetExpiredTimer())
 			--DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
-			--local canon=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",x,y)
-			local canon=AddSpecialEffect("AdmiralAssets\\SiegeCannon",x,y)
 
-			BlzSetSpecialEffectYaw(canon,math.rad(angle))
-			BlzSetSpecialEffectPosition(canon,x,y,z)
+			--local canon=AddSpecialEffect("AdmiralAssets\\SiegeCannon",x,y)
+			--BlzSetSpecialEffectYaw(canon,math.rad(angle))
+			--BlzSetSpecialEffectPosition(canon,x,y,z)
+			local cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)
+			BlzPauseUnitEx(cannon,true)
+			SetUnitX(cannon,x)
+			SetUnitY(cannon,y)
+			local sec=0
+			TimerStart(CreateTimer(), 2, true, function()
+				sec=sec+1
+				local xs,ys=MoveXY(x, y,40,angle)
+				local damage=(BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage)*5
+				SetUnitAnimation(cannon,"Attack")
+				--SetUnitAnimation(cannon,"attack")
+				CreateAndForceBullet(cannon,angle,50,"Abilities\\Weapons\\BoatMissile\\BoatMissile",xs,ys,damage)
+				if sec>=5 then
+					DestroyTimer(GetExpiredTimer())
+					TimerStart(CreateTimer(), 1, false, function()
+						DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\DispelMagic\\DispelMagicTarget",GetUnitXY(cannon)))
+						KillUnit(cannon)
+						ShowUnit(cannon,false)
+					end)
+				end
+
+			end)
 		end
 
 	end)

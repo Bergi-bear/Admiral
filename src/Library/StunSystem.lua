@@ -48,7 +48,7 @@ function StunUnit(hero,dur)
 	end)
 end
 
-function StanArea(hero,x,y,range,duration)
+function StunArea(hero,x,y,range,duration)
 	local e=nil
 	--DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
 	GroupEnumUnitsInRange(perebor,x,y,range,nil)
