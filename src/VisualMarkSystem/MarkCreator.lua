@@ -25,9 +25,9 @@ function MarkCreatorW(data)
 	end
 	if UnitHaveReadyAbility(hero,SpellIDW) then
 		if not data.MarkIsActivated then
-			CreateVisualPointerForUnitBySplat(hero,1,900//5,5,450//5)
+			CreateVisualPointerForUnitBySplat(hero,1,900//5,5,600//5)
 			data.MarkIsActivated=true--
-			data.Anchor=AddSpecialEffect("AdmiralAssets\\Anchor",GetUnitXY(data.UnitHero))
+			data.Anchor=AddSpecialEffect("AdmiralAssets\\AnchorHD",GetUnitXY(data.UnitHero))
 			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
 			BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
 			local a=0
@@ -222,8 +222,10 @@ function CreateFallCannonOnEffectPosition(angle,x,y)
 		if z<=GetTerrainZ(x,y) then
 			z=GetTerrainZ(x,y)
 			DestroyTimer(GetExpiredTimer())
-			DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
-			local canon=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",x,y)
+			--DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
+			--local canon=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",x,y)
+			local canon=AddSpecialEffect("AdmiralAssets\\SiegeCannon",x,y)
+
 			BlzSetSpecialEffectYaw(canon,math.rad(angle))
 			BlzSetSpecialEffectPosition(canon,x,y,z)
 		end

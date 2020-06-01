@@ -3,8 +3,12 @@ end
 
 function CreateAllItems()
     local itemID
+    BlzCreateItemWithSkin(FourCC("desc"), -1551.9, -2685.6, FourCC("desc"))
+    BlzCreateItemWithSkin(FourCC("infs"), -1488.4, -2771.7, FourCC("infs"))
     BlzCreateItemWithSkin(FourCC("rat9"), -1656.3, -2583.3, FourCC("rat9"))
     BlzCreateItemWithSkin(FourCC("ratc"), -1356.8, -2525.7, FourCC("ratc"))
+    BlzCreateItemWithSkin(FourCC("tfar"), -1440.5, -2704.3, FourCC("tfar"))
+    BlzCreateItemWithSkin(FourCC("will"), -1286.0, -2643.1, FourCC("will"))
 end
 
 function CreateUnitsForPlayer0()
@@ -16,29 +20,59 @@ function CreateUnitsForPlayer0()
     u = BlzCreateUnitWithSkin(p, FourCC("H000"), -1457.6, -2554.9, 222.698, FourCC("H000"))
 end
 
+function CreateBuildingsForPlayer1()
+    local p = Player(1)
+    local u
+    local unitID
+    local t
+    local life
+    u = BlzCreateUnitWithSkin(p, FourCC("ofor"), 800.0, 864.0, 270.000, FourCC("ofor"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ndfl"), -640.0, 576.0, 270.000, FourCC("ndfl"))
+    u = BlzCreateUnitWithSkin(p, FourCC("npgf"), 800.0, -416.0, 270.000, FourCC("npgf"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nbfl"), 896.0, -1920.0, 270.000, FourCC("nbfl"))
+    u = BlzCreateUnitWithSkin(p, FourCC("oshy"), 1728.0, 1024.0, 270.000, FourCC("oshy"))
+end
+
 function CreateUnitsForPlayer1()
     local p = Player(1)
     local u
     local unitID
     local t
     local life
-    u = BlzCreateUnitWithSkin(p, FourCC("hpea"), -682.8, -2048.0, 152.460, FourCC("hpea"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1953.3, -1037.9, 202.902, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1993.7, -1115.7, 349.673, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1978.7, -1239.1, 343.168, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1925.7, -1311.5, 62.976, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1865.3, -1347.3, 122.545, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1842.2, -1180.2, 82.719, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1740.7, -1355.3, 109.032, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -521.3, -2484.6, 312.615, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -531.8, -2578.8, 133.675, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -504.1, -2649.4, 40.607, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1362.3, -1252.8, 40.607, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1390.0, -1182.2, 133.675, FourCC("hfoo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hfoo"), -1379.5, -1088.0, 312.615, FourCC("hfoo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -2045.9, -1767.8, 23.808, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -1969.2, -1670.1, 2.384, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -1870.7, -1683.6, 101.297, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -1856.1, -1744.2, 131.488, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -1936.2, -1800.0, 265.515, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -1855.6, -1907.2, 190.289, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -994.9, -2004.3, 32.630, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -940.1, -2084.1, 224.688, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -600.4, -1504.3, 354.968, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -490.3, -1610.0, 22.545, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1700.8, -872.7, 45.298, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1581.1, -986.5, 285.302, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1471.9, -849.7, 287.982, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1530.3, -808.3, 110.361, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -214.8, -2563.0, 85.333, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -185.2, -2642.3, 221.909, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -129.7, -2706.2, 305.111, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("otau"), 858.2, -1212.9, 142.585, FourCC("otau"))
+    u = BlzCreateUnitWithSkin(p, FourCC("okod"), 276.0, 99.0, 203.989, FourCC("okod"))
+    u = BlzCreateUnitWithSkin(p, FourCC("okod"), 488.2, -136.4, 198.562, FourCC("okod"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -424.5, 379.9, 16.722, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -885.1, -2153.2, 201.243, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1760.7, 163.7, 2.406, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1853.8, 222.6, 274.194, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1852.3, 394.6, 110.669, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), 883.2, 278.0, 348.200, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ojgn"), 2005.5, 818.9, 256.396, FourCC("ojgn"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ncpn"), 23.7, -1844.8, 131.620, FourCC("ncpn"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ncpn"), -799.8, -1432.4, 50.835, FourCC("ncpn"))
+    u = BlzCreateUnitWithSkin(p, FourCC("oosc"), 1106.8, -689.1, 231.159, FourCC("oosc"))
 end
 
 function CreatePlayerBuildings()
+    CreateBuildingsForPlayer1()
 end
 
 function CreatePlayerUnits()
@@ -95,6 +129,7 @@ SpellIDQ=FourCC("A000") -- Выстрел из мушкета
 SpellIDW=FourCC("A001") -- Бросок якоря
 SpellIDE=FourCC("A002") -- Удар саблей
 SpellIDR=FourCC("A003") -- Пушки из ларца
+SpellIDS=FourCC("A004") -- Ярость адмирала
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
 --- Created by Bergi.
@@ -144,6 +179,7 @@ function InitHEROTable()
 			StartCanon=false,
 			RClick=false,
 			ChainEff=nil,
+			AttackOriginal=0,
 		}
 	end
 
@@ -217,7 +253,17 @@ function InitSpellTrigger()
 		local angleCast=AngleBetweenXY(casterX, casterY, x, y)/bj_DEGTORAD
 		local data=HERO[GetPlayerId(GetOwningPlayer(caster))]
 
+		if GetUnitAbilityLevel(caster,SpellIDS)>0 then
+			local bonusAttack=20
+			local cd=BlzGetUnitAbilityCooldown(caster,spellId,GetUnitAbilityLevel(caster,spellId)-1)
 
+			print("Атака увеличена")
+			BlzSetUnitBaseDamage(caster,BlzGetUnitBaseDamage(caster,0)+bonusAttack,0)
+			TimerStart(CreateTimer(), cd, false, function()
+				BlzSetUnitBaseDamage(caster,BlzGetUnitBaseDamage(caster,0)-bonusAttack,0)
+			--	print("Атака уменьшена")
+			end)
+		end
 		if spellId == SpellIDQ then-- Выстрел
 			BlzPauseUnitEx(caster,true)
 			TimerStart(CreateTimer(), 0.1, false, function()
@@ -240,19 +286,14 @@ function InitSpellTrigger()
 		end
 		if spellId == SpellIDW then-- Бросок якоря
 		--	print("Бросок якоря")
-			--GetUnitGreenAttackBonus(caster)
-			local anchor=AddSpecialEffect("AdmiralAssets\\Anchor",casterX,casterY)
-			local chanElement={}
 
+			local anchor=AddSpecialEffect("AdmiralAssets\\AnchorHD",casterX,casterY)
 			local dist=DistanceBetweenXY(x,y,casterX,casterY)
+			--if dist<=900 then dist=900 end
 			BlzSetSpecialEffectYaw(anchor,math.rad(angleCast))
 			BlzSetSpecialEffectPitch(anchor,math.rad(-90))
 			BlzSetSpecialEffectZ(anchor,GetUnitZ(caster)+200)
-			--CreateArtToss(caster,"AdmiralAssets\\Anchor",angleCast,dist)
-
-			--CreateEffectLighting3D(casterX,casterY,GetUnitZ(caster)+50,x,y,GetUnitZ(caster)+500,20,"AdmiralAssets\\ChainElement")
 			data.ChainEff=CreateEffectLighting3D(0,0,0,0,0,0,0,"AdmiralAssets\\ChainElement")
-
 			JumpEffect(anchor, 20, 300, angleCast, dist, caster, 2,GetUnitZ(caster)+200)
 		end
 
@@ -263,7 +304,7 @@ function InitSpellTrigger()
 					SetUnitAnimationByIndex(caster,4)
 					local eff=nil
 					TimerStart(CreateTimer(), 0.2, false, function()
-						eff=AddSpecialEffectTarget("animeslashfinal",caster,"weapon")
+						eff=AddSpecialEffectTarget("AdmiralAssets\\animeslashfinal",caster,"weapon")
 						--print("момент урона")
 						local e=nil
 						local k=0
@@ -310,11 +351,11 @@ function InitSpellTrigger()
 		end
 		if spellId == SpellIDR then-- Пушки
 			--TODO id
-			local data=HERO[GetPlayerId(GetOwningPlayer(caster))]
+			--local data=HERO[GetPlayerId(GetOwningPlayer(caster))]
 			--data.ReleaseLMB=true
 			local cannon={}
 			for i=1,5 do
-				cannon[i]=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",6000,6000)
+				cannon[i]=AddSpecialEffect("AdmiralAssets\\SiegeCannon",6000,6000)
 				BlzSetSpecialEffectAlpha(cannon[i],40)
 				--BlzSetSpecialEffectColor(cannon[i],0,255,0)
 			end
@@ -491,163 +532,8 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 	end)
 end
 
-function SingleCannon(hero, angle, modelEff, damage)
-	if not angle then
-		angle = GetUnitFacing(hero)
-	end
-	local x = MoveX(GetUnitX(hero), 80, angle)
-	local y = MoveY(GetUnitY(hero), 80, angle)
-	--print("x создания="..x.." y="..y..GetUnitName(hero))
-	if not modelEff then
-		modelEff = "Abilities/Weapons/BoatMissile/BoatMissile.mdl"
-	end
-	CreateAndForceBullet(hero, angle, 30, modelEff, x, y, damage)
-end
 
----@param board real
-function BoardCannon(hero, board, cannon)
-	-- left -90 right+90
-	local facing = GetUnitFacing(hero)
-	local angle = facing + board
-	local x = MoveX(GetUnitX(hero), 60, angle)
-	local y = MoveY(GetUnitY(hero), 60, angle)
-	local inverse = -1
-	if board == -90 then
-		inverse = 1
-	end
-	local x1 = MoveX(x, 30, facing)
-	local y1 = MoveY(y, 30, facing)
-	local x2 = MoveX(x, -30, facing)
-	local y2 = MoveY(y, -30, facing)
-	local x3 = MoveX(x, -60, facing)
-	local y3 = MoveY(y, -60, facing)
-	local x4 = MoveX(x, -90, facing)
-	local y4 = MoveY(y, -90, facing)
-	if cannon >= 1 then
-		CreateAndForceBullet(hero, angle, 30, "Abilities/Weapons/BoatMissile/BoatMissile.mdl", x, y)--Центр
-	end
-	if cannon >= 2 then
-		CreateAndForceBullet(hero, angle + 5 * inverse, 30, "Abilities/Weapons/BoatMissile/BoatMissile.mdl", x1, y1)--Спереди
-	end
-	if cannon >= 3 then
-		CreateAndForceBullet(hero, angle - 5 * inverse, 30, "Abilities/Weapons/BoatMissile/BoatMissile.mdl", x2, y2)--Сзади 1
-	end
-	if cannon >= 4 then
-		CreateAndForceBullet(hero, angle - 10 * inverse, 30, "Abilities/Weapons/BoatMissile/BoatMissile.mdl", x3, y3)--Сзади 2
-	end
-	if cannon >= 5 then
-		CreateAndForceBullet(hero, angle - 15 * inverse, 30, "Abilities/Weapons/BoatMissile/BoatMissile.mdl", x4, y4)--Сзади 3
-	end
-end
 
-function CreateFire(hero, board)
-	local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
-	local facing = GetUnitFacing(hero)
-	--board=board+90
-	local angle = facing + board
-	local x = MoveX(GetUnitX(hero), 60, angle)
-	local y = MoveY(GetUnitY(hero), 60, angle)
-
-	--local fire=AddSpecialEffect("FireGun.mdl",x,y)
-	local fire = AddSpecialEffect("Flame Thrower.mdl", x, y)
-	local inverse = 1
-	if board == 1 then
-		inverse = -1
-	end
-	BlzSetSpecialEffectMatrixScale(fire, 1, 1, 1)
-
-	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
-		--local xf,yf,zf=BlzGetLocalSpecialEffectX(fire),BlzGetLocalSpecialEffectY(fire),BlzGetLocalSpecialEffectZ(fire)
-		local xhero, yhero = GetUnitX(hero), GetUnitY(hero)
-		--local nx,ny=MoveX(xhero,80,GetUnitFacing(hero)-board),MoveY(yhero,80,GetUnitFacing(hero)-board)
-		local nx, ny = MoveXY(xhero, yhero, 10, GetUnitFacing(hero) - board)
-		local z = GetUnitZ(hero)
-		BlzSetSpecialEffectPosition(fire, nx, ny, z - 140 + 89)
-		BlzPlaySpecialEffect(fire, ANIM_TYPE_BIRTH)
-		--HeroUpdateWeaponCharges(hero,4,1)
-
-		--print("z Огня="..BlzGetLocalSpecialEffectZ(fire))
-
-		if board == 0 then
-			BlzSetSpecialEffectYaw(fire, math.rad(GetUnitFacing(hero) + board - 5 - 90))
-			UnitDamageLine(hero, 10, nx, ny, 80, 80 * 6, GetUnitFacing(hero) + board - 5 - 90, GetUnitZ(hero) + 50)
-		else
-			local problem = GetUnitFacing(hero) + board - 5 + 90
-			--print("проблемный угол="..problem)
-			BlzSetSpecialEffectYaw(fire, math.rad(problem))
-			UnitDamageLine(hero, 10, nx, ny, 80, 80 * 6, GetUnitFacing(hero) + board - 5 + 90, GetUnitZ(hero) + 50)
-		end
-		if (data.ReleaseRMB == false and board == 0) then
-			--print("отключен вручную")
-			DestroyEffect(fire)
-			DestroyTimer(GetExpiredTimer())
-			BlzPlaySpecialEffect(fire, ANIM_TYPE_DEATH)
-		end
-		if (data.ReleaseLMB == false and board == 1) then
-			DestroyEffect(fire)
-			DestroyTimer(GetExpiredTimer())
-			BlzPlaySpecialEffect(fire, ANIM_TYPE_DEATH)
-		end
-		if Ammo[GetPlayerId(GetOwningPlayer(hero))].Count.Fire <= 0 then
-			--print("закончились заряды")
-			DestroyEffect(fire)
-			DestroyTimer(GetExpiredTimer())
-			BlzPlaySpecialEffect(fire, ANIM_TYPE_DEATH)
-		end
-		HeroUpdateWeaponCharges(hero, 4, 1)
-	end)
-end
-
-function CreateBarrel(hero, angle, dist)
-	local x, y = GetUnitXY(hero)
-	local id = GetPlayerId(GetOwningPlayer(hero))
-	local barrel = AddSpecialEffect("Barrel_Unit.mdl", x, y)
-	if angle == nil then
-		angle = AngleBetweenXY(x, y, GetPlayerMouseX[id], GetPlayerMouseY[id]) / bj_DEGTORAD
-	end
-	if dist == nil then
-		dist = DistanceBetweenXY(x, y, GetPlayerMouseX[id], GetPlayerMouseY[id])
-	end
-	if dist >= 200 then
-		dist = 200
-	end
-	if dist <= 100 then
-		dist = 100
-	end
-	BlzSetSpecialEffectYaw(barrel, math.rad(angle))
-	BlzPlaySpecialEffect(barrel, ANIM_TYPE_WALK)
-	BlzSetSpecialEffectZ(barrel, GetUnitZ(hero))
-	JumpEffect(barrel, dist / 20, 150, angle, dist, hero, 1)
-end
-
-function CreateArtToss(hero, effectmodel, angle, dist, flag)
-	local x, y = GetUnitXY(hero)
-	local id = GetPlayerId(GetOwningPlayer(hero))
-	local art = AddSpecialEffect(effectmodel, x, y)
-	if angle == nil then
-		angle = AngleBetweenXY(x, y, GetPlayerMouseX[id], GetPlayerMouseY[id]) / bj_DEGTORAD
-	end
-	if dist == nil then
-		dist = DistanceBetweenXY(x, y, GetPlayerMouseX[id], GetPlayerMouseY[id])
-	end
-	if dist >= 1200 then
-		dist = 1200
-	end
-	if dist <= 200 then
-		dist = 200
-	end
-	local speed = dist / 50
-	BlzSetSpecialEffectYaw(art, math.rad(angle))
-	---BlzPlaySpecialEffect(barrel,ANIM_TYPE_WALK)
-	if flag == nil then
-		JumpEffect(art, speed, 700, angle, dist, hero, 2)
-	elseif flag == 3 then
-		--Стрельба простых пушек
-		JumpEffect(art, speed * 2, 200, angle, dist * .7, hero, flag, GetUnitZ(hero) + 150)--осколочный мелкий
-	else
-		JumpEffect(art, speed, 300, angle, dist, hero, flag)--любой другой
-	end
-end
 
 function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 	local i = 0
@@ -659,8 +545,9 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		if distance <= 300 then
 			distance = 300
 		end
-		if distance >= 900 then
-			distance = 900
+		if distance >= 600 then
+			--print("слишком далеко")
+			distance = 600
 		end
 		speed = distance / speed
 		for i2=1,50 do
@@ -684,7 +571,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		local z = BlzGetLocalSpecialEffectZ(eff)
 		local zGround = GetTerrainZ(nx, ny)
 		local zn=f
-		if f<=GetTerrainZ(nx,ny) then zn=GetTerrainZ(nx,ny) end --правка проваливания в землю
+		--if f<=GetTerrainZ(nx,ny) then zn=GetTerrainZ(nx,ny) end --правка проваливания в землю
 
 		BlzSetSpecialEffectPosition(eff, nx, ny, zn)
 		i = i + 1
@@ -753,7 +640,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			else
 				local step=20
 				local fStart= GetUnitZ(hero)+70
-				print("fStart="..fStart-zn)
+				--print("fStart="..fStart-zn)
 				MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),fStart,nx, ny, zn,step,data.ChainEff)
 			end
 
@@ -784,132 +671,6 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 	end)
 end
 
-function EffectAddRegistrationCollision(eff, hero, range, duration, flag)
-	local sec = duration
-	local infinity = false
-	if duration == nil or duration == 0 then
-		infinity = true
-	end
-	TimerStart(CreateTimer(), 0.1, true, function()
-		local x, y, z = BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff), BlzGetLocalSpecialEffectZ(eff)
-		local e = nil
-		GroupEnumUnitsInRange(perebor, x, y, range, nil)
-		while true do
-			e = FirstOfGroup(perebor)
-			if e == nil then
-				break
-			end
-			if UnitAlive(e) and IsUnitZCollision(e, z) then
-				--print("Эффет столкнулся с "..GetUnitName(e))
-				if flag == 1 then
-					-- орк в уточке
-					if IsUnitType(hero, UNIT_TYPE_HERO) then
-						DestroyEffect(eff)
-						PlaySoundAtPointBJ(gg_snd_Load, 100, Location(x, y), 0)
-						DestroyTimer(GetExpiredTimer())
-						HealUnit(hero, 100)
-						--print("Лечение подбор орка для"..GetUnitName(hero))
-					end
-				elseif flag == 2 then
-					-- глубоководная мина
-					if IsUnitEnemy(e, GetOwningPlayer(hero)) then
-						--UnitDamageArea(hero, 100, x, y, 200, z) --мина
-					end
-				end
-			end
-			GroupRemoveUnit(perebor, e)
-		end
-		sec = sec - 1
-		if sec < 0 and infinity == false then
-			DestroyEffect(eff)
-			DestroyTimer(GetExpiredTimer())
-		end
-	end)
-end
-
-function CreateLightingCharges(hero)
-	local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
-	--print("1")
-	TimerStart(CreateTimer(), 0.7, true, function()
-		if data.ReleaseRMB then
-			HeroUpdateWeaponCharges(hero, 7, -1)
-			FindEnemyForLighting(hero, 500)
-		else
-			DestroyTimer(GetExpiredTimer())
-		end
-	end)
-end
-
-function FindEnemyForLighting(hero, range)
-	local e = nil
-	local x, y = GetUnitXY(hero)
-
-	GroupEnumUnitsInRange(perebor, x, y, range, nil)
-	--print("2")
-	while true do
-		e = FirstOfGroup(perebor)
-		if e == nil then
-			break
-		end
-		if UnitAlive(e) and IsUnitEnemy(e, GetOwningPlayer(hero)) and IsUnitVisible(e, GetOwningPlayer(hero)) then
-			--print("найден враг")
-			if HeroUpdateWeaponCharges(hero, 7, 1) then
-				local dummy = CreateUnit(GetOwningPlayer(hero), DummyID, GetUnitX(hero), GetUnitY(hero), 0)
-				SetUnitZ(dummy, GetUnitZ(hero) + 90)
-				UnitAddAbility(dummy, FourCC('A00B'))-- молния
-				UnitApplyTimedLife(dummy, DummyID, 1)
-				if not Cast(dummy, 0, 0, e) then
-					HeroUpdateWeaponCharges(hero, 7, -1)
-				end
-			else
-				DestroyTimer(GetExpiredTimer())
-			end
-		end
-		GroupRemoveUnit(perebor, e)
-	end
-end
-
-function SawActivated(hero)
-	local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
-	local saw = AddSpecialEffect(SawDiskModel, GetUnitXY(hero))
-	local id = UnitGetPid(hero)
-	BlzSetSpecialEffectScale(saw, 0.7)
-	--HeroUpdateWeaponCharges(hero,8,-1)
-	--print("пила активирована")
-	local CurAngle = GetUnitFacing(hero)
-	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
-		local x, y = GetUnitXY(hero)
-		local angle = AngleBetweenXY(x, y, GetPlayerMouseX[id], GetPlayerMouseY[id]) / bj_DEGTORAD
-		--angle=math.abs(angle)
-		--print(angle)
-		--if CurAngle>=angle-10 and CurAngle<=angle+10 then
-		if data.ReleaseRMB then
-			if CurAngle <= angle then
-				if CurAngle < angle - 10 then
-					CurAngle = CurAngle + 5
-				end
-			else
-				CurAngle = CurAngle - 5
-			end
-		end
-
-		local nx, ny = MoveXY(x, y, 130, angle)
-		-- вроде как и было отключено
-		--if UnitDamageArea(hero, 30, nx, ny, 150, GetUnitZ(hero) + 50, "Abilities/Weapons/AncestralGuardianMissile/AncestralGuardianMissile.mdl") then -- это и бло отключено
-		--[[if HeroUpdateWeaponCharges(hero,8,1) then
-		else
-			DestroyTimer(GetExpiredTimer())
-			DestroyEffect(saw)
-		end]]
-		--end
-
-		BlzSetSpecialEffectPosition(saw, nx, ny, GetUnitZ(hero) + 20)
-		if data.WeaponIndex ~= 8 then
-			DestroyTimer(GetExpiredTimer())
-			DestroyEffect(saw)
-		end
-	end)
-end
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
 --- Created by Bergi.
@@ -1341,40 +1102,6 @@ end
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
 --- Created by Bergi.
---- DateTime: 27.05.2020 16:53
----
-
-function ehandler( err )
-	print( "ERROR:", err )
-end
-
-function GetUnitGreenAttackBonus(hero)
-		local bonus=0
-		if IsUnitSelected(hero,GetOwningPlayer(hero)) then
-			local frame=BlzGetFrameByName("InfoPanelIconValue",0)
-			local text=BlzFrameGetText(frame) --"46 - 56 |CFF00FF00+12|R"
-			if string.len(text)>=15 then
-				bonus =  text:sub(text:find("|C")+10,-3)
-			end
-			bonus=tonumber(bonus)
-		end
-		return bonus
-end
-
---[[function PlayerPlaying(text)
-	print("preloading")
-	Preload(text)
-	PreloadGenEnd("save\\"..GetPlayerName(GetLocalPlayer())..GetRandomInt(1,100)..".txt")-- РАБОТАЕТ
-end]]
-
-
-
-
-
-
----
---- Generated by EmmyLua(https://github.com/EmmyLua)
---- Created by Bergi.
 --- DateTime: 09.02.2020 13:24
 
 function UnitCheckPathingInRound(hero,range)
@@ -1490,6 +1217,54 @@ TriggerAddAction = function(trig, callback)
 	end
 	realTriggerAddAction(trig, pcallback)
 end
+---
+--- Generated by EmmyLua(https://github.com/EmmyLua)
+--- Created by Bergi.
+--- DateTime: 27.05.2020 16:53
+---
+
+function GetUnitGreenAttackBonus(hero)
+		local bonus=0
+		if IsUnitSelected(hero,GetOwningPlayer(hero)) then
+			local frame=BlzGetFrameByName("InfoPanelIconValue",0)
+			local text=BlzFrameGetText(frame) --"46 - 56 |CFF00FF00+12|R"
+			if string.len(text)>=15 then
+				bonus =  text:sub(text:find("|C")+10,-3)
+			end
+			bonus=tonumber(bonus)
+		end
+		return bonus
+end
+
+function SetUnitGreenAttackBonus(hero,bonusSet)
+	local bonus=0
+	local frame=BlzGetFrameByName("InfoPanelIconValue",0)
+	local data=HERO[GetPlayerId(GetOwningPlayer(hero))]
+	data.AttackOriginal=BlzFrameGetText(frame)
+	if IsUnitSelected(hero,GetOwningPlayer(hero)) then
+
+		local text=BlzFrameGetText(frame) --"46 - 56 |CFF00FF00+12|R"
+		if string.len(text)>=15 then
+			bonus =  text:sub(text:find("|C")+10,-3)
+		end
+		bonus=tonumber(bonus)
+		if bonus==bonusSet then return end
+		local totalBonus=bonus+bonusSet
+		local whiteText=text
+		if bonus~=0 then
+			 whiteText=text.sub(text,0,-(4+string.len(totalBonus)))
+		end
+		print("white" ..whiteText)
+		if totalBonus>0 then
+			BlzFrameSetText(frame,whiteText.."|CFF00FF00+"..totalBonus.."|R")
+		end
+
+	end
+	--return bonus
+end
+
+
+
 --- Generated by EmmyLua(https://github.com/EmmyLua)
 --- Created by Bergi.
 --- DateTime: 03.01.2020 12:16
@@ -1850,7 +1625,6 @@ end
 -- orientation - ориентация сектора в мировых координатах
 -- width - уголовой размер сектора в градусах
 -- radius - окружности которой принадлежит сектор
-
 function IsPointInSector(x1,y1,x2,y2,orientation,width,radius)
 	local lenght=DistanceBetweenXY(x1,y1,x2,y2)
 	local angle=Acos(Cos(orientation*bj_DEGTORAD)*(x1-x2)/lenght+Sin(orientation*bj_DEGTORAD)*(y1-y2)/lenght )*bj_RADTODEG
@@ -3240,10 +3014,36 @@ function InitSelectionRegister()
 	end
 	TriggerAddAction(this, function()
 		local hero = GetTriggerUnit()
-		if IsUnitType(hero, UNIT_TYPE_HERO) and GetOwningPlayer(hero) == GetTriggerPlayer() then
+		if IsUnitType(hero, UNIT_TYPE_HERO) and GetOwningPlayer(hero) == GetTriggerPlayer() and GetUnitTypeId(hero)==HeroID then
 			local data = HERO[GetPlayerId(GetTriggerPlayer())]
-			data.UnitHero = hero
-			data.MarkIsActivated = false
+			if not data.UnitHero then
+				data.UnitHero = hero
+				data.MarkIsActivated = false
+
+				--[[TimerStart(CreateTimer(), 0.1, true, function()
+					local bonus=0
+					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDQ)>=0.1 then
+						bonus=bonus+20
+					end
+					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDW)>=0.1 then
+						bonus=bonus+20
+					end
+					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDE)>=0.1 then
+						bonus=bonus+20
+					end
+					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDR)>=0.1 then
+						bonus=bonus+20
+					end
+					if bonus >0 then
+						--print("текущий бонус атаки="..bonus)
+					else
+						data
+					end
+					BlzSetUnitBaseDamage(hero,BlzGetUnitBaseDamage(hero,0)+bonus,0)
+					--SetUnitGreenAttackBonus(hero,bonus)
+
+				end)]]
+			end
 			--print("Выбрал своего нужного героя")
 		end
 	end)
@@ -3275,9 +3075,9 @@ function MarkCreatorW(data)
 	end
 	if UnitHaveReadyAbility(hero,SpellIDW) then
 		if not data.MarkIsActivated then
-			CreateVisualPointerForUnitBySplat(hero,1,900//5,5,450//5)
+			CreateVisualPointerForUnitBySplat(hero,1,900//5,5,600//5)
 			data.MarkIsActivated=true--
-			data.Anchor=AddSpecialEffect("AdmiralAssets\\Anchor",GetUnitXY(data.UnitHero))
+			data.Anchor=AddSpecialEffect("AdmiralAssets\\AnchorHD",GetUnitXY(data.UnitHero))
 			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
 			BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
 			local a=0
@@ -3472,8 +3272,10 @@ function CreateFallCannonOnEffectPosition(angle,x,y)
 		if z<=GetTerrainZ(x,y) then
 			z=GetTerrainZ(x,y)
 			DestroyTimer(GetExpiredTimer())
-			DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
-			local canon=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",x,y)
+			--DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
+			--local canon=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",x,y)
+			local canon=AddSpecialEffect("AdmiralAssets\\SiegeCannon",x,y)
+
 			BlzSetSpecialEffectYaw(canon,math.rad(angle))
 			BlzSetSpecialEffectPosition(canon,x,y,z)
 		end

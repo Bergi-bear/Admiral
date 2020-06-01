@@ -165,10 +165,36 @@ function InitSelectionRegister()
 	end
 	TriggerAddAction(this, function()
 		local hero = GetTriggerUnit()
-		if IsUnitType(hero, UNIT_TYPE_HERO) and GetOwningPlayer(hero) == GetTriggerPlayer() then
+		if IsUnitType(hero, UNIT_TYPE_HERO) and GetOwningPlayer(hero) == GetTriggerPlayer() and GetUnitTypeId(hero)==HeroID then
 			local data = HERO[GetPlayerId(GetTriggerPlayer())]
-			data.UnitHero = hero
-			data.MarkIsActivated = false
+			if not data.UnitHero then
+				data.UnitHero = hero
+				data.MarkIsActivated = false
+
+				--[[TimerStart(CreateTimer(), 0.1, true, function()
+					local bonus=0
+					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDQ)>=0.1 then
+						bonus=bonus+20
+					end
+					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDW)>=0.1 then
+						bonus=bonus+20
+					end
+					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDE)>=0.1 then
+						bonus=bonus+20
+					end
+					if BlzGetUnitAbilityCooldownRemaining(hero,SpellIDR)>=0.1 then
+						bonus=bonus+20
+					end
+					if bonus >0 then
+						--print("текущий бонус атаки="..bonus)
+					else
+						data
+					end
+					BlzSetUnitBaseDamage(hero,BlzGetUnitBaseDamage(hero,0)+bonus,0)
+					--SetUnitGreenAttackBonus(hero,bonus)
+
+				end)]]
+			end
 			--print("Выбрал своего нужного героя")
 		end
 	end)

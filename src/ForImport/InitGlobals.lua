@@ -47,6 +47,7 @@ function InitHEROTable()
 			StartCanon=false,
 			RClick=false,
 			ChainEff=nil,
+			AttackOriginal=0,
 		}
 	end
 

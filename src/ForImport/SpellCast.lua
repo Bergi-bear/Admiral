@@ -14,7 +14,17 @@ function InitSpellTrigger()
 		local angleCast=AngleBetweenXY(casterX, casterY, x, y)/bj_DEGTORAD
 		local data=HERO[GetPlayerId(GetOwningPlayer(caster))]
 
+		if GetUnitAbilityLevel(caster,SpellIDS)>0 then
+			local bonusAttack=20
+			local cd=BlzGetUnitAbilityCooldown(caster,spellId,GetUnitAbilityLevel(caster,spellId)-1)
 
+			print("Атака увеличена")
+			BlzSetUnitBaseDamage(caster,BlzGetUnitBaseDamage(caster,0)+bonusAttack,0)
+			TimerStart(CreateTimer(), cd, false, function()
+				BlzSetUnitBaseDamage(caster,BlzGetUnitBaseDamage(caster,0)-bonusAttack,0)
+			--	print("Атака уменьшена")
+			end)
+		end
 		if spellId == SpellIDQ then-- Выстрел
 			BlzPauseUnitEx(caster,true)
 			TimerStart(CreateTimer(), 0.1, false, function()
@@ -37,19 +47,14 @@ function InitSpellTrigger()
 		end
 		if spellId == SpellIDW then-- Бросок якоря
 		--	print("Бросок якоря")
-			--GetUnitGreenAttackBonus(caster)
-			local anchor=AddSpecialEffect("AdmiralAssets\\Anchor",casterX,casterY)
-			local chanElement={}
 
+			local anchor=AddSpecialEffect("AdmiralAssets\\AnchorHD",casterX,casterY)
 			local dist=DistanceBetweenXY(x,y,casterX,casterY)
+			--if dist<=900 then dist=900 end
 			BlzSetSpecialEffectYaw(anchor,math.rad(angleCast))
 			BlzSetSpecialEffectPitch(anchor,math.rad(-90))
 			BlzSetSpecialEffectZ(anchor,GetUnitZ(caster)+200)
-			--CreateArtToss(caster,"AdmiralAssets\\Anchor",angleCast,dist)
-
-			--CreateEffectLighting3D(casterX,casterY,GetUnitZ(caster)+50,x,y,GetUnitZ(caster)+500,20,"AdmiralAssets\\ChainElement")
 			data.ChainEff=CreateEffectLighting3D(0,0,0,0,0,0,0,"AdmiralAssets\\ChainElement")
-
 			JumpEffect(anchor, 20, 300, angleCast, dist, caster, 2,GetUnitZ(caster)+200)
 		end
 
@@ -60,7 +65,7 @@ function InitSpellTrigger()
 					SetUnitAnimationByIndex(caster,4)
 					local eff=nil
 					TimerStart(CreateTimer(), 0.2, false, function()
-						eff=AddSpecialEffectTarget("animeslashfinal",caster,"weapon")
+						eff=AddSpecialEffectTarget("AdmiralAssets\\animeslashfinal",caster,"weapon")
 						--print("момент урона")
 						local e=nil
 						local k=0
@@ -107,11 +112,11 @@ function InitSpellTrigger()
 		end
 		if spellId == SpellIDR then-- Пушки
 			--TODO id
-			local data=HERO[GetPlayerId(GetOwningPlayer(caster))]
+			--local data=HERO[GetPlayerId(GetOwningPlayer(caster))]
 			--data.ReleaseLMB=true
 			local cannon={}
 			for i=1,5 do
-				cannon[i]=AddSpecialEffect("units\\nightelf\\Ballista\\Ballista",6000,6000)
+				cannon[i]=AddSpecialEffect("AdmiralAssets\\SiegeCannon",6000,6000)
 				BlzSetSpecialEffectAlpha(cannon[i],40)
 				--BlzSetSpecialEffectColor(cannon[i],0,255,0)
 			end

@@ -249,7 +249,6 @@ end
 -- orientation - ориентация сектора в мировых координатах
 -- width - уголовой размер сектора в градусах
 -- radius - окружности которой принадлежит сектор
-
 function IsPointInSector(x1,y1,x2,y2,orientation,width,radius)
 	local lenght=DistanceBetweenXY(x1,y1,x2,y2)
 	local angle=Acos(Cos(orientation*bj_DEGTORAD)*(x1-x2)/lenght+Sin(orientation*bj_DEGTORAD)*(y1-y2)/lenght )*bj_RADTODEG
