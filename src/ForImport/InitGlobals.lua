@@ -16,6 +16,7 @@ do
 		KeyRegistration() -- инициализация отлова нажатия клавиш
 		InitSelectionRegister() -- инициализация выбора
 		InitMouseMoveTrigger() -- Запуск отслеживания положения мыши
+		InitSoundsA()--Создаём звуки
 	end
 
 end

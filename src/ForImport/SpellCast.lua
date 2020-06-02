@@ -75,6 +75,18 @@ function InitSpellTrigger()
 						local damage=BlzGetUnitBaseDamage(caster,0)
 						local multiplier=1
 						local totalDamage=0
+						--[[local  tl = Location(GetUnitXY(caster))
+						local r=4--GetRandomInt(1,3)
+						if r==1 then
+							PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch1, 100, tl, 0 )
+						elseif r==2 then
+							PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch2, 100, tl, 0 )
+						elseif r==3then
+							PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch3, 100, tl, 0 )
+						end
+						RemoveLocation(tl)]]
+						local  tl = Location(GetUnitXY(caster))
+
 						--сначала считаем юнитов
 						GroupEnumUnitsInRange(perebor,casterX, casterY,attackRange,nil)
 						while true do
@@ -89,6 +101,7 @@ function InitSpellTrigger()
 						multiplier=multiplier+1*k
 						totalDamage=damage*multiplier
 						--наносит урон тем же юнитам
+						local isUnit=false
 						GroupEnumUnitsInRange(perebor,casterX, casterY,attackRange,nil)
 						while true do
 							e = FirstOfGroup(perebor)
@@ -97,10 +110,35 @@ function InitSpellTrigger()
 								--UnitDamageArea(caster,totalDamage,casterX, casterY, 150)
 								UnitDamageTarget( caster, e, totalDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS )
 								FlyTextTagCriticalStrike(caster,R2I(totalDamage).."!",GetOwningPlayer(caster))
+
+								isUnit=true
+								local r2=GetRandomInt(1,3)
+								if r2==1 then
+									PlaySoundAtPointBJ( gg_snd_MetalHeavySliceFlesh1, 100, tl, 0 )
+								elseif r2==2 then
+									PlaySoundAtPointBJ( gg_snd_MetalHeavySliceFlesh2, 100, tl, 0 )
+								elseif r2==3then
+									PlaySoundAtPointBJ( gg_snd_MetalHeavySliceFlesh3, 100, tl, 0 )
+								end
+
 							end
 							GroupRemoveUnit(perebor,e)
 						end
-
+						if not isUnit then
+							--print("урон по деревьям?")
+							if UnitDamageArea(caster,totalDamage,casterX,casterY,attackRange) then
+							--	print("прошёл")
+							end
+							local r=GetRandomInt(1,3)
+							if r==1 then
+								PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch1, 100, tl, 0 )
+							elseif r==2 then
+								PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch2, 100, tl, 0 )
+							elseif r==3then
+								PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch3, 100, tl, 0 )
+							end
+						end
+						RemoveLocation(tl)
 
 					end)
 					TimerStart(CreateTimer(), 0.5, false, function()

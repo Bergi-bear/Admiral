@@ -3,11 +3,9 @@ end
 
 function CreateAllItems()
     local itemID
-    BlzCreateItemWithSkin(FourCC("desc"), -1551.9, -2685.6, FourCC("desc"))
-    BlzCreateItemWithSkin(FourCC("infs"), -1488.4, -2771.7, FourCC("infs"))
-    BlzCreateItemWithSkin(FourCC("rat9"), -1656.3, -2583.3, FourCC("rat9"))
+    BlzCreateItemWithSkin(FourCC("desc"), -1351.1, -2615.1, FourCC("desc"))
+    BlzCreateItemWithSkin(FourCC("rat9"), -1321.6, -2697.9, FourCC("rat9"))
     BlzCreateItemWithSkin(FourCC("ratc"), -1356.8, -2525.7, FourCC("ratc"))
-    BlzCreateItemWithSkin(FourCC("will"), -1286.0, -2643.1, FourCC("will"))
 end
 
 function CreateUnitsForPlayer0()
@@ -17,9 +15,6 @@ function CreateUnitsForPlayer0()
     local t
     local life
     u = BlzCreateUnitWithSkin(p, FourCC("H000"), -1457.6, -2554.9, 222.698, FourCC("H000"))
-    u = BlzCreateUnitWithSkin(p, FourCC("h001"), -1226.0, -2813.1, 332.270, FourCC("h001"))
-    u = BlzCreateUnitWithSkin(p, FourCC("h001"), -1080.6, -2835.6, 84.422, FourCC("h001"))
-    u = BlzCreateUnitWithSkin(p, FourCC("hmtt"), -941.0, -2884.2, 65.964, FourCC("hmtt"))
 end
 
 function CreateBuildingsForPlayer1()
@@ -33,6 +28,7 @@ function CreateBuildingsForPlayer1()
     u = BlzCreateUnitWithSkin(p, FourCC("npgf"), 800.0, -416.0, 270.000, FourCC("npgf"))
     u = BlzCreateUnitWithSkin(p, FourCC("nbfl"), 896.0, -1920.0, 270.000, FourCC("nbfl"))
     u = BlzCreateUnitWithSkin(p, FourCC("oshy"), 1728.0, 1024.0, 270.000, FourCC("oshy"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owtw"), -640.0, -704.0, 270.000, FourCC("owtw"))
 end
 
 function CreateUnitsForPlayer1()
@@ -55,6 +51,8 @@ function CreateUnitsForPlayer1()
     u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1581.1, -986.5, 285.302, FourCC("ogru"))
     u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1471.9, -849.7, 287.982, FourCC("ogru"))
     u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1530.3, -808.3, 110.361, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmbg"), -2856.2, -818.8, 185.257, FourCC("nmbg"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmcf"), -2756.7, -945.8, 153.659, FourCC("nmcf"))
     u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -214.8, -2563.0, 85.333, FourCC("ogru"))
     u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -185.2, -2642.3, 221.909, FourCC("ogru"))
     u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -129.7, -2706.2, 305.111, FourCC("ogru"))
@@ -68,9 +66,41 @@ function CreateUnitsForPlayer1()
     u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1852.3, 394.6, 110.669, FourCC("ogru"))
     u = BlzCreateUnitWithSkin(p, FourCC("ogru"), 883.2, 278.0, 348.200, FourCC("ogru"))
     u = BlzCreateUnitWithSkin(p, FourCC("ojgn"), 2005.5, 818.9, 256.396, FourCC("ojgn"))
-    u = BlzCreateUnitWithSkin(p, FourCC("ncpn"), 23.7, -1844.8, 131.620, FourCC("ncpn"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ohun"), 808.9, -2369.9, 290.773, FourCC("ohun"))
     u = BlzCreateUnitWithSkin(p, FourCC("ncpn"), -799.8, -1432.4, 50.835, FourCC("ncpn"))
     u = BlzCreateUnitWithSkin(p, FourCC("oosc"), 1106.8, -689.1, 231.159, FourCC("oosc"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmcf"), -2664.1, -728.8, 322.799, FourCC("nmcf"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmcf"), -2364.9, -2221.3, 277.886, FourCC("nmcf"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ocat"), 174.4, -1709.0, 74.270, FourCC("ocat"))
+    u = BlzCreateUnitWithSkin(p, FourCC("odoc"), 80.5, -2262.9, 208.791, FourCC("odoc"))
+    u = BlzCreateUnitWithSkin(p, FourCC("odoc"), 190.9, -2242.3, 302.441, FourCC("odoc"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owyv"), -1869.7, -564.7, 157.615, FourCC("owyv"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owyv"), 1372.2, -1653.3, 282.544, FourCC("owyv"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owyv"), 1547.6, -1623.5, 313.461, FourCC("owyv"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ncpn"), -698.7, -833.1, 7.932, FourCC("ncpn"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ncpn"), -561.8, -874.5, 121.765, FourCC("ncpn"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ncpn"), -476.0, -724.9, 155.934, FourCC("ncpn"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nchr"), 1824.2, -734.9, 333.357, FourCC("nchr"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmcf"), -2441.8, -2311.4, 70.776, FourCC("nmcf"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmcf"), -2505.3, -2175.8, 298.672, FourCC("nmcf"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmcf"), 1225.2, -3150.9, 299.628, FourCC("nmcf"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmcf"), 1139.1, -3121.2, 89.838, FourCC("nmcf"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmrv"), 1171.5, -3182.2, 267.185, FourCC("nmrv"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmrv"), 2773.7, -869.9, 159.493, FourCC("nmrv"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmsc"), 2723.7, -748.1, 14.678, FourCC("nmsc"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmcf"), 2667.5, -788.2, 322.733, FourCC("nmcf"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmrv"), 1048.4, 2614.0, 35.146, FourCC("nmrv"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nmrv"), 1085.6, 2461.8, 69.392, FourCC("nmrv"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ntrt"), -2857.9, 780.6, 296.926, FourCC("ntrt"))
+end
+
+function CreateNeutralPassive()
+    local p = Player(PLAYER_NEUTRAL_PASSIVE)
+    local u
+    local unitID
+    local t
+    local life
+    u = BlzCreateUnitWithSkin(p, FourCC("hbsh"), -1831.6, -2736.5, 147.400, FourCC("hbsh"))
 end
 
 function CreatePlayerBuildings()
@@ -84,6 +114,7 @@ end
 
 function CreateAllUnits()
     CreatePlayerBuildings()
+    CreateNeutralPassive()
     CreatePlayerUnits()
 end
 
@@ -146,6 +177,7 @@ do
 		KeyRegistration() -- инициализация отлова нажатия клавиш
 		InitSelectionRegister() -- инициализация выбора
 		InitMouseMoveTrigger() -- Запуск отслеживания положения мыши
+		InitSoundsA()--Создаём звуки
 	end
 
 end
@@ -314,6 +346,18 @@ function InitSpellTrigger()
 						local damage=BlzGetUnitBaseDamage(caster,0)
 						local multiplier=1
 						local totalDamage=0
+						--[[local  tl = Location(GetUnitXY(caster))
+						local r=4--GetRandomInt(1,3)
+						if r==1 then
+							PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch1, 100, tl, 0 )
+						elseif r==2 then
+							PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch2, 100, tl, 0 )
+						elseif r==3then
+							PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch3, 100, tl, 0 )
+						end
+						RemoveLocation(tl)]]
+						local  tl = Location(GetUnitXY(caster))
+
 						--сначала считаем юнитов
 						GroupEnumUnitsInRange(perebor,casterX, casterY,attackRange,nil)
 						while true do
@@ -328,6 +372,7 @@ function InitSpellTrigger()
 						multiplier=multiplier+1*k
 						totalDamage=damage*multiplier
 						--наносит урон тем же юнитам
+						local isUnit=false
 						GroupEnumUnitsInRange(perebor,casterX, casterY,attackRange,nil)
 						while true do
 							e = FirstOfGroup(perebor)
@@ -336,10 +381,35 @@ function InitSpellTrigger()
 								--UnitDamageArea(caster,totalDamage,casterX, casterY, 150)
 								UnitDamageTarget( caster, e, totalDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS )
 								FlyTextTagCriticalStrike(caster,R2I(totalDamage).."!",GetOwningPlayer(caster))
+
+								isUnit=true
+								local r2=GetRandomInt(1,3)
+								if r2==1 then
+									PlaySoundAtPointBJ( gg_snd_MetalHeavySliceFlesh1, 100, tl, 0 )
+								elseif r2==2 then
+									PlaySoundAtPointBJ( gg_snd_MetalHeavySliceFlesh2, 100, tl, 0 )
+								elseif r2==3then
+									PlaySoundAtPointBJ( gg_snd_MetalHeavySliceFlesh3, 100, tl, 0 )
+								end
+
 							end
 							GroupRemoveUnit(perebor,e)
 						end
-
+						if not isUnit then
+							--print("урон по деревьям?")
+							if UnitDamageArea(caster,totalDamage,casterX,casterY,attackRange) then
+							--	print("прошёл")
+							end
+							local r=GetRandomInt(1,3)
+							if r==1 then
+								PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch1, 100, tl, 0 )
+							elseif r==2 then
+								PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch2, 100, tl, 0 )
+							elseif r==3then
+								PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch3, 100, tl, 0 )
+							end
+						end
+						RemoveLocation(tl)
 
 					end)
 					TimerStart(CreateTimer(), 0.5, false, function()
@@ -1227,6 +1297,47 @@ TriggerAddAction = function(trig, callback)
 	end
 	realTriggerAddAction(trig, pcallback)
 end
+---
+--- Generated by EmmyLua(https://github.com/EmmyLua)
+--- Created by Bergi.
+--- DateTime: 02.06.2020 22:32
+---
+
+gg_snd_BristleBackMissileLaunch1 = nil
+gg_snd_BristleBackMissileLaunch2 = nil
+gg_snd_BristleBackMissileLaunch3 = nil
+gg_snd_MetalHeavySliceFlesh1 = nil
+gg_snd_MetalHeavySliceFlesh2 = nil
+gg_snd_MetalHeavySliceFlesh3 = nil
+
+function InitSoundsA()
+	gg_snd_BristleBackMissileLaunch1 = CreateSound("Abilities/Weapons/BristleBackMissile/BristleBackMissileLaunch1.flac", false, true, true, 0, 0, "MissilesEAX")
+	SetSoundParamsFromLabel(gg_snd_BristleBackMissileLaunch1, "BristleBackMissileLaunch")
+	SetSoundDuration(gg_snd_BristleBackMissileLaunch1, 345)
+	SetSoundVolume(gg_snd_BristleBackMissileLaunch1, 250)
+	gg_snd_BristleBackMissileLaunch2 = CreateSound("Abilities/Weapons/BristleBackMissile/BristleBackMissileLaunch2.flac", false, true, true, 0, 0, "MissilesEAX")
+	SetSoundParamsFromLabel(gg_snd_BristleBackMissileLaunch2, "BristleBackMissileLaunch")
+	SetSoundDuration(gg_snd_BristleBackMissileLaunch2, 372)
+	SetSoundVolume(gg_snd_BristleBackMissileLaunch2, 250)
+	gg_snd_BristleBackMissileLaunch3 = CreateSound("Abilities/Weapons/BristleBackMissile/BristleBackMissileLaunch3.flac", false, true, true, 0, 0, "MissilesEAX")
+	SetSoundParamsFromLabel(gg_snd_BristleBackMissileLaunch3, "BristleBackMissileLaunch")
+	SetSoundDuration(gg_snd_BristleBackMissileLaunch3, 333)
+	SetSoundVolume(gg_snd_BristleBackMissileLaunch3, 250)
+
+	gg_snd_MetalHeavySliceFlesh1 = CreateSound("Sound/Units/Combat/MetalHeavySliceFlesh1.flac", false, true, true, 0, 0, "MissilesEAX")
+	SetSoundParamsFromLabel(gg_snd_MetalHeavySliceFlesh1, "MetalHeavySliceFlesh")
+	SetSoundDuration(gg_snd_MetalHeavySliceFlesh1, 1104)
+	SetSoundVolume(gg_snd_MetalHeavySliceFlesh1, 250)
+	gg_snd_MetalHeavySliceFlesh2 = CreateSound("Sound/Units/Combat/MetalHeavySliceFlesh2.flac", false, true, true, 0, 0, "MissilesEAX")
+	SetSoundParamsFromLabel(gg_snd_MetalHeavySliceFlesh2, "MetalHeavySliceFlesh")
+	SetSoundDuration(gg_snd_MetalHeavySliceFlesh2, 946)
+	SetSoundVolume(gg_snd_MetalHeavySliceFlesh2, 250)
+	gg_snd_MetalHeavySliceFlesh3 = CreateSound("Sound/Units/Combat/MetalHeavySliceFlesh3.flac", false, true, true, 0, 0, "MissilesEAX")
+	SetSoundParamsFromLabel(gg_snd_MetalHeavySliceFlesh3, "MetalHeavySliceFlesh")
+	SetSoundDuration(gg_snd_MetalHeavySliceFlesh3, 853)
+	SetSoundVolume(gg_snd_MetalHeavySliceFlesh3, 250)
+end
+
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
 --- Created by Bergi.
@@ -3539,7 +3650,7 @@ function CreateVisualPointerForUnitBySplat(hero,flag,long,step,minlong)
 		image2[i]=CreateImage("AdmiralAssets\\pointerORIG",16,16,9999,4000,4000,0,0,0,0,4)
 
 		--SetImageAboveWater(image2[i],false, false)
-		--SetImageConstantHeight(image[2],true,250)
+		--SetImageConstantHeight(image2[i],true,250)
 
 		SetImageColor(image2[i],0,255,0,128)
 		SetImageRenderAlways(image2[i], true)
@@ -3769,8 +3880,8 @@ function config()
     SetPlayers(2)
     SetTeams(2)
     SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)
-    DefineStartLocation(0, -1600.0, -2240.0)
-    DefineStartLocation(1, 704.4, 539.9)
+    DefineStartLocation(0, -1472.0, -2624.0)
+    DefineStartLocation(1, 704.0, 512.0)
     InitCustomPlayerSlots()
     SetPlayerSlotAvailable(Player(0), MAP_CONTROL_USER)
     SetPlayerSlotAvailable(Player(1), MAP_CONTROL_USER)
