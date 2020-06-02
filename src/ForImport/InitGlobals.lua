@@ -51,6 +51,7 @@ function InitHEROTable()
 			AttackOriginal=0,
 			bonusCD=0,
 			HeroGreenDamage=0,
+			AnchorPitch=0,
 		}
 	end
 

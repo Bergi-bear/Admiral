@@ -254,3 +254,25 @@ function IsPointInSector(x1,y1,x2,y2,orientation,width,radius)
 	local angle=Acos(Cos(orientation*bj_DEGTORAD)*(x1-x2)/lenght+Sin(orientation*bj_DEGTORAD)*(y1-y2)/lenght )*bj_RADTODEG
 	return angle<=width and lenght<=radius
 end
+
+function GetParabolaPitch(height,distance,i, speed)
+	local function Tangent(f, df, x0, x)
+		return f(x0) + df(x0) * (x - x0)
+	end
+	local function ParabolaZDerivative(height, distance, x)
+		return 4 * height / distance / distance * (distance - 2 * x)
+	end
+	local f = function(x)
+		return ParabolaZ(height, distance, x)
+	end
+
+	local df = function(x)
+		return ParabolaZDerivative(height, distance, x)
+	end
+	local x0 = i * speed
+	local x1 = x0 + speed
+	local thisZ = f(x0)
+	local someTangentZ = Tangent(f, df, x0, x1)
+	return math.atan(someTangentZ - thisZ, x1 - x0)--pitch
+end
+

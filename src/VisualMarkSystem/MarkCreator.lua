@@ -27,9 +27,9 @@ function MarkCreatorW(data)
 		if not data.MarkIsActivated then
 			CreateVisualPointerForUnitBySplat(hero,1,900//5,5,600//5)
 			data.MarkIsActivated=true--
-			data.Anchor=AddSpecialEffect("AdmiralAssets\\AnchorHD",GetUnitXY(data.UnitHero))
+			data.Anchor=AddSpecialEffect("AdmiralAssets\\AnchorHD2",GetUnitXY(data.UnitHero))
 			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
-			BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
+			--BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
 			local a=0
 			TimerStart(CreateTimer(),TIMER_PERIOD, true, function()
 				local z,x,y=GetUnitZ(data.UnitHero)+200,GetUnitXY(data.UnitHero)
@@ -139,5 +139,4 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 		end
 
 	end)
-
 end

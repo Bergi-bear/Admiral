@@ -167,11 +167,14 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		local x, y = BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff)
 		if flag == 3 then
 			angle = AngleBetweenXY(x, y, GetUnitXY(hero)) / bj_DEGTORAD
-			BlzSetSpecialEffectYaw(eff, math.rad(angle - 180))
+			BlzSetSpecialEffectYaw(eff, math.rad(angle - 180)) --выворот на обратному ходу
 		end
 
+
 		local nx, ny = MoveXY(x, y, speed, angle)
+		local lastF=BlzGetLocalSpecialEffectZ(eff)
 		local f = ParabolaZ(maxHeight, distance, i * speed) + ZStart
+		local pitchPoint=GetParabolaPitch(maxHeight,distance,i,speed)
 		--if f<=GetTerrainZ(nx,ny) then f=GetTerrainZ(nx,ny) end --правка проваливания в землю
 		local z = BlzGetLocalSpecialEffectZ(eff)
 		local zGround = GetTerrainZ(nx, ny)
@@ -184,7 +187,8 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		if flag == 3 then
 			--Движение якоря на обратном ходу
 			local e = nil
-			--DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
+			--DestroyEffect()
+			AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0",x,y)
 			--эффект поврежденное земли
 			local xs,ys=MoveXY(BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff), -speed, angle)
 			GroupEnumUnitsInRange(perebor, x, y, 75, nil)
@@ -216,16 +220,16 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 
 
 		if flag == 2 then
-			--прямое движение
-			--отрисовка цепи
-			local step=20
-			--local eStart=GetUnitZ(hero)+100
 			local fStart= GetUnitZ(hero)+70
-			--print(fStart)
-			MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),fStart,nx, ny,BlzGetLocalSpecialEffectZ(eff),step,data.ChainEff)
+			--BlzSetSpecialEffectPitch(eff, -(pitchPoint)) --и якорь полетит навесом
+			BlzSetSpecialEffectPitch(eff, -(data.AnchorPitch)) --верная рабочая
+			local step=20
+			data.AnchorPitch=MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),fStart,nx, ny,BlzGetLocalSpecialEffectZ(eff),step,data.ChainEff)
 		end
 
 		if flag == 3 then -- обратное движение
+			--DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",nx,ny))
+			BlzSetSpecialEffectPitch(eff, math.rad(0))
 			if IsUnitInRangeXY(hero, nx, ny, 50) then
 				--конец, вернулся к юниту
 				for i2=1,#chainElement do
@@ -241,12 +245,12 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 					PauseUnit(enum,false)
 				end)
 				DestroyGroup(HookGroup)
-
 			else
 				local step=20
 				local fStart= GetUnitZ(hero)+70
 				--print("fStart="..fStart-zn)
-				MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),fStart,nx, ny, zn,step,data.ChainEff)
+				data.AnchorPitch=MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),fStart,nx, ny, zn,step,data.ChainEff)
+
 			end
 
 		end

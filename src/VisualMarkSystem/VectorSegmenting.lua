@@ -106,6 +106,7 @@ function MoveEffectLighting3D(x1, y1, z1, x2, y2, z2, step, eff)
 		end
 
 	end
+	return pitch
 end
 
 function DestroyEffectLighting3D(eff)

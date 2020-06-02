@@ -50,11 +50,11 @@ function InitSpellTrigger()
 		if spellId == SpellIDW then-- Бросок якоря
 		--	print("Бросок якоря")
 
-			local anchor=AddSpecialEffect("AdmiralAssets\\AnchorHD",casterX,casterY)
+			local anchor=AddSpecialEffect("AdmiralAssets\\AnchorHD2",casterX,casterY)
 			local dist=DistanceBetweenXY(x,y,casterX,casterY)
 			--if dist<=900 then dist=900 end
 			BlzSetSpecialEffectYaw(anchor,math.rad(angleCast))
-			BlzSetSpecialEffectPitch(anchor,math.rad(-90))
+			--BlzSetSpecialEffectPitch(anchor,math.rad(-90))
 			BlzSetSpecialEffectZ(anchor,GetUnitZ(caster)+200)
 			data.ChainEff=CreateEffectLighting3D(0,0,0,0,0,0,0,"AdmiralAssets\\ChainElement")
 			JumpEffect(anchor, 20, 300, angleCast, dist, caster, 2,GetUnitZ(caster)+200)
