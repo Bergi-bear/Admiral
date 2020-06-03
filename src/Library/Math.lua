@@ -256,12 +256,6 @@ function IsPointInSector(x1,y1,x2,y2,orientation,width,radius)
 end
 
 function GetParabolaPitch(height,distance,i, speed)
-	local function Tangent(f, df, x0, x)
-		return f(x0) + df(x0) * (x - x0)
-	end
-	local function ParabolaZDerivative(height, distance, x)
-		return 4 * height / distance / distance * (distance - 2 * x)
-	end
 	local f = function(x)
 		return ParabolaZ(height, distance, x)
 	end
@@ -275,4 +269,9 @@ function GetParabolaPitch(height,distance,i, speed)
 	local someTangentZ = Tangent(f, df, x0, x1)
 	return math.atan(someTangentZ - thisZ, x1 - x0)--pitch
 end
-
+function Tangent(f, df, x0, x)
+	return f(x0) + df(x0) * (x - x0)
+end
+function ParabolaZDerivative(height, distance, x)
+	return 4 * height / distance / distance * (distance - 2 * x)
+end

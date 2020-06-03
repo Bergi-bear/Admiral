@@ -188,7 +188,10 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			--Движение якоря на обратном ходу
 			local e = nil
 			--DestroyEffect()
-			AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0",x,y)
+			local tempEff=AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0",x,y)
+			TimerStart(CreateTimer(), 5, false, function()
+				DestroyEffect(tempEff)
+			end)
 			--эффект поврежденное земли
 			local xs,ys=MoveXY(BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff), -speed, angle)
 			GroupEnumUnitsInRange(perebor, x, y, 75, nil)

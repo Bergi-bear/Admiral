@@ -75,18 +75,8 @@ function InitSpellTrigger()
 						local damage=BlzGetUnitBaseDamage(caster,0)
 						local multiplier=1
 						local totalDamage=0
-						--[[local  tl = Location(GetUnitXY(caster))
-						local r=4--GetRandomInt(1,3)
-						if r==1 then
-							PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch1, 100, tl, 0 )
-						elseif r==2 then
-							PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch2, 100, tl, 0 )
-						elseif r==3then
-							PlaySoundAtPointBJ( gg_snd_BristleBackMissileLaunch3, 100, tl, 0 )
-						end
-						RemoveLocation(tl)]]
-						local  tl = Location(GetUnitXY(caster))
 
+						local  tl = Location(GetUnitXY(caster))
 						--сначала считаем юнитов
 						GroupEnumUnitsInRange(perebor,casterX, casterY,attackRange,nil)
 						while true do
