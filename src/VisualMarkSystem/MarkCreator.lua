@@ -116,7 +116,7 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 			--BlzSetSpecialEffectYaw(canon,math.rad(angle))
 			--BlzSetSpecialEffectPosition(canon,x,y,z)
 
-			if GetTerrainZ(x,y)<=170 then
+			if GetTerrainZ(x,y)<=WaterZ then
 				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",x,y))
 			else
 				cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)

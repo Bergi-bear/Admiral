@@ -35,7 +35,6 @@ function KeyRegistration()
 		end
 	end)
 
-
 	-----------------------------------------------------------------OSKEY_W --в это карте это якорь
 	local gg_trg_EventUpW = CreateTrigger()
 	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
@@ -165,35 +164,20 @@ function InitSelectionRegister()
 	end
 	TriggerAddAction(this, function()
 		local hero = GetTriggerUnit()
-		if IsUnitType(hero, UNIT_TYPE_HERO) and GetOwningPlayer(hero) == GetTriggerPlayer() and GetUnitTypeId(hero)==HeroID then
+		if IsUnitType(hero, UNIT_TYPE_HERO) and GetOwningPlayer(hero) == GetTriggerPlayer() and GetUnitTypeId(hero) == HeroID then
 			local data = HERO[GetPlayerId(GetTriggerPlayer())]
 
-
-			--[[local k=0
-			for i=0, 10 do
-				local abi=BlzGetUnitAbilityByIndex(hero,i)
-				local info=BlzGetAbilityRealLevelField(abi,ABILITY_RLF_COOLDOWN,0)
-				k=k+info
-				if info then
-					print("info"..i.."="..info)
-				end
-			end
-			print("Общее время кд всех способностей героя="..k)]]
-
-
-
-
 			if not data.UnitHero then
-		data.UnitHero = hero
-		data.MarkIsActivated = false
-		--
-		TimerStart(CreateTimer(), 0.1, true, function()
-		AllAbilityRefresh(hero)
-			if IsUnitSelected(hero,GetOwningPlayer(hero)) then
-		data.HeroGreenDamage=GetUnitGreenAttackBonus(hero)
+				data.UnitHero = hero
+				data.MarkIsActivated = false
+				--
+				TimerStart(CreateTimer(), 0.1, true, function()
+					AllAbilityRefresh(hero)
+					if IsUnitSelected(hero, GetOwningPlayer(hero)) then
+						data.HeroGreenDamage = GetUnitGreenAttackBonus(hero)
+					end
+				end)
+			end
 		end
-			end)
-			end
-			end
 	end)
 end

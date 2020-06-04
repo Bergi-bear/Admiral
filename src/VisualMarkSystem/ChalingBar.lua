@@ -48,33 +48,4 @@ function CreateCallingBar(u,cd,text)
 			full=0
 		end
 	end)
-
 end
-
-function HealthBarAdd(u) --Код Сиренчика
-	BlzLoadTOCFile("Main.toc")
-	local bar = BlzCreateSimpleFrame("MyFakeBar", BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), 0)
-	BlzFrameSetVisible(bar,false)
-
-	--Моделька пеона же
-
-
-	if GetLocalPlayer()==GetOwningPlayer(u) and GetLocalON then -- хп бары, они точно в норме
-		BlzFrameSetVisible(bar,true)
-		--BlzFrameSetVisible(heroico,true)
-	end
-	BlzFrameSetTexture(bar, "Replaceabletextures\\Teamcolor\\Teamcolor0"..(GetConvertedPlayerId(GetOwningPlayer(u))-1)..".blp", 0, true)
-	BlzFrameSetTexture(BlzGetFrameByName("MyFakeBarBorder",0),"MyBarBorder.blp", 0, true)
-	BlzFrameSetText(BlzGetFrameByName("MyFakeBarTitle",0), GetHeroProperName(u).." ‡")--‡ Сердце ™ щит
-	local lefttext = BlzGetFrameByName("MyFakeBarLeftText",0)
-	local righttext = BlzGetFrameByName("MyFakeBarRightText",0)
-	local function on_timer()
-
-		BlzFrameSetValue(bar, GetUnitLifePercent(u))
-		BlzFrameSetText(lefttext, R2I(GetWidgetLife(u)))
-		BlzFrameSetText(righttext, R2I(BlzGetUnitMaxHP(u)))
-	end
-	TimerStart(CreateTimer(),0.5,true, on_timer)
-	BlzFrameSetAbsPoint(bar, FRAMEPOINT_LEFT, 0.08, 0.564)
-end
-

@@ -65,69 +65,23 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 		if dist > 1000 or CollisionEnemy or CollisisonDestr or IsUnitType(DamagingUnit, UNIT_TYPE_STRUCTURE) or PerepadZ > 20 then
 			--or zGround+z>=-70+z --z<=147
 			PointContentDestructable(x, y, CollisionRange, true)
-			if z <= -90 then
+			--print(z)
+			if GetTerrainZ(x,y)  <= WaterZ then
 				--CreateTorrent(x,y)
+				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",x,y))
 				--BlzSetSpecialEffectPosition(bullet,4000,4000,0)
 			end
 			--print("Условие урона прошло для"..GetUnitName(DamagingUnit))
 			local stunDuration=1
 			StunArea(hero,x,y,CollisionRange,stunDuration)
-			if UnitDamageArea(hero, damage, x, y, CollisionRange, ZBullet) and IsUnitType(hero,UNIT_TYPE_HERO) then
+			UnitDamageArea(hero, damage, x, y, CollisionRange, ZBullet)
+			if DamagingUnit  and IsUnitType(hero,UNIT_TYPE_HERO) then
 				FlyTextTagCriticalStrike(DamagingUnit,R2I(damage).."!",GetOwningPlayer(hero))
 			end
 
-			if IsUnitType(hero, UNIT_TYPE_HERO) then
-				local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
-				if data.Perk16 and IsUnitEnemy(hero, GetOwningPlayer(DamagingUnit)) and DamagingUnit and data.FBIsReady then
-					--print("фаерболим "..GetUnitName(DamagingUnit))
-					local cd = 5
-					local dummy = CreateUnit(GetOwningPlayer(hero), DummyID, x, y, 0)--
-					UnitAddAbility(dummy, FourCC('A00G'))
-					UnitApplyTimedLife(dummy, FourCC('BTLF'), 0.1)
-					if Cast(dummy, 0, 0, DamagingUnit) then
-						data.FBIsReady = false
-						StartFrameCD(cd, data, 16)
-						TimerStart(CreateTimer(), cd, false, function()
-							DestroyTimer(GetExpiredTimer())
-							data.FBIsReady = true
-						end)
-					end
+			DestroyEffect(bullet)
+			DestroyTimer(GetExpiredTimer())
 
-				end
-			end
-			--блок разворота снаряда
-			if IsUnitType(DamagingUnit, UNIT_TYPE_HERO) then
-				local data = HERO[GetPlayerId(GetOwningPlayer(DamagingUnit))]
-				if data.ReleaseLMB and data.Perk14 then
-					local AngleUnitRad = math.rad(GetUnitFacing(DamagingUnit))  -- data.LastTurn
-					--local AngleSource = math.deg(AngleBetweenXY(GetUnitX(caster), GetUnitY(caster), GetUnitX(target), GetUnitY(target)))
-					local Vector3 = wGeometry.Vector3
-					local UnitFacingVector = Vector3:new(math.cos(AngleUnitRad), math.sin(AngleUnitRad), 0)  -- вектор поворота юнита
-					local AngleSourceVector = Vector3:new(GetUnitX(hero) - GetUnitX(DamagingUnit), GetUnitY(hero) - GetUnitY(DamagingUnit), 0)  -- вектор получения от урона (by Doc)
-					AngleSourceVector = AngleSourceVector:normalize()
-					local dot = UnitFacingVector:dotProduct(AngleSourceVector)
-					--print(dot)
-					if 0 < dot then
-						--print("Отклонение снаряда щитом")
-						angleCurrent = GetUnitFacing(DamagingUnit)
-
-						if effectmodel == Special or effectmodel == stoneEffModel then
-							heroCurrent = DamagingUnit
-						end
-
-						BlzSetSpecialEffectPosition(bullet, MoveX(x, speed * 2, angleCurrent), MoveY(y, speed * 2, angleCurrent), z - 2)
-					else
-						DestroyEffect(bullet)
-						DestroyTimer(GetExpiredTimer())
-					end
-				else
-					DestroyEffect(bullet)
-					DestroyTimer(GetExpiredTimer())
-				end
-			else
-				DestroyEffect(bullet)
-				DestroyTimer(GetExpiredTimer())
-			end
 
 			if not DamagingUnit then
 				DestroyEffect(bullet)
@@ -163,7 +117,6 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 	local HookGroup = CreateGroup()
 	local data=HERO[GetPlayerId(GetOwningPlayer(hero))]
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
-		--xpcall(function()
 		local x, y = BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff)
 		if flag == 3 then
 			angle = AngleBetweenXY(x, y, GetUnitXY(hero)) / bj_DEGTORAD
@@ -178,10 +131,15 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		--if f<=GetTerrainZ(nx,ny) then f=GetTerrainZ(nx,ny) end --правка проваливания в землю
 		local z = BlzGetLocalSpecialEffectZ(eff)
 		local zGround = GetTerrainZ(nx, ny)
+		--правка проваливания в землю
 		local zn=f
-		--if f<=GetTerrainZ(nx,ny) then zn=GetTerrainZ(nx,ny) end --правка проваливания в землю
+		if zn<=GetTerrainZ(nx,ny) then zn=GetTerrainZ(nx,ny) end
 
-		BlzSetSpecialEffectPosition(eff, nx, ny, zn)
+		if flag == 3 then
+			BlzSetSpecialEffectPosition(eff, nx, ny, GetTerrainZ(nx,ny)+30)
+		else
+			BlzSetSpecialEffectPosition(eff, nx, ny, zn)
+		end
 		i = i + 1
 
 		if flag == 3 then
@@ -189,7 +147,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			local e = nil
 			--DestroyEffect()
 			local tempEff=nil
-			if GetTerrainZ(nx,ny)<=170 then
+			if GetTerrainZ(nx,ny)<=WaterZ then
 				--print("в воде")
 				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",nx,ny))
 			else
@@ -257,24 +215,26 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 				ForGroup(HookGroup, function()
 					local enum = GetEnumUnit()
 					PauseUnit(enum,false)
+					IssueImmediateOrder(enum,"stop")
 				end)
 				DestroyGroup(HookGroup)
 			else
 				local step=20
 				local fStart= GetUnitZ(hero)+70
 				--print("fStart="..fStart-zn)
-				data.AnchorPitch=MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),fStart,nx, ny, zn,step,data.ChainEff)
+				BlzSetSpecialEffectPitch(eff, -(data.AnchorPitch))
+				data.AnchorPitch=MoveEffectLighting3D(GetUnitX(hero),GetUnitY(hero),fStart,nx, ny,GetTerrainZ(nx,ny)+30,step,data.ChainEff)
 
 			end
 
 		end
 
-		if z <= zGround and i > 5 and flag ~= 3 then
-			--print(z)
-			if flag == 2 then
+		if (z <= zGround and i > 5 and flag ~= 3) or i>23 then
+			--print(i)
+			if flag == 2  then
 				--заменён на обычныя якорь
 				--print("место где приземлился якорь, эффект приземления")
-				if GetTerrainZ(nx,ny)<=170 then
+				if GetTerrainZ(nx,ny)<=WaterZ then
 				--	print("в воде")
 					DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",nx,ny))
 				else
@@ -300,10 +260,10 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 					BlzSetSpecialEffectPosition(chainElement[i2], 6000, 6000, 0)
 					DestroyEffect(chainElement[i2])
 				end
+				DestroyTimer(GetExpiredTimer())
 				--print("урон прошел")
 			end
-			DestroyTimer(GetExpiredTimer())
+
 		end
-	--end,ehandler)
 	end)
 end
