@@ -106,6 +106,7 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 	local speed=40
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		z=z-speed
+		local cannon=nil
 		if z<=zTerr then
 			z=zTerr
 			DestroyTimer(GetExpiredTimer())
@@ -114,28 +115,38 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 			--local canon=AddSpecialEffect("AdmiralAssets\\SiegeCannon",x,y)
 			--BlzSetSpecialEffectYaw(canon,math.rad(angle))
 			--BlzSetSpecialEffectPosition(canon,x,y,z)
-			local cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)
-			BlzPauseUnitEx(cannon,true)
-			SetUnitX(cannon,x)
-			SetUnitY(cannon,y)
-			local sec=0
-			TimerStart(CreateTimer(), 2, true, function()
-				sec=sec+1
-				local xs,ys=MoveXY(x, y,40,angle)
-				local damage=(BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage)*5
-				SetUnitAnimation(cannon,"Attack")
-				--SetUnitAnimation(cannon,"attack")
-				CreateAndForceBullet(cannon,angle,50,"Abilities\\Weapons\\BoatMissile\\BoatMissile",xs,ys,damage)
-				if sec>=5 then
-					DestroyTimer(GetExpiredTimer())
-					TimerStart(CreateTimer(), 1, false, function()
-						DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\DispelMagic\\DispelMagicTarget",GetUnitXY(cannon)))
-						KillUnit(cannon)
-						ShowUnit(cannon,false)
-					end)
-				end
 
-			end)
+			if GetTerrainZ(x,y)<=170 then
+				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",x,y))
+			else
+				cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)
+			end
+
+			if cannon then --пушка существует
+				BlzPauseUnitEx(cannon,true)
+				SetUnitX(cannon,x)
+				SetUnitY(cannon,y)
+				local sec=0
+				TimerStart(CreateTimer(), 2, true, function()
+					sec=sec+1
+					local xs,ys=MoveXY(x, y,40,angle)
+					local damage=(BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage)*5
+					SetUnitAnimation(cannon,"Attack")
+					SetUnitTimeScale(cannon,2)
+					--SetUnitAnimation(cannon,"attack")
+
+					CreateAndForceBullet(cannon,angle,50,"Abilities\\Weapons\\BoatMissile\\BoatMissile",xs,ys,damage)
+					if sec>=5 then
+						DestroyTimer(GetExpiredTimer())
+						TimerStart(CreateTimer(), 1, false, function()
+							DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\DispelMagic\\DispelMagicTarget",GetUnitXY(cannon)))
+							KillUnit(cannon)
+							ShowUnit(cannon,false)
+						end)
+					end
+
+				end)
+			end
 		end
 
 	end)

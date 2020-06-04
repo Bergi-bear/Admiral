@@ -4,7 +4,6 @@ end
 function CreateAllItems()
     local itemID
     BlzCreateItemWithSkin(FourCC("desc"), -1351.1, -2615.1, FourCC("desc"))
-    BlzCreateItemWithSkin(FourCC("rat9"), -1321.6, -2697.9, FourCC("rat9"))
     BlzCreateItemWithSkin(FourCC("ratc"), -1356.8, -2525.7, FourCC("ratc"))
 end
 
@@ -178,6 +177,7 @@ do
 		InitSelectionRegister() -- инициализация выбора
 		InitMouseMoveTrigger() -- Запуск отслеживания положения мыши
 		InitSoundsA()--Создаём звуки
+		InitUnitDeath()-- инициализация смерти
 	end
 
 end
@@ -217,57 +217,77 @@ function InitHEROTable()
 	end
 
 	TimerStart(CreateTimer(), 1, false, function()
-		--CreateGlue()
-
+	--	CreateGlue()
 	end)
 end
 
 
 function CreateGlue()
 
-	local frameMove=BlzGetFrameByName("CommandButton_0", 0)
+	local frameMove=BlzGetFrameByName("ConsoleUI", 0) -- CommandButton_0
+	local chk=BlzFrameGetChildrenCount(frameMove)
+	print("число детей "..chk)
+	local zero=BlzFrameGetChild(frameMove,0)
+	local first=BlzFrameGetChild(frameMove,1)
+	local chkzero=BlzFrameGetChildrenCount(zero)
+	local chkfirst=BlzFrameGetChildrenCount(first)
+	print("число детей "..chkzero)
+	print("число детей "..chkfirst)
+	print("число внуков "..BlzFrameGetChildrenCount(BlzFrameGetChild(zero,0)))
+	if zero then
+		print(BlzFrameGetName ( zero)..0)
+	else
+		print("notzero")
+	end
+	if first then
+		print(BlzFrameGetName ( first)..1)
+	else
+		print("notfirst")
+	end
+
+
 	local trigger0 = CreateTrigger()
 	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_DOUBLECLICK)
 	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_DOWN)
-	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_CONTROL_CLICK)-- работает только это и то весьма странно
+	BlzTriggerRegisterFrameEvent(trigger0, zero, FRAMEEVENT_CONTROL_CLICK)-- работает только это и то весьма странно
 	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_ENTER)
 	BlzTriggerRegisterFrameEvent(trigger0, frameMove, FRAMEEVENT_MOUSE_WHEEL)
 	--print("все события добавлены")
 	TriggerAddAction(trigger0, function()
-		print("Любое событие по кнопке")
+	print("Любое событие по кнопке")
 	end)
 
-
-
-	local  buttonFrame = BlzCreateFrameByType("GLUEBUTTON", "FaceButton",  BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0), "", 0)
 	--local  buttonFrame = BlzCreateFrameByType("GLUEBUTTON", "FaceButton",  BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0), "", 0)
-	local  buttonIconFrame = BlzCreateFrameByType("BACKDROP", "FaceButtonIcon", buttonFrame, "", 0)
-	BlzFrameSetAllPoints(buttonIconFrame, buttonFrame)
-	BlzFrameSetTexture(buttonIconFrame, "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn", 0, true)
-	local trigger = CreateTrigger()
-	BlzTriggerRegisterFrameEvent ( trigger , buttonFrame, FRAMEEVENT_CONTROL_CLICK )
-	BlzTriggerRegisterFrameEvent(trigger, buttonFrame, FRAMEEVENT_MOUSE_ENTER)
+	--[[
+		local  buttonFrame = BlzCreateFrameByType("GLUEBUTTON", "FaceButton",  BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0), "", 0)
+		--local  buttonFrame = BlzCreateFrameByType("GLUEBUTTON", "FaceButton",  BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0), "", 0)
+		local  buttonIconFrame = BlzCreateFrameByType("BACKDROP", "FaceButtonIcon", buttonFrame, "", 0)
+		BlzFrameSetAllPoints(buttonIconFrame, buttonFrame)
+		BlzFrameSetTexture(buttonIconFrame, "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn", 0, true)
+		local trigger = CreateTrigger()
+		BlzTriggerRegisterFrameEvent ( trigger , buttonFrame, FRAMEEVENT_CONTROL_CLICK )
+		BlzTriggerRegisterFrameEvent(trigger, buttonFrame, FRAMEEVENT_MOUSE_ENTER)
 
-	TriggerAddAction ( trigger , function ( )
-		print ( "click" , BlzFrameGetName ( BlzGetTriggerFrame ( ) ) )
-	end )
+		TriggerAddAction ( trigger , function ( )
+			print ( "click" , BlzFrameGetName ( BlzGetTriggerFrame ( ) ) )
+		end )
 
-	BlzFrameClearAllPoints(buttonFrame) --хз зачем
-	BlzFrameSetAbsPoint(buttonFrame,FRAMEPOINT_CENTER,0.4,0.3)
+		BlzFrameClearAllPoints(buttonFrame) --хз зачем
+		BlzFrameSetAbsPoint(buttonFrame,FRAMEPOINT_CENTER,0.4,0.3)
 
-	BlzFrameClearAllPoints(BlzGetFrameByName("CommandButtonBackground_0", 0)) --кнопку
-	BlzFrameSetAbsPoint(BlzGetFrameByName("CommandButtonBackground_0", 0),FRAMEPOINT_CENTER,0.4,0.3)
+		BlzFrameClearAllPoints(BlzGetFrameByName("CommandButtonBackground_0", 0)) --кнопку
+		BlzFrameSetAbsPoint(BlzGetFrameByName("CommandButtonBackground_0", 0),FRAMEPOINT_CENTER,0.4,0.3)
 
-	BlzFrameSetSize(buttonFrame,0.04,0.04)
-	print(BlzGetFrameByName("CommandButtonBackground", 0))
-	print(BlzGetFrameByName("CommandButtonBackground_0", 0))
-	print(BlzGetFrameByName("CommandButton_0", 0))
-	print(BlzGetFrameByName("123", 0))
-	--BlzFrameSetParent(buttonFrame,BlzGetFrameByName("CommandButton_0", 0))
+		BlzFrameSetSize(buttonFrame,0.04,0.04)
+		print(BlzGetFrameByName("CommandButtonBackground", 0))
+		print(BlzGetFrameByName("CommandButtonBackground_0", 0))
+		print(BlzGetFrameByName("CommandButton_0", 0))
+		print(BlzGetFrameByName("123", 0))
+		--BlzFrameSetParent(buttonFrame,BlzGetFrameByName("CommandButton_0", 0))
 
 
-	print ( "Родитель" , BlzFrameGetName ( BlzFrameGetParent(BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)) ) )
-end
+		print ( "Родитель" , BlzFrameGetName ( BlzFrameGetParent(BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)) ) )]]
+	end
 
 --BlzCreateFrame
 function InitSpellTrigger()
@@ -290,6 +310,10 @@ function InitSpellTrigger()
 			local bonusAttack=20
 			local cd=BlzGetUnitAbilityCooldown(caster,spellId,GetUnitAbilityLevel(caster,spellId)-1)
 			data.bonusCD=data.bonusCD+bonusAttack
+
+			BlzSetUnitWeaponIntegerField(caster,UNIT_WEAPON_IF_ATTACK_ATTACK_TYPE,0,5)
+
+			FrameBigSize(BlzGetAbilityIcon(SpellIDS),0.2,5,data.bonusCD)
 			--print("Атака увеличена")
 			BlzSetUnitBaseDamage(caster,BlzGetUnitBaseDamage(caster,0)+bonusAttack,0)
 			TimerStart(CreateTimer(), cd, false, function()
@@ -303,6 +327,8 @@ function InitSpellTrigger()
 			TimerStart(CreateTimer(), 0.1, false, function()
 				if UnitAlive(caster) then
 					SetUnitAnimationByIndex(caster,17)
+					CreateCallingBar(caster,0.4)
+					--HealthBarAdd(caster)
 					TimerStart(CreateTimer(), 0.4, false, function()
 						local damage=(BlzGetUnitBaseDamage(caster,0)+data.HeroGreenDamage)*5
 						--print("момент вылета пули")
@@ -339,6 +365,7 @@ function InitSpellTrigger()
 				if UnitAlive(caster) then
 					SetUnitAnimationByIndex(caster,4)
 					local eff=nil
+					CreateCallingBar(caster,0.2)
 					TimerStart(CreateTimer(), 0.2, false, function()
 						eff=AddSpecialEffectTarget("AdmiralAssets\\animeslashfinal",caster,"weapon")
 						--print("момент урона")
@@ -651,10 +678,21 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			--Движение якоря на обратном ходу
 			local e = nil
 			--DestroyEffect()
-			local tempEff=AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0",x,y)
-			TimerStart(CreateTimer(), 5, false, function()
-				DestroyEffect(tempEff)
-			end)
+			local tempEff=nil
+			if GetTerrainZ(nx,ny)<=170 then
+				--print("в воде")
+				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",nx,ny))
+			else
+				--print("на суше")
+				tempEff=AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0",x,y)
+				TimerStart(CreateTimer(), 5, false, function()
+					DestroyEffect(tempEff)
+				end)
+				--DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",nx,ny))
+			end
+
+
+
 			--эффект поврежденное земли
 			local xs,ys=MoveXY(BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff), -speed, angle)
 			GroupEnumUnitsInRange(perebor, x, y, 75, nil)
@@ -726,10 +764,21 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			if flag == 2 then
 				--заменён на обычныя якорь
 				--print("место где приземлился якорь, эффект приземления")
+				if GetTerrainZ(nx,ny)<=170 then
+				--	print("в воде")
+					DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",nx,ny))
+				else
+				--	print("на суше")
+					DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",nx,ny))
+				end
+				--print(GetTerrainZ(nx,ny).."-GetTerrainZ")
+				--local tempunnit=CreateUnit(GetOwningPlayer(hero),CannonID,nx,ny,angle)
+				--print(GetUnitZ(tempunnit).."z temp")
+
 				local damage = GetHeroStr(hero, true) * 10
 				DestroyTimer(GetExpiredTimer())
 				StunArea(hero, nx, ny, 150, 2)
-				DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",nx,ny))
+
 				JumpEffect(eff, 30, 0, angle - 180, distance, hero, 3)
 				--CreateTorrent(nx, ny)
 				--DestroyEffect(eff)
@@ -780,20 +829,7 @@ function OnPostDamage()
 		local dot = UnitFacingVector:dotProduct(AngleSourceVector)
 		local dist=damage
 
-		if GetUnitAbilityLevel(target,FourCC('BPSE'))>0 then  -- голем валун
-			UnitRemoveAbility(target,FourCC('BPSE'))
 
-			if data.ReleaseLMB  and not data.Perk14A then
-				BlzSetEventDamage(0)
-				data.StoneCount=data.StoneCount+1
-				FrameBigSize(data.SelfFrame[14],0.2,14)
-				if data.StoneCount==5 then
-					data.Perk14A=true
-					PerkUnlocker(data,14)
-				end
-			end
-			--print("урон от голема")
-		end
 		if GetUnitAbilityLevel(caster,FourCC('A005'))>0 then -- обледенение
 			DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Undead\\FrostNova\\FrostNovaTarget",GetUnitXY(target)))
 		end
@@ -989,75 +1025,9 @@ function UnitDamageArea(u,damage,x,y,range,ZDamageSource,EffectModel)
 				BlzSetSpecialEffectZ(DE,ZDamageSource)
 				DestroyEffect(DE)
 			end
-			if IsUnitType(u,UNIT_TYPE_HERO) then
-				local data=HERO[GetPlayerId(GetOwningPlayer(u))]
-				--if data.
-
-				if data.HaveAFire then --урон от фаербола
-					damage=damage*5
-					data.HaveAFire=false
-					if not data.Perk16 then
-						UnitRemoveAbility(u,FourCC('A006'))
-					end
-					FlyTextTagCriticalStrike(e,I2S(R2I(damage)),GetOwningPlayer(u))
-				end
-
-			end
 			UnitDamageTarget( u, e, damage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS )
 			--print("урон прошёл для "..GetUnitName(e))
 			isdamage=true
-			hero=e
-		end
-		--ремонт
-		if  true and UnitAlive(e) and IsUnitAlly(e,GetOwningPlayer(u)) and e~=u and IsUnitType(u,UNIT_TYPE_HERO)  then -- момент ремонта
-
-			local data=HERO[GetPlayerId(GetOwningPlayer(u))]
-			if GetUnitTypeId(e)==FourCC('n007') and damage>6 then-- попытка ударить свинку лечилку
-				if DistanceBetweenXY(GetUnitX(u),GetUnitY(u),GetUnitXY(e))<=70 then
-					local x,y=GetUnitXY(u)
-					local mes=""
-					if BlzGetLocale()=="ruRU" then
-						mes="Герой полностью здоров"
-					else
-						mes="HP is full"
-					end
-					FlyTextTagHealXY(x,y,mes,GetOwningPlayer(u))
-				end
-			end
-			if DistanceBetweenXY(GetUnitX(u),GetUnitY(u),GetUnitXY(e))<=200 and (IsUnitType(e,UNIT_TYPE_STRUCTURE) or IsUnitType(e,UNIT_TYPE_MECHANICAL)) then
-				if GetUnitTypeId(e)==FourCC('n003') then-- костер
-					if not data.Perk9 then
-					data.FireCount=data.FireCount+1
-					FrameBigSize(data.SelfFrame[9],0.2,9)
-						if data.FireCount>=5 then
-							data.Perk9=true
-							--print("разблокировка перка огонька")
-							PerkUnlocker(data,9)
-						end
-					end
-					if data.Perk9 and GetUnitAbilityLevel(u,FourCC('A006'))==0 then
-						UnitAddAbility(u,FourCC('A006'))
-						--print("добавлен огонёк")
-						data.HaveAFire=true
-
-					end
-				end
-				--print("лечим")
-				if not data.OnCharge and data.ShieldForce then-- нельзя чинить при рывке щита и при толчке щитом
-					local heal=HealUnit(e,BlzGetUnitBaseDamage(u,0))
-					data.Repairs=data.Repairs+heal
-					if heal>0 and not data.Perk6  then
-						FrameBigSize(data.SelfFrame[6],0.2,6)
-					end
-					data.RevoltSec=0
-					if not data.Perk6 then
-						if data.Repairs>=1000 then
-							data.Perk6=true
-							PerkUnlocker(data,6)
-						end
-					end
-				end
-			end
 			hero=e
 		end
 		GroupRemoveUnit(perebor,e)
@@ -1068,17 +1038,6 @@ function UnitDamageArea(u,damage,x,y,range,ZDamageSource,EffectModel)
 	return isdamage, hero
 end
 
-function IsUnitZCollision(hero,ZDamageSource)
-	local zcollision=false
-	local z=GetUnitZ(hero)
-
-	if  ZDamageSource+60>=z and ZDamageSource-60<=z then
-		zcollision=true
-	else
-		--print("Высота снаряда="..ZDamageSource.."Высота юнита="..z)
-	end
-	return zcollision
-end
 
 
 
@@ -1168,13 +1127,6 @@ function PointContentDestructable (x,y,range,iskill,damage,hero)
 		end
 	end)
 	return content
-end
-
-function CreateFreeWood(x,y)
-	local  new=CreateUnit(Player(5), FourCC('e002'),x,y , 0)
-	UnitAddAbility(new,FourCC('A000'))
-	IssueImmediateOrder(new,"WindWalk")
-	SetUnitInvulnerable(new,true)
 end
 
 ---
@@ -1439,59 +1391,6 @@ function AllTarget(u,target)
 		end
 	end
 	return IsCast
-end
----
---- Generated by EmmyLua(https://github.com/EmmyLua)
---- Created by Bergi.
---- DateTime: 03.04.2020 13:40
-function HealUnit(hero,amount,flag)
-	--1 или nil Сколько вылчено
-	--2 Сверхлечение
-	local p=GetOwningPlayer(hero)
-	local MaxHP=BlzGetUnitMaxHP(hero)
-	local CurrentHP=GetUnitState(hero,UNIT_STATE_LIFE)
-	local LoosingHP=MaxHP-CurrentHP
-	local OverHeal=amount-LoosingHP
-	local TotalHeal=amount
-	if LoosingHP<=amount then TotalHeal=LoosingHP	end
-	--Блок перка обжоры
-	if IsUnitType(hero,UNIT_TYPE_HERO) then
-		local data=HERO[GetPlayerId(GetOwningPlayer(hero))]
-		data.Heals=data.Heals+TotalHeal
-		if TotalHeal>1 and UnitAlive(hero) then
-			FrameBigSize(data.SelfFrame[7],0.2,7)
-		end
-		if not data.Perk7 then
-			if data.Heals>=1000 then
-				data.Perk7=true
-				--UnitAddAbility(hero,FourCC('A004'))-- переделать на триггерное лечение может быть когда нибудь.. не столь важное
-				AddAutoHeal(hero,7)
-				PerkUnlocker(data,7)
-			end
-		end
-		if not data.Perk7A and data.Heals>=5000 then
-			--print("7A")
-			data.Perk7A=true
-		end
-	end
-	--Блок перка обжоры
-	SetUnitState(hero,UNIT_STATE_LIFE,CurrentHP+TotalHeal)
-	if TotalHeal>1 then
-		FlyTextTagHealXY(GetUnitX(hero),GetUnitY(hero),"+"..R2I(TotalHeal),p)
-	end
-	if not flag or flag==1 then
-		return TotalHeal
-	end
-	if  flag==2 then
-		return OverHeal
-	end
-end
-
-function GetLosingHP(hero)
-	local MaxHP=BlzGetUnitMaxHP(hero)
-	local CurrentHP=GetUnitState(hero,UNIT_STATE_LIFE)
-	local LoosingHP=MaxHP-CurrentHP
-	return LoosingHP
 end
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
@@ -3047,6 +2946,179 @@ wGeometry = wGeometryInit()
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
 --- Created by Bergi.
+--- DateTime: 23.01.2020 20:11
+function InitUnitDeath()
+	local gg_trg_DEADGUI = CreateTrigger()
+	TriggerRegisterAnyUnitEventBJ(gg_trg_DEADGUI, EVENT_PLAYER_UNIT_DEATH)
+	TriggerAddAction(gg_trg_DEADGUI, function()
+
+		local DeadUnit=GetTriggerUnit()--умерший
+		local Killer=GetKillingUnit()--убийца
+		--print("EventDead "..GetUnitName(DeadUnit).." "..GetUnitName(Killer))
+
+
+		if IsUnitType(DeadUnit,UNIT_TYPE_HERO) then --герой умер
+			CreateCallingBar(DeadUnit,10,"Воскрешение")
+			local PD=GetOwningPlayer(DeadUnit)
+			TimerStart(CreateTimer(), 10, false, function()
+				ReviveHero(DeadUnit,GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD),true)
+				SelectUnitForPlayerSingle(DeadUnit,PD)
+				SetCameraPosition(GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD))
+			end)
+		end
+
+
+	end)
+end
+---
+--- Generated by EmmyLua(https://github.com/EmmyLua)
+--- Created by Bergi.
+--- DateTime: 03.06.2020 19:27
+---
+
+
+function FrameBigSize( FrameTexture,secShow,i2,bonus)
+	local size = 0
+	local sec = 0
+	local i = 1
+	local turn = true
+	local next = 0.039
+	local  fh = BlzCreateFrameByType("BACKDROP", "FaceButtonIcon", BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), "", 0)
+	BlzFrameSetSize(fh,next,next)
+	BlzFrameSetTexture(fh, FrameTexture, 0, true)
+	--local firsBonus=SubString(bonus,0,1)
+	--print(firsBonus)
+
+	--[[local  fh1 = BlzCreateFrameByType("BACKDROP", "FaceButtonIcon", BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), "", 0)
+	BlzFrameSetSize(fh1,next/2,next/2)
+	BlzFrameSetTexture(fh1, "AdmiralAssets\\DDSSymbols\\"..firsBonus, 0, true)
+	local  fh2 = BlzCreateFrameByType("BACKDROP", "FaceButtonIcon", BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), "", 0)
+	BlzFrameSetSize(fh2,next/2,next/2)
+	BlzFrameSetTexture(fh2, "AdmiralAssets\\DDSSymbols\\0", 0, true)]]
+
+	local CBPoz=BlzGetFrameByName("CommandButton_"..i2, 0) -- CommandButton_0
+	BlzFrameSetPoint(fh,FRAMEPOINT_CENTER,CBPoz,FRAMEPOINT_CENTER,0,0)
+	--BlzFrameSetPoint(fh1,FRAMEPOINT_CENTER,CBPoz,FRAMEPOINT_CENTER,-0.005,0)
+	--BlzFrameSetPoint(fh2,FRAMEPOINT_CENTER,CBPoz,FRAMEPOINT_CENTER,0.005,0)
+	--BlzFrameSetAbsPoint(fh,FRAMEPOINT_CENTER,0.4,0.1)
+	local newText = BlzCreateFrameByType("TEXT", "ButtonChargesText", BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), "", 0)
+	BlzFrameSetText(newText,bonus)
+	BlzFrameSetPoint(newText,FRAMEPOINT_CENTER,CBPoz,FRAMEPOINT_CENTER,0,0)
+
+
+
+	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+		sec = sec + TIMER_PERIOD
+		size = size + (i * 0.005)
+
+		--print(sec)
+		if sec >= secShow and turn then
+			--print("off")
+			turn = false
+			i = i * (-1)
+		end
+		if size <= 0 then
+			DestroyTimer(GetExpiredTimer())
+			BlzDestroyFrame(fh)
+			--BlzDestroyFrame(fh1)
+			--BlzDestroyFrame(fh2)
+			BlzDestroyFrame(newText)
+			size = 0
+		end
+
+		--BlzFrameSetAbsPoint(fh, FRAMEPOINT_CENTER, 0.1 + next * (index - 1), 0.02 + size / 4)
+	--	print(size.." "..i)
+		BlzFrameSetSize(fh,next+size,next+size)
+		BlzFrameSetScale(newText,(next+size)*50)
+		--BlzFrameSetSize(fh1,next+size/2,next+size/2)
+		--BlzFrameSetSize(fh2,next+size/2,next+size/2)
+		--BlzFrameSetSize(newText,next+size,next+size)
+	end)
+end
+---
+--- Generated by EmmyLua(https://github.com/EmmyLua)
+--- Created by Bergi.
+--- DateTime: 03.06.2020 17:02
+---
+function CreateCallingBar(u,cd,text)
+	if BlzLoadTOCFile("AdmiralAssets\\Main.toc") then
+	else
+		print("ошибка загрузки fdf")
+	end
+	if not text then text="Подготовка" end
+	local amount=5/cd
+	local full=0
+
+
+
+	local bar = BlzCreateSimpleFrame("MyFakeBar", BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), 0)
+	--BlzFrameSetVisible(bar,false)
+	BlzFrameSetAbsPoint(bar, FRAMEPOINT_CENTER, 0.4, 0.15)
+	BlzFrameSetValue(bar, 0)
+	BlzFrameSetTextSizeLimit(bar,1)
+	--Моделька пеона же
+
+
+	if GetLocalPlayer()==GetOwningPlayer(u)  then -- хп бары, они точно в норме
+		BlzFrameSetVisible(bar,true)
+		--BlzFrameSetVisible(heroico,true)
+	end
+	BlzFrameSetTexture(bar, "Replaceabletextures\\Teamcolor\\Teamcolor0"..(GetConvertedPlayerId(GetOwningPlayer(u))-1)..".blp", 0, true)
+	BlzFrameSetTexture(BlzGetFrameByName("MyFakeBarBorder",0),"AdmiralAssets\\MyBarBorder.blp", 0, true)
+	BlzFrameSetText(BlzGetFrameByName("MyFakeBarTitle",0), text)--‡ Сердце ™ щит
+
+	local lefttext = BlzGetFrameByName("MyFakeBarLeftText",0)
+	local righttext = BlzGetFrameByName("MyFakeBarRightText",0)
+	BlzFrameSetText(lefttext, "")
+	BlzFrameSetText(righttext, "")
+
+
+
+	TimerStart(CreateTimer(), 0.05, true, function()
+		full=full+amount
+		BlzFrameSetValue(bar, full)
+		--print(full)
+		if full>=100 then
+			--print("destroy")
+			DestroyTimer(GetExpiredTimer())
+			BlzDestroyFrame(bar)
+			full=0
+		end
+	end)
+
+end
+
+function HealthBarAdd(u) --Код Сиренчика
+	BlzLoadTOCFile("Main.toc")
+	local bar = BlzCreateSimpleFrame("MyFakeBar", BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), 0)
+	BlzFrameSetVisible(bar,false)
+
+	--Моделька пеона же
+
+
+	if GetLocalPlayer()==GetOwningPlayer(u) and GetLocalON then -- хп бары, они точно в норме
+		BlzFrameSetVisible(bar,true)
+		--BlzFrameSetVisible(heroico,true)
+	end
+	BlzFrameSetTexture(bar, "Replaceabletextures\\Teamcolor\\Teamcolor0"..(GetConvertedPlayerId(GetOwningPlayer(u))-1)..".blp", 0, true)
+	BlzFrameSetTexture(BlzGetFrameByName("MyFakeBarBorder",0),"MyBarBorder.blp", 0, true)
+	BlzFrameSetText(BlzGetFrameByName("MyFakeBarTitle",0), GetHeroProperName(u).." ‡")--‡ Сердце ™ щит
+	local lefttext = BlzGetFrameByName("MyFakeBarLeftText",0)
+	local righttext = BlzGetFrameByName("MyFakeBarRightText",0)
+	local function on_timer()
+
+		BlzFrameSetValue(bar, GetUnitLifePercent(u))
+		BlzFrameSetText(lefttext, R2I(GetWidgetLife(u)))
+		BlzFrameSetText(righttext, R2I(BlzGetUnitMaxHP(u)))
+	end
+	TimerStart(CreateTimer(),0.5,true, on_timer)
+	BlzFrameSetAbsPoint(bar, FRAMEPOINT_LEFT, 0.08, 0.564)
+end
+
+
+---
+--- Generated by EmmyLua(https://github.com/EmmyLua)
+--- Created by Bergi.
 --- DateTime: 20.05.2020 0:33
 ---
 
@@ -3213,18 +3285,34 @@ function InitSelectionRegister()
 		local hero = GetTriggerUnit()
 		if IsUnitType(hero, UNIT_TYPE_HERO) and GetOwningPlayer(hero) == GetTriggerPlayer() and GetUnitTypeId(hero)==HeroID then
 			local data = HERO[GetPlayerId(GetTriggerPlayer())]
-			if not data.UnitHero then
-				data.UnitHero = hero
-				data.MarkIsActivated = false
-				--
-				TimerStart(CreateTimer(), 0.1, true, function()
-					AllAbilityRefresh(hero)
-					if IsUnitSelected(hero,GetOwningPlayer(hero)) then
-						data.HeroGreenDamage=GetUnitGreenAttackBonus(hero)
-					end
-				end)
+
+
+			--[[local k=0
+			for i=0, 10 do
+				local abi=BlzGetUnitAbilityByIndex(hero,i)
+				local info=BlzGetAbilityRealLevelField(abi,ABILITY_RLF_COOLDOWN,0)
+				k=k+info
+				if info then
+					print("info"..i.."="..info)
+				end
 			end
+			print("Общее время кд всех способностей героя="..k)]]
+
+
+
+
+			if not data.UnitHero then
+		data.UnitHero = hero
+		data.MarkIsActivated = false
+		--
+		TimerStart(CreateTimer(), 0.1, true, function()
+		AllAbilityRefresh(hero)
+			if IsUnitSelected(hero,GetOwningPlayer(hero)) then
+		data.HeroGreenDamage=GetUnitGreenAttackBonus(hero)
 		end
+			end)
+			end
+			end
 	end)
 end
 ---
@@ -3335,6 +3423,7 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 	local speed=40
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		z=z-speed
+		local cannon=nil
 		if z<=zTerr then
 			z=zTerr
 			DestroyTimer(GetExpiredTimer())
@@ -3343,28 +3432,38 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 			--local canon=AddSpecialEffect("AdmiralAssets\\SiegeCannon",x,y)
 			--BlzSetSpecialEffectYaw(canon,math.rad(angle))
 			--BlzSetSpecialEffectPosition(canon,x,y,z)
-			local cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)
-			BlzPauseUnitEx(cannon,true)
-			SetUnitX(cannon,x)
-			SetUnitY(cannon,y)
-			local sec=0
-			TimerStart(CreateTimer(), 2, true, function()
-				sec=sec+1
-				local xs,ys=MoveXY(x, y,40,angle)
-				local damage=(BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage)*5
-				SetUnitAnimation(cannon,"Attack")
-				--SetUnitAnimation(cannon,"attack")
-				CreateAndForceBullet(cannon,angle,50,"Abilities\\Weapons\\BoatMissile\\BoatMissile",xs,ys,damage)
-				if sec>=5 then
-					DestroyTimer(GetExpiredTimer())
-					TimerStart(CreateTimer(), 1, false, function()
-						DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\DispelMagic\\DispelMagicTarget",GetUnitXY(cannon)))
-						KillUnit(cannon)
-						ShowUnit(cannon,false)
-					end)
-				end
 
-			end)
+			if GetTerrainZ(x,y)<=170 then
+				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",x,y))
+			else
+				cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)
+			end
+
+			if cannon then --пушка существует
+				BlzPauseUnitEx(cannon,true)
+				SetUnitX(cannon,x)
+				SetUnitY(cannon,y)
+				local sec=0
+				TimerStart(CreateTimer(), 2, true, function()
+					sec=sec+1
+					local xs,ys=MoveXY(x, y,40,angle)
+					local damage=(BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage)*5
+					SetUnitAnimation(cannon,"Attack")
+					SetUnitTimeScale(cannon,2)
+					--SetUnitAnimation(cannon,"attack")
+
+					CreateAndForceBullet(cannon,angle,50,"Abilities\\Weapons\\BoatMissile\\BoatMissile",xs,ys,damage)
+					if sec>=5 then
+						DestroyTimer(GetExpiredTimer())
+						TimerStart(CreateTimer(), 1, false, function()
+							DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\DispelMagic\\DispelMagicTarget",GetUnitXY(cannon)))
+							KillUnit(cannon)
+							ShowUnit(cannon,false)
+						end)
+					end
+
+				end)
+			end
 		end
 
 	end)
@@ -3900,8 +3999,8 @@ function config()
     SetPlayers(2)
     SetTeams(2)
     SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)
-    DefineStartLocation(0, -1472.0, -2624.0)
-    DefineStartLocation(1, 704.0, 512.0)
+    DefineStartLocation(0, -1536.0, -2560.0)
+    DefineStartLocation(1, -1280.0, -2880.0)
     InitCustomPlayerSlots()
     SetPlayerSlotAvailable(Player(0), MAP_CONTROL_USER)
     SetPlayerSlotAvailable(Player(1), MAP_CONTROL_USER)

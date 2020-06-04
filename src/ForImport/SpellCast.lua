@@ -18,6 +18,10 @@ function InitSpellTrigger()
 			local bonusAttack=20
 			local cd=BlzGetUnitAbilityCooldown(caster,spellId,GetUnitAbilityLevel(caster,spellId)-1)
 			data.bonusCD=data.bonusCD+bonusAttack
+
+			BlzSetUnitWeaponIntegerField(caster,UNIT_WEAPON_IF_ATTACK_ATTACK_TYPE,0,5)
+
+			FrameBigSize(BlzGetAbilityIcon(SpellIDS),0.2,5,data.bonusCD)
 			--print("Атака увеличена")
 			BlzSetUnitBaseDamage(caster,BlzGetUnitBaseDamage(caster,0)+bonusAttack,0)
 			TimerStart(CreateTimer(), cd, false, function()
@@ -31,6 +35,8 @@ function InitSpellTrigger()
 			TimerStart(CreateTimer(), 0.1, false, function()
 				if UnitAlive(caster) then
 					SetUnitAnimationByIndex(caster,17)
+					CreateCallingBar(caster,0.4)
+					--HealthBarAdd(caster)
 					TimerStart(CreateTimer(), 0.4, false, function()
 						local damage=(BlzGetUnitBaseDamage(caster,0)+data.HeroGreenDamage)*5
 						--print("момент вылета пули")
@@ -67,6 +73,7 @@ function InitSpellTrigger()
 				if UnitAlive(caster) then
 					SetUnitAnimationByIndex(caster,4)
 					local eff=nil
+					CreateCallingBar(caster,0.2)
 					TimerStart(CreateTimer(), 0.2, false, function()
 						eff=AddSpecialEffectTarget("AdmiralAssets\\animeslashfinal",caster,"weapon")
 						--print("момент урона")

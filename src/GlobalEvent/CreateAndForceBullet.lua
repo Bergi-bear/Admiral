@@ -188,10 +188,21 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			--Движение якоря на обратном ходу
 			local e = nil
 			--DestroyEffect()
-			local tempEff=AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0",x,y)
-			TimerStart(CreateTimer(), 5, false, function()
-				DestroyEffect(tempEff)
-			end)
+			local tempEff=nil
+			if GetTerrainZ(nx,ny)<=170 then
+				--print("в воде")
+				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",nx,ny))
+			else
+				--print("на суше")
+				tempEff=AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0",x,y)
+				TimerStart(CreateTimer(), 5, false, function()
+					DestroyEffect(tempEff)
+				end)
+				--DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",nx,ny))
+			end
+
+
+
 			--эффект поврежденное земли
 			local xs,ys=MoveXY(BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff), -speed, angle)
 			GroupEnumUnitsInRange(perebor, x, y, 75, nil)
@@ -263,10 +274,21 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			if flag == 2 then
 				--заменён на обычныя якорь
 				--print("место где приземлился якорь, эффект приземления")
+				if GetTerrainZ(nx,ny)<=170 then
+				--	print("в воде")
+					DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",nx,ny))
+				else
+				--	print("на суше")
+					DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",nx,ny))
+				end
+				--print(GetTerrainZ(nx,ny).."-GetTerrainZ")
+				--local tempunnit=CreateUnit(GetOwningPlayer(hero),CannonID,nx,ny,angle)
+				--print(GetUnitZ(tempunnit).."z temp")
+
 				local damage = GetHeroStr(hero, true) * 10
 				DestroyTimer(GetExpiredTimer())
 				StunArea(hero, nx, ny, 150, 2)
-				DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",nx,ny))
+
 				JumpEffect(eff, 30, 0, angle - 180, distance, hero, 3)
 				--CreateTorrent(nx, ny)
 				--DestroyEffect(eff)

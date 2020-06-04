@@ -29,20 +29,7 @@ function OnPostDamage()
 		local dot = UnitFacingVector:dotProduct(AngleSourceVector)
 		local dist=damage
 
-		if GetUnitAbilityLevel(target,FourCC('BPSE'))>0 then  -- голем валун
-			UnitRemoveAbility(target,FourCC('BPSE'))
 
-			if data.ReleaseLMB  and not data.Perk14A then
-				BlzSetEventDamage(0)
-				data.StoneCount=data.StoneCount+1
-				FrameBigSize(data.SelfFrame[14],0.2,14)
-				if data.StoneCount==5 then
-					data.Perk14A=true
-					PerkUnlocker(data,14)
-				end
-			end
-			--print("урон от голема")
-		end
 		if GetUnitAbilityLevel(caster,FourCC('A005'))>0 then -- обледенение
 			DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Undead\\FrostNova\\FrostNovaTarget",GetUnitXY(target)))
 		end
@@ -238,75 +225,9 @@ function UnitDamageArea(u,damage,x,y,range,ZDamageSource,EffectModel)
 				BlzSetSpecialEffectZ(DE,ZDamageSource)
 				DestroyEffect(DE)
 			end
-			if IsUnitType(u,UNIT_TYPE_HERO) then
-				local data=HERO[GetPlayerId(GetOwningPlayer(u))]
-				--if data.
-
-				if data.HaveAFire then --урон от фаербола
-					damage=damage*5
-					data.HaveAFire=false
-					if not data.Perk16 then
-						UnitRemoveAbility(u,FourCC('A006'))
-					end
-					FlyTextTagCriticalStrike(e,I2S(R2I(damage)),GetOwningPlayer(u))
-				end
-
-			end
 			UnitDamageTarget( u, e, damage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS )
 			--print("урон прошёл для "..GetUnitName(e))
 			isdamage=true
-			hero=e
-		end
-		--ремонт
-		if  true and UnitAlive(e) and IsUnitAlly(e,GetOwningPlayer(u)) and e~=u and IsUnitType(u,UNIT_TYPE_HERO)  then -- момент ремонта
-
-			local data=HERO[GetPlayerId(GetOwningPlayer(u))]
-			if GetUnitTypeId(e)==FourCC('n007') and damage>6 then-- попытка ударить свинку лечилку
-				if DistanceBetweenXY(GetUnitX(u),GetUnitY(u),GetUnitXY(e))<=70 then
-					local x,y=GetUnitXY(u)
-					local mes=""
-					if BlzGetLocale()=="ruRU" then
-						mes="Герой полностью здоров"
-					else
-						mes="HP is full"
-					end
-					FlyTextTagHealXY(x,y,mes,GetOwningPlayer(u))
-				end
-			end
-			if DistanceBetweenXY(GetUnitX(u),GetUnitY(u),GetUnitXY(e))<=200 and (IsUnitType(e,UNIT_TYPE_STRUCTURE) or IsUnitType(e,UNIT_TYPE_MECHANICAL)) then
-				if GetUnitTypeId(e)==FourCC('n003') then-- костер
-					if not data.Perk9 then
-					data.FireCount=data.FireCount+1
-					FrameBigSize(data.SelfFrame[9],0.2,9)
-						if data.FireCount>=5 then
-							data.Perk9=true
-							--print("разблокировка перка огонька")
-							PerkUnlocker(data,9)
-						end
-					end
-					if data.Perk9 and GetUnitAbilityLevel(u,FourCC('A006'))==0 then
-						UnitAddAbility(u,FourCC('A006'))
-						--print("добавлен огонёк")
-						data.HaveAFire=true
-
-					end
-				end
-				--print("лечим")
-				if not data.OnCharge and data.ShieldForce then-- нельзя чинить при рывке щита и при толчке щитом
-					local heal=HealUnit(e,BlzGetUnitBaseDamage(u,0))
-					data.Repairs=data.Repairs+heal
-					if heal>0 and not data.Perk6  then
-						FrameBigSize(data.SelfFrame[6],0.2,6)
-					end
-					data.RevoltSec=0
-					if not data.Perk6 then
-						if data.Repairs>=1000 then
-							data.Perk6=true
-							PerkUnlocker(data,6)
-						end
-					end
-				end
-			end
 			hero=e
 		end
 		GroupRemoveUnit(perebor,e)
@@ -317,17 +238,6 @@ function UnitDamageArea(u,damage,x,y,range,ZDamageSource,EffectModel)
 	return isdamage, hero
 end
 
-function IsUnitZCollision(hero,ZDamageSource)
-	local zcollision=false
-	local z=GetUnitZ(hero)
-
-	if  ZDamageSource+60>=z and ZDamageSource-60<=z then
-		zcollision=true
-	else
-		--print("Высота снаряда="..ZDamageSource.."Высота юнита="..z)
-	end
-	return zcollision
-end
 
 
 
@@ -417,11 +327,4 @@ function PointContentDestructable (x,y,range,iskill,damage,hero)
 		end
 	end)
 	return content
-end
-
-function CreateFreeWood(x,y)
-	local  new=CreateUnit(Player(5), FourCC('e002'),x,y , 0)
-	UnitAddAbility(new,FourCC('A000'))
-	IssueImmediateOrder(new,"WindWalk")
-	SetUnitInvulnerable(new,true)
 end

@@ -167,17 +167,33 @@ function InitSelectionRegister()
 		local hero = GetTriggerUnit()
 		if IsUnitType(hero, UNIT_TYPE_HERO) and GetOwningPlayer(hero) == GetTriggerPlayer() and GetUnitTypeId(hero)==HeroID then
 			local data = HERO[GetPlayerId(GetTriggerPlayer())]
-			if not data.UnitHero then
-				data.UnitHero = hero
-				data.MarkIsActivated = false
-				--
-				TimerStart(CreateTimer(), 0.1, true, function()
-					AllAbilityRefresh(hero)
-					if IsUnitSelected(hero,GetOwningPlayer(hero)) then
-						data.HeroGreenDamage=GetUnitGreenAttackBonus(hero)
-					end
-				end)
+
+
+			--[[local k=0
+			for i=0, 10 do
+				local abi=BlzGetUnitAbilityByIndex(hero,i)
+				local info=BlzGetAbilityRealLevelField(abi,ABILITY_RLF_COOLDOWN,0)
+				k=k+info
+				if info then
+					print("info"..i.."="..info)
+				end
 			end
+			print("Общее время кд всех способностей героя="..k)]]
+
+
+
+
+			if not data.UnitHero then
+		data.UnitHero = hero
+		data.MarkIsActivated = false
+		--
+		TimerStart(CreateTimer(), 0.1, true, function()
+		AllAbilityRefresh(hero)
+			if IsUnitSelected(hero,GetOwningPlayer(hero)) then
+		data.HeroGreenDamage=GetUnitGreenAttackBonus(hero)
 		end
+			end)
+			end
+			end
 	end)
 end
