@@ -60,11 +60,11 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 				HealUnit(DamagingUnit, -10)
 			end
 		end
-		CollisisonDestr = PointContentDestructable(x, y, CollisionRange, false)
+		CollisisonDestr = PointContentDestructable(x, y, CollisionRange, false,0,hero)
 		local PerepadZ = zGround - z
 		if dist > 1000 or CollisionEnemy or CollisisonDestr or IsUnitType(DamagingUnit, UNIT_TYPE_STRUCTURE) or PerepadZ > 20 then
 			--or zGround+z>=-70+z --z<=147
-			PointContentDestructable(x, y, CollisionRange, true)
+			PointContentDestructable(x, y, CollisionRange, true,0,hero)
 			--print(z)
 			if GetTerrainZ(x,y)  <= WaterZ then
 				--CreateTorrent(x,y)
@@ -239,7 +239,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 					DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",nx,ny))
 				else
 				--	print("на суше")
-					DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",nx,ny))
+					DestroyEffect(AddSpecialEffect("AdmiralAssets\\ThunderclapCasterClassic",nx,ny))
 				end
 				--print(GetTerrainZ(nx,ny).."-GetTerrainZ")
 				--local tempunnit=CreateUnit(GetOwningPlayer(hero),CannonID,nx,ny,angle)

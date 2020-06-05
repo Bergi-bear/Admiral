@@ -207,3 +207,5 @@ function InitSpellTrigger()
 	end)
 end
 
+
+
