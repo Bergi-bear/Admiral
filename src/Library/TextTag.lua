@@ -28,59 +28,8 @@ function FlyTextTag(text, textSize, x, y, z, red, green, blue, alpha, xvel, yvel
 	return t
 end
 
----@param target widget
----@param text string
----@param player player
----@return texttag
-function FlyTextTagGoldBounty(target, text, player)
-	return FlyTextTag(text, 0.024, GetWidgetX(target) - 16, GetWidgetY(target), 0, 255, 220, 0, 255, 0, 0.03, 2, 3, player)
-end
-
----@param target widget
----@param text string
----@param player player
----@return texttag
-function FlyTextTagLumberBounty(target, text, player)
-	return FlyTextTag(text, 0.024, GetWidgetX(target) - 16, GetWidgetY(target), 0, 0, 200, 80, 255, 0, 0.03, 2, 3, player)
-end
-
----@param target widget
----@param text string
----@param player player
----@return texttag
-function FlyTextTagMiss(target, text, player)
-	return FlyTextTag(text, 0.024, GetWidgetX(target), GetWidgetY(target), 0, 255, 0, 0, 255, 0, 0.03, 1, 3, player)
-end
-
----@param target widget
----@param text string
----@param player player
----@return texttag
 function FlyTextTagCriticalStrike(target, text, player)
-	return FlyTextTag(text, 0.024, GetWidgetX(target), GetWidgetY(target), 0, 255, 0, 0, 255, 0, 0.04, 2, 5, player)
-end
-
----@param target widget
----@param text string
----@param player player
----@return texttag
-function FlyTextTagManaBurn(target, text, player)
-	return FlyTextTag(text, 0.024, GetWidgetX(target), GetWidgetY(target), 0, 82, 82, 255, 255, 0, 0.04, 2, 5, player)
-end
-
----@param target widget
----@param text string
----@param player player
----@return texttag
-function FlyTextTagShadowStrike(target, text, player)
-	return FlyTextTag(text, 0.024, GetWidgetX(target), GetWidgetY(target), 0, 160, 255, 0, 255, 0, 0.04, 2, 5, player)
-end
-
-function FlyTextTagHealXY(x,y, text, player)
-	return FlyTextTag(text, 0.024, x, y, 150, 88, 250, 13, 255, 0, 0.03, 1, 3, player)
-end
-
-function FlyTextTagShieldXY(x,y, text, player)--™
-	local xr=GetRandomReal(-0.05,0,05)
-	return FlyTextTag(""..text, 0.018, x, y, 150, 128, 128, 128, 255, xr, 0.03, 1, 3, player)
+	if TexTagSystem then
+		FlyTextTag(text, 0.024, GetWidgetX(target), GetWidgetY(target), 0, 255, 0, 0, 255, 0, 0.04, 2, 5, player)
+	end
 end

@@ -6,14 +6,11 @@ function InitUnitDeath()
 	local gg_trg_DEADGUI = CreateTrigger()
 	TriggerRegisterAnyUnitEventBJ(gg_trg_DEADGUI, EVENT_PLAYER_UNIT_DEATH)
 	TriggerAddAction(gg_trg_DEADGUI, function()
-
-		local DeadUnit=GetTriggerUnit()--умерший
-		local Killer=GetKillingUnit()--убийца
-		--print("EventDead "..GetUnitName(DeadUnit).." "..GetUnitName(Killer))
-
-
+		local DeadUnit=GetTriggerUnit()
 		if IsUnitType(DeadUnit,UNIT_TYPE_HERO) then --герой умер
-			CreateCallingBar(DeadUnit,10,"Воскрешение")
+			if CustomFrameSystem then
+				CreateCallingBar(DeadUnit,10,"Воскрешение")
+			end
 			local PD=GetOwningPlayer(DeadUnit)
 			TimerStart(CreateTimer(), 10, false, function()
 				ReviveHero(DeadUnit,GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD),true)
@@ -21,7 +18,5 @@ function InitUnitDeath()
 				SetCameraPosition(GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD))
 			end)
 		end
-
-
 	end)
 end

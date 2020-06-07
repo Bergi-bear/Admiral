@@ -17,7 +17,7 @@ function GetUnitGreenAttackBonus(hero)
 		return bonus
 end
 
-function SetUnitGreenAttackBonus(hero,bonusSet)
+function SetUnitGreenAttackBonus(hero,bonusSet) --Не реализовано, останется огрызком
 	local bonus=0
 	local frame=BlzGetFrameByName("InfoPanelIconValue",0)
 	local data=HERO[GetPlayerId(GetOwningPlayer(hero))]

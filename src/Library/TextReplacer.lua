@@ -14,12 +14,9 @@ end
 
 do
 	local GetAbilityDescriptionOriginalTable = {} ---@type table
-
 	function GetAbilityDescriptionOriginal(id)
-		--print("0.6")
 		if GetAbilityDescriptionOriginalTable[id] == nil then
 			GetAbilityDescriptionOriginalTable[id] = BlzGetAbilityExtendedTooltip(id,0)
-			--	print("0.7")
 		end
 		return GetAbilityDescriptionOriginalTable[id]
 	end
@@ -28,21 +25,26 @@ do
 		local data=HERO[GetPlayerId(GetOwningPlayer(hero))]
 		if GetLocalPlayer()==GetOwningPlayer(hero) then
 			if id==SpellIDQ then
-				local dmg=(BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage)*5
+				local dmg=(BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage)*AbilityStats.Q.damage
 				NativeString =string.gsub(NativeString,'dmg',dmg)
 			end
 			if id==SpellIDW then
-				local dmg= GetHeroStr(hero, true) * 10
+				local dmg= GetHeroStr(hero, true) * AbilityStats.W.damage
 				NativeString =string.gsub(NativeString,'dmg',dmg)
 			end
 			if id==SpellIDE then
 				local dmg= BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage
 				NativeString =string.gsub(NativeString,'dmg',dmg)
 			end
+			if id==SpellIDR then
+				local count= AbilityStats.R.count
+				NativeString =string.gsub(NativeString,'count',count)
+			end
 			if id==SpellIDS then
 				local dmg= data.bonusCD
 				NativeString =string.gsub(NativeString,'dmg',dmg)
 			end
+
 		end
 		BlzSetAbilityExtendedTooltip(id,NativeString,0)
 
@@ -53,5 +55,6 @@ function AllAbilityRefresh(hero)
 	UnitRefreshAbilityTooltip(hero,SpellIDQ)
 	UnitRefreshAbilityTooltip(hero,SpellIDW)
 	UnitRefreshAbilityTooltip(hero,SpellIDE)
+	UnitRefreshAbilityTooltip(hero,SpellIDR)
 	UnitRefreshAbilityTooltip(hero,SpellIDS)
 end

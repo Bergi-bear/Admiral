@@ -77,7 +77,7 @@ function CreateEffectLighting3D(x1, y1, z1, x2, y2, z2, step, effModel)
 			BlzSetSpecialEffectPitch(eff[i], -pitch)
 			BlzSetSpecialEffectYaw(eff[i], yaw)
 		else
-			eff[i] = AddSpecialEffect(effModel, 6000, 600)
+			eff[i] = AddSpecialEffect(effModel, OutPoint, OutPoint)
 		end
 	end
 	return eff
@@ -94,15 +94,11 @@ function MoveEffectLighting3D(x1, y1, z1, x2, y2, z2, step, eff)
 		local v = normalized * (step * i)
 		if i<=chainCount then
 			local z = z1 + v.z
-			--if i==5 then
-			--	print(z)
-			--end
-			--if z<=GetTerrainZ(x1 + v.x, y1 + v.y) then z=GetTerrainZ(x1 + v.x, y1 + v.y)+50 end
 			BlzSetSpecialEffectPosition(eff[i], x1 + v.x, y1 + v.y, z)
 			BlzSetSpecialEffectPitch(eff[i], -pitch)
 			BlzSetSpecialEffectYaw(eff[i], yaw)
 		else
-			BlzSetSpecialEffectPosition(eff[i], 6000, 6000, 0)
+			BlzSetSpecialEffectPosition(eff[i], OutPoint, OutPoint, 0)
 		end
 
 	end
@@ -111,7 +107,7 @@ end
 
 function DestroyEffectLighting3D(eff)
 	for i = 1, #eff do
-		BlzSetSpecialEffectPosition(eff[i], 6000, 6000, 0)
+		BlzSetSpecialEffectPosition(eff[i], OutPoint, OutPoint, 0)
 		DestroyEffect(eff[i])
 	end
 end

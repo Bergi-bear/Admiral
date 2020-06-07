@@ -5,8 +5,6 @@
 ---
 
 function KeyRegistration()
-
-
 	-----------------------------------------------------------------LMB and Any Mouse
 	local TrigPressLMB = CreateTrigger()
 	for i = 0, bj_MAX_PLAYER_SLOTS - 1 do
@@ -155,7 +153,7 @@ function KeyRegistration()
 		local data = HERO[pid]
 		data.ReleaseE = false
 	end)
-end-- do not copyend
+end-- do not copy end
 ------------------------------------------------------------------------------------------- EVENT_PLAYER_UNIT_SELECTED
 function InitSelectionRegister()
 	local this = CreateTrigger()

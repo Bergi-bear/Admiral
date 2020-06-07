@@ -28,17 +28,12 @@ function CreateVisualConusForUnitBySplat(hero,flag,long,step,range,angleSector)
 
 	end
 
-
-
 	local distance=0
 	local mouseMoving=false
 	local savedDistance=0
 	local lastAngle=0
 	local delta=0
 	local angle=0
-
-
-
 	local function Destroy()
 		DestroyTimer(GetExpiredTimer())
 		--data.MarkIsActivated=true
@@ -52,36 +47,18 @@ function CreateVisualConusForUnitBySplat(hero,flag,long,step,range,angleSector)
 	local iter=0
 	local curBlock=0
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
-		--angle=GetUnitFacing(hero)
-		--local xs,ys=MoveXY(GetUnitX(hero),GetUnitY(hero),10,angle-30)
 		local xs,ys=MoveXY(GetUnitX(hero)-16,GetUnitY(hero)-16,0,curAngle)--стартовое смещение и это центр юнита
-		--local xs2,ys2=0,0
 		iter=iter+1
-
-			--xs,ys=MoveXY(xs,ys,0,curAngle+)
-			--xs2,ys2=MoveXY(xs,ys,80,curAngle-90)
-
-
 		angle=AngleBetweenXY(xs, ys, GetPlayerMouseX[pid], GetPlayerMouseY[pid])/bj_DEGTORAD--data.AngleMouse
-
 		curAngle=lerpTheta(curAngle,angle,TIMER_PERIOD*8)
-
 		if LastMouseX == GetPlayerMouseX[pid] then
 			mouseMoving=false
-			--savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
 		else
 			mouseMoving=true
-			--print("движется")
 		end
 		LastMouseX = GetPlayerMouseX[pid]
 		delta=curAngle-lastAngle
 		lastAngle=curAngle
-
-
-		--angle=data.LastTurn--/bj_DEGTORAD
-
-
-		--print(delta)
 		if mouseMoving then
 			distance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
 			savedDistance=DistanceBetweenXY(GetPlayerMouseX[pid],GetPlayerMouseY[pid],GetUnitXY(hero))
@@ -89,17 +66,12 @@ function CreateVisualConusForUnitBySplat(hero,flag,long,step,range,angleSector)
 			distance=savedDistance
 		end
 		local block=0
-
 		for _=1,#image do
 			distance=distance-step
 			if distance>=0 then
 				block=block+1
 			end
 		end
-
-
-
-		--print(block)
 		local k=0
 		local k2=0
 		local a=0
@@ -114,7 +86,6 @@ function CreateVisualConusForUnitBySplat(hero,flag,long,step,range,angleSector)
 				local nx,ny=MoveXY(xs,ys,range,-angleSector/2+curAngle+a)
 				SetImagePosition(image[i],nx,ny,0)
 			else
-				--рисуем диагональ от края до центра
 				local rxs,rys=MoveXY(xs,ys,range,-angleSector/2+curAngle+k*step)
 				local angleR=AngleBetweenXY(rxs,rys,xs, ys)/bj_DEGTORAD
 				k2=k2+1

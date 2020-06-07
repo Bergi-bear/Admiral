@@ -11,7 +11,9 @@ function MarkCreatorQ(data)
 	end
 	if UnitHaveReadyAbility(hero,SpellIDQ) then
 		if not data.MarkIsActivated then
-			CreateVisualPointerForUnitBySplat(hero,1,1200//5,5,1200//5)
+			if MarkSystem then
+				CreateVisualPointerForUnitBySplat(hero,1,1200//5,5,1200//5)
+			end
 			data.MarkIsActivated=true
 		end
 	end
@@ -25,7 +27,9 @@ function MarkCreatorW(data)
 	end
 	if UnitHaveReadyAbility(hero,SpellIDW) then
 		if not data.MarkIsActivated then
-			CreateVisualPointerForUnitBySplat(hero,1,900//5,5,600//5)
+			if MarkSystem then
+				CreateVisualPointerForUnitBySplat(hero,1,900//5,5,600//5)
+			end
 			data.MarkIsActivated=true--
 			data.Anchor=AddSpecialEffect("AdmiralAssets\\AnchorHD2",GetUnitXY(data.UnitHero))
 			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
@@ -42,7 +46,7 @@ function MarkCreatorW(data)
 					--print("уничтожем якорь")
 					DestroyTimer(GetExpiredTimer())
 					DestroyEffect(data.Anchor)
-					BlzSetSpecialEffectPosition(data.Anchor,6000,6000,0)
+					BlzSetSpecialEffectPosition(data.Anchor,OutPoint,OutPoint,0)
 				end
 			end)
 		end
@@ -57,7 +61,9 @@ function MarkCreatorE(data)
 	end
 	if UnitHaveReadyAbility(hero,SpellIDE) then
 		if not data.MarkIsActivated then
-			CreateVisualConusForUnitBySplat(hero,1,360,1,150,235) --180 времено в иделе 235
+			if MarkSystem then
+				CreateVisualConusForUnitBySplat(hero,1,360,1,150,235) --Создание конуса
+			end
 			data.MarkIsActivated=true
 		end
 	end
@@ -81,7 +87,6 @@ end
 --есть мана, не в кд, юнит жив
 function  UnitHaveReadyAbility(hero,abiID)
 	local isReady=false
-	--print(BlzGetUnitAbilityManaCost(hero,abiID,1-GetUnitAbilityLevel(hero,abiID)))
 	if GetUnitAbilityLevel(hero,abiID)>0
 		and BlzGetUnitAbilityCooldownRemaining(hero,abiID)<=.01
 		and UnitAlive(hero)
@@ -96,9 +101,6 @@ end
 
 
 function CreateFallCannonOnEffectPosition(data,angle,x,y)
-	--local x,y=BlzGetLocalSpecialEffectX(eff),BlzGetLocalSpecialEffectY(eff)
-
-	--Abilities\\\Spells\\\NightElf\\\Starfall\\\StarfallTarget
 	local hero=data.UnitHero
 	DestroyEffect(AddSpecialEffect("Abilities\\Spells\\NightElf\\Starfall\\StarfallTarget",x,y))
 	local zTerr=GetTerrainZ(x,y)
@@ -110,12 +112,6 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 		if z<=zTerr then
 			z=zTerr
 			DestroyTimer(GetExpiredTimer())
-			--DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster",x,y))
-
-			--local canon=AddSpecialEffect("AdmiralAssets\\SiegeCannon",x,y)
-			--BlzSetSpecialEffectYaw(canon,math.rad(angle))
-			--BlzSetSpecialEffectPosition(canon,x,y,z)
-
 			if GetTerrainZ(x,y)<=WaterZ then
 				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",x,y))
 			else
@@ -130,7 +126,7 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 				TimerStart(CreateTimer(), 2, true, function()
 					sec=sec+1
 					local xs,ys=MoveXY(x, y,40,angle)
-					local damage=(BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage)*5
+					local damage=(BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage)*AbilityStats.Q.damage
 					SetUnitAnimation(cannon,"Attack")
 					SetUnitTimeScale(cannon,2)
 					--SetUnitAnimation(cannon,"attack")
