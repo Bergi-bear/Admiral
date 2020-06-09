@@ -18,5 +18,10 @@ function InitUnitDeath()
 				SetCameraPosition(GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD))
 			end)
 		end
+		if IsUnitType(DeadUnit,UNIT_TYPE_STRUCTURE) then
+			--print("Погибло здание")
+			local x,y=GetUnitXY(DeadUnit)
+			AnyHPEARandomBuild(x,y,GetUnitTypeId(DeadUnit))
+		end
 	end)
 end

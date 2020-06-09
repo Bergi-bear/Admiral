@@ -26,7 +26,17 @@ function CreateBuildingsForPlayer1()
     u = BlzCreateUnitWithSkin(p, FourCC("npgf"), 800.0, -416.0, 270.000, FourCC("npgf"))
     u = BlzCreateUnitWithSkin(p, FourCC("nbfl"), 1024.0, -1920.0, 270.000, FourCC("nbfl"))
     u = BlzCreateUnitWithSkin(p, FourCC("oshy"), 1728.0, 1024.0, 270.000, FourCC("oshy"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owtw"), -1472.0, 448.0, 270.000, FourCC("owtw"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owtw"), -2112.0, 768.0, 270.000, FourCC("owtw"))
     u = BlzCreateUnitWithSkin(p, FourCC("owtw"), -640.0, -704.0, 270.000, FourCC("owtw"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogre"), -512.0, 1408.0, 270.000, FourCC("ogre"))
+    u = BlzCreateUnitWithSkin(p, FourCC("otrb"), -1696.0, -1824.0, 270.000, FourCC("otrb"))
+    u = BlzCreateUnitWithSkin(p, FourCC("otrb"), -1952.0, -736.0, 270.000, FourCC("otrb"))
+    u = BlzCreateUnitWithSkin(p, FourCC("otrb"), -2272.0, -1312.0, 270.000, FourCC("otrb"))
+    u = BlzCreateUnitWithSkin(p, FourCC("otrb"), -864.0, -2336.0, 270.000, FourCC("otrb"))
+    u = BlzCreateUnitWithSkin(p, FourCC("oshy"), -1920.0, 1344.0, 270.000, FourCC("oshy"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owtw"), 256.0, 704.0, 270.000, FourCC("owtw"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owtw"), 768.0, 192.0, 270.000, FourCC("owtw"))
 end
 
 function CreateUnitsForPlayer1()
@@ -90,6 +100,33 @@ function CreateUnitsForPlayer1()
     u = BlzCreateUnitWithSkin(p, FourCC("nmrv"), 1048.4, 2614.0, 35.146, FourCC("nmrv"))
     u = BlzCreateUnitWithSkin(p, FourCC("nmrv"), 1085.6, 2461.8, 69.392, FourCC("nmrv"))
     u = BlzCreateUnitWithSkin(p, FourCC("ntrt"), -2857.9, 780.6, 296.926, FourCC("ntrt"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), 533.5, 820.6, 62.206, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), 650.8, 984.0, 62.206, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), 852.2, 1086.6, 62.206, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), 1023.1, 946.1, 62.206, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), 1016.0, 868.8, 62.206, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -1011.1, 946.1, 15.184, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -854.4, 883.2, 208.681, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -771.6, 930.7, 199.727, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -792.8, 1095.5, 62.206, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -958.6, 1133.1, 85.696, FourCC("opeo"))
+    u = BlzCreateUnitWithSkin(p, FourCC("obot"), -2229.0, 1292.3, 309.549, FourCC("obot"))
+    u = BlzCreateUnitWithSkin(p, FourCC("obot"), -1869.5, 1750.1, 92.738, FourCC("obot"))
+    u = BlzCreateUnitWithSkin(p, FourCC("odes"), 1949.9, -2209.8, 16.030, FourCC("odes"))
+    u = BlzCreateUnitWithSkin(p, FourCC("odes"), 2083.2, -2039.6, 170.667, FourCC("odes"))
+    u = BlzCreateUnitWithSkin(p, FourCC("odes"), 2135.4, -1874.6, 182.434, FourCC("odes"))
+    u = BlzCreateUnitWithSkin(p, FourCC("nhyc"), -2457.9, 108.0, 273.730, FourCC("nhyc"))
+    SetUnitAcquireRange(u, 200.0)
+end
+
+function CreateNeutralPassiveBuildings()
+    local p = Player(PLAYER_NEUTRAL_PASSIVE)
+    local u
+    local unitID
+    local t
+    local life
+    u = BlzCreateUnitWithSkin(p, FourCC("ngol"), -1216.0, 768.0, 270.000, FourCC("ngol"))
+    SetResourceAmount(u, 12500)
 end
 
 function CreateNeutralPassive()
@@ -111,6 +148,7 @@ function CreatePlayerUnits()
 end
 
 function CreateAllUnits()
+    CreateNeutralPassiveBuildings()
     CreatePlayerBuildings()
     CreateNeutralPassive()
     CreatePlayerUnits()
@@ -124,8 +162,9 @@ SpellIDW = FourCC("A001") -- Бросок якоря
 SpellIDE = FourCC("A002") -- Удар саблей
 SpellIDR = FourCC("A003") -- Пушки из ларца
 SpellIDS = FourCC("A004") -- Ярость адмирала
+SpellIDD = FourCC("A005") -- На гребне волны
 WaterZ = 170 -- Минимуальный уровень высоты, после которого начинается вода, это нужно для водных эффектов ,брызг и некоторых условий, введите введите очень мало значение, чтобы отключить воду
-OutPoint=6000 -- пространство за экраном, для резконого перемещения эффектов и уберсплатов, рекомендуеются использовать только на больших картах
+OutPoint=6000 -- пространство за экраном, для резконого перемещения эффектов и уберсплатов, рекомендуеются изменять только на больших картах
 --Включение и отключение прочих систем true включено, false  отключено
 MarkSystem = false -- Система подсветки радиуса способностей героев
 TexTagSystem = true -- Система всплывающего текста
@@ -222,6 +261,7 @@ function InitHEROTable()
 			bonusCD = 0,
 			HeroGreenDamage = 0,
 			AnchorPitch = 0,
+			OnWater=false,
 		}
 	end
 end
@@ -267,6 +307,8 @@ function InitSpellTrigger()
 					end
 					TimerStart(CreateTimer(), 0.4, false, function()
 						local damage = (BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage) * AbilityStats.Q.damage
+						casterX, casterY=GetUnitXY(caster)
+						angleCast=GetUnitFacing(caster)--AngleBetweenXY(casterX, casterY, x, y) / bj_DEGTORAD
 						local xs, ys = MoveXY(casterX, casterY, 80, angleCast)
 						CreateAndForceBullet(caster, angleCast, 50, "Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile", xs, ys, damage)
 					end)
@@ -369,7 +411,7 @@ function InitSpellTrigger()
 		if spellId == SpellIDR then -- Пушечные ряды
 			local cannon = {}
 			for i = 1, AbilityStats.R.count do
-				cannon[i] = AddSpecialEffect("AdmiralAssets\\SiegeCannon", 6000, 6000)
+				cannon[i] = AddSpecialEffect("AdmiralAssets\\SiegeCannon", OutPoint, OutPoint)
 				BlzSetSpecialEffectAlpha(cannon[i], 40)
 				BlzSetSpecialEffectScale(cannon[i], 1.3)
 			end
@@ -393,18 +435,81 @@ function InitSpellTrigger()
 					for i = 1, AbilityStats.R.count do
 						local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count//2))), curAngle - 90)
 						CreateFallCannonOnEffectPosition(data, curAngle, nx, ny)
-						BlzSetSpecialEffectPosition(cannon[i], 6000, 6000, 0)
+						BlzSetSpecialEffectPosition(cannon[i], OutPoint, OutPoint, 0)
 						DestroyEffect(cannon[i])
 					end
 				end
 			end)
 
 		end
+		if spellId == SpellIDD then -- На гребне волны
+			local effModel="Units\\Creeps\\DragonSeaTurtle\\DragonSeaTurtle"
+			data.OnWater=true
+			--local cd = BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1)
+			local ship=AddSpecialEffect(effModel,OutPoint,OutPoint)
+			BlzSpecialEffectAddSubAnimation(ship,SUBANIM_TYPE_SWIM)
+			UnitAddAbility(caster,FourCC("Abun"))
+			TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+				BlzStartUnitAbilityCooldown(caster, spellId, BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1))
+				local xs,ys=GetUnitXY(caster)
+				local eff=AddSpecialEffect("AdmiralAssets\\Torrent1",xs,ys)
+				local angle=GetUnitFacing(caster)
+				local speed=30
+				local nx,ny=MoveXY(xs,ys,speed,angle)
+				local nz=GetUnitZ(caster)
+				if not InMapXY(nx,ny) then
+				--	print("y="..ny)
+					local hor = 1
+					if isHitLeftOrRight(nx) then
+						hor = -1
+					end
+					local ver = 1
+					if isHitTopOrBottom(ny) then
+						ver = -1
+					end
+					local vector = Vector:new((nx - xs)*hor,( ny- ys)*ver, nz - nz)
+					local yaw = vector:yaw()
+					BlzSetUnitFacingEx(caster,math.deg(yaw))
+				end
+				BlzSetSpecialEffectPosition(ship,nx,ny,nz-20)
+				BlzSetSpecialEffectYaw(ship,math.rad(angle))
+
+				BlzPlaySpecialEffectWithTimeScale(ship,ANIM_TYPE_WALK,2)
+
+				BlzSetSpecialEffectYaw(eff,math.rad(angle-180))
+				BlzSetSpecialEffectPitch(eff,math.rad(-90))
+				BlzSetSpecialEffectZ(eff,GetUnitZ(caster)-50)
+				BlzSetSpecialEffectScale(eff,0.2)
+				DestroyEffect(eff)
+				SetUnitX(caster,nx)
+				SetUnitY(caster,ny)
+
+				SetCameraQuickPosition(nx,ny)
+				SetCameraTargetControllerNoZForPlayer(GetOwningPlayer(caster), caster, 10, 10, true) -- не дергается
+
+				--SetUnitZ(caster,nz)
+				if GetUnitZ(caster)>=WaterZ  or not UnitAlive(caster) then
+					print("end")
+					data.OnWater=false
+					UnitRemoveAbility(caster,FourCC("Abun"))
+					BlzSetSpecialEffectPosition(ship,OutPoint,OutPoint,0)
+					DestroyEffect(ship)
+					DestroyTimer(GetExpiredTimer())
+					ResetToGameCameraForPlayer(GetOwningPlayer(caster),0)
+				--	SetUnitZ(caster,GetUnitZ(caster)-200)
+				end
+			end)
+		end
 	end)
 end
 
+function isHitTopOrBottom(ny)
+	return ny<=GetRectMinY(bj_mapInitialPlayableArea) or ny>=GetRectMaxY(bj_mapInitialPlayableArea)
+end
 
-
+function isHitLeftOrRight(nx)
+	return nx<=GetRectMinX(bj_mapInitialPlayableArea) or nx>=GetRectMaxX(bj_mapInitialPlayableArea)
+end
 
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
@@ -558,10 +663,10 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			BlzSetSpecialEffectPitch(eff, math.rad(0))
 			if IsUnitInRangeXY(hero, nx, ny, 50) then
 				for i2 = 1, #chainElement do
-					BlzSetSpecialEffectPosition(chainElement[i2], 6000, 6000, 0)
+					BlzSetSpecialEffectPosition(chainElement[i2], OutPoint, OutPoint, 0)
 					DestroyEffect(chainElement[i2])
 				end
-				BlzSetSpecialEffectPosition(eff, 6000, 6000, 0)
+				BlzSetSpecialEffectPosition(eff, OutPoint, OutPoint, 0)
 				DestroyEffect(eff)
 				DestroyTimer(GetExpiredTimer())
 				DestroyEffectLighting3D(data.ChainEff)
@@ -597,7 +702,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 					FlyTextTagCriticalStrike(du, R2I(damage) .. "!", GetOwningPlayer(hero))
 				end
 				for i2 = 1, #chainElement do
-					BlzSetSpecialEffectPosition(chainElement[i2], 6000, 6000, 0)
+					BlzSetSpecialEffectPosition(chainElement[i2], OutPoint, OutPoint, 0)
 					DestroyEffect(chainElement[i2])
 				end
 				DestroyTimer(GetExpiredTimer())
@@ -1203,6 +1308,97 @@ end
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
 --- Created by Bergi.
+--- DateTime: 17.05.2020 22:30
+---
+
+function AnyHPEARandomBuild(x, y,id)
+	AdjustPlayerStateBJ(1000, Player(1), PLAYER_STATE_RESOURCE_LUMBER)
+	AdjustPlayerStateBJ(1000, Player(1), PLAYER_STATE_RESOURCE_GOLD)
+	--print(id)
+	for i = 1, 5 do
+		local r = GetRandomInt(-800, 800)
+		local builder = FindUnitOfType(FourCC('opeo'), 2500, x, y)
+		IssueBuildOrderById(builder, id, x , y )
+		if i == 1 then
+			r=0
+		end
+		--PingMinimap(GetUnitX(builder),GetUnitY(builder),1)
+		if IssueBuildOrderById(builder, id, x + r, y + r) then
+		--	print("Иду строить")
+			IssueImmediateOrder(builder, "repairon")
+		else
+
+			if i>=5 then
+				IssueImmediateOrder(builder, "autoharvestgold")
+			else
+				IssueImmediateOrder(builder, "autoharvestlumber")
+			end
+			--print("Не могу построить")
+		end
+		TimerStart(CreateTimer(), 2, true, function()
+			--print(OrderId2String(GetUnitCurrentOrder(builder)))
+			if OrderId2String(GetUnitCurrentOrder(builder))=="harvest" then
+				IssueImmediateOrder(builder, "autoharvestlumber")
+				DestroyTimer(GetExpiredTimer())
+			end
+		end)
+	end
+end
+
+---
+--- Generated by EmmyLua(https://github.com/EmmyLua)
+--- Created by Bergi.
+--- DateTime: 11.03.2020 22:30
+function FindUnitOfType(id,flag,x,y)
+	--flag nil - вся карта
+	--flag any - радиус
+	local unit=nil
+	local e=nil
+	local k=0
+	--print("ищем")
+	local rg={}
+	if not flag then
+		GroupEnumUnitsInRect(perebor,bj_mapInitialPlayableArea,nil)
+		while true do
+			e = FirstOfGroup(perebor)
+
+			if e == nil then break end
+			if UnitAlive(e) and GetUnitTypeId(e)==id then
+				k=k+1
+				unit=e
+			end
+			GroupRemoveUnit(perebor,e)
+		end
+	else
+		GroupEnumUnitsInRange(perebor,x,y,flag,nil)
+		while true do
+			e = FirstOfGroup(perebor)
+
+			if e == nil then break end
+			if UnitAlive(e) and GetUnitTypeId(e)==id then
+				k=k+1
+				rg[k]=e
+				unit=e
+			end
+			GroupRemoveUnit(perebor,e)
+		end
+	end
+
+
+	if k>1 then
+	--	print("Ошибка получено "..k.." юнитов")
+	end
+	if k>2 then
+		unit=rg[GetRandomInt(1,#rg)]
+	end
+	if unit==nil then
+	--	print("Не найдено живых юнитов данного типа")
+	end
+	return unit,k
+end
+---
+--- Generated by EmmyLua(https://github.com/EmmyLua)
+--- Created by Bergi.
 --- DateTime: 23.01.2020 20:11
 function InitUnitDeath()
 	local gg_trg_DEADGUI = CreateTrigger()
@@ -1219,6 +1415,11 @@ function InitUnitDeath()
 				SelectUnitForPlayerSingle(DeadUnit,PD)
 				SetCameraPosition(GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD))
 			end)
+		end
+		if IsUnitType(DeadUnit,UNIT_TYPE_STRUCTURE) then
+			--print("Погибло здание")
+			local x,y=GetUnitXY(DeadUnit)
+			AnyHPEARandomBuild(x,y,GetUnitTypeId(DeadUnit))
 		end
 	end)
 end
@@ -1460,7 +1661,7 @@ function KeyRegistration()
 		local data = HERO[pid]
 		data.ReleaseE = false
 	end)
-end-- do not copyend
+end-- do not copy end
 ------------------------------------------------------------------------------------------- EVENT_PLAYER_UNIT_SELECTED
 function InitSelectionRegister()
 	local this = CreateTrigger()
@@ -1482,6 +1683,26 @@ function InitSelectionRegister()
 						data.HeroGreenDamage = GetUnitGreenAttackBonus(hero)
 					end
 				end)
+				local enable=false
+				local disable=true
+				TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+					local z=GetUnitZ(hero)
+					--print(z)
+					if z<=WaterZ  then
+						if enable then
+							BlzUnitDisableAbility(hero,SpellIDD,false,false)
+							enable=false
+							disable=true
+						end
+					else
+						if disable then
+							BlzUnitDisableAbility(hero,SpellIDD,true,false)
+							enable=true
+							disable=false
+						end
+					end
+				end)
+
 			end
 		end
 	end)
@@ -1534,7 +1755,7 @@ function MarkCreatorW(data)
 					--print("уничтожем якорь")
 					DestroyTimer(GetExpiredTimer())
 					DestroyEffect(data.Anchor)
-					BlzSetSpecialEffectPosition(data.Anchor,6000,6000,0)
+					BlzSetSpecialEffectPosition(data.Anchor,OutPoint,OutPoint,0)
 				end
 			end)
 		end
@@ -1714,7 +1935,7 @@ function CreateEffectLighting3D(x1, y1, z1, x2, y2, z2, step, effModel)
 			BlzSetSpecialEffectPitch(eff[i], -pitch)
 			BlzSetSpecialEffectYaw(eff[i], yaw)
 		else
-			eff[i] = AddSpecialEffect(effModel, 6000, 600)
+			eff[i] = AddSpecialEffect(effModel, OutPoint, OutPoint)
 		end
 	end
 	return eff
@@ -1735,7 +1956,7 @@ function MoveEffectLighting3D(x1, y1, z1, x2, y2, z2, step, eff)
 			BlzSetSpecialEffectPitch(eff[i], -pitch)
 			BlzSetSpecialEffectYaw(eff[i], yaw)
 		else
-			BlzSetSpecialEffectPosition(eff[i], 6000, 6000, 0)
+			BlzSetSpecialEffectPosition(eff[i], OutPoint, OutPoint, 0)
 		end
 
 	end
@@ -1744,7 +1965,7 @@ end
 
 function DestroyEffectLighting3D(eff)
 	for i = 1, #eff do
-		BlzSetSpecialEffectPosition(eff[i], 6000, 6000, 0)
+		BlzSetSpecialEffectPosition(eff[i], OutPoint, OutPoint, 0)
 		DestroyEffect(eff[i])
 	end
 end
@@ -1998,8 +2219,8 @@ function CreateVisualPointerForUnitBySplat(hero, flag, long, step, minlong)
 						k2 = k2 + 1
 						if curBlock <= r60 then
 							--print("лишняяотрисовка")
-							SetImagePosition(image[i], 6000, 6000, 0)
-							SetImagePosition(image2[i], 6000, 6000, 0)
+							SetImagePosition(image[i], OutPoint, OutPoint, 0)
+							SetImagePosition(image2[i], OutPoint, OutPoint, 0)
 						else
 							nx, ny = MoveXY(px, py, step * (k2), curAngle - 45)
 							SetImagePosition(image[i], nx, ny, 0)
@@ -2014,8 +2235,8 @@ function CreateVisualPointerForUnitBySplat(hero, flag, long, step, minlong)
 					end
 				end
 			else
-				SetImagePosition(image[i], 6000, 6000, 0)
-				SetImagePosition(image2[i], 7000, 7000, 0)
+				SetImagePosition(image[i], OutPoint, OutPoint, 0)
+				SetImagePosition(image2[i], OutPoint, OutPoint, 0)
 			end
 		end
 		if flag == 1 then
@@ -2035,19 +2256,19 @@ function InitCustomPlayerSlots()
     ForcePlayerStartLocation(Player(0), 0)
     SetPlayerColor(Player(0), ConvertPlayerColor(0))
     SetPlayerRacePreference(Player(0), RACE_PREF_HUMAN)
-    SetPlayerRaceSelectable(Player(0), true)
+    SetPlayerRaceSelectable(Player(0), false)
     SetPlayerController(Player(0), MAP_CONTROL_USER)
     SetPlayerStartLocation(Player(1), 1)
     ForcePlayerStartLocation(Player(1), 1)
     SetPlayerColor(Player(1), ConvertPlayerColor(1))
     SetPlayerRacePreference(Player(1), RACE_PREF_ORC)
-    SetPlayerRaceSelectable(Player(1), true)
+    SetPlayerRaceSelectable(Player(1), false)
     SetPlayerController(Player(1), MAP_CONTROL_USER)
 end
 
 function InitCustomTeams()
     SetPlayerTeam(Player(0), 0)
-    SetPlayerTeam(Player(1), 0)
+    SetPlayerTeam(Player(1), 1)
 end
 
 function InitAllyPriorities()
@@ -2079,9 +2300,7 @@ function config()
     DefineStartLocation(0, -1536.0, -2560.0)
     DefineStartLocation(1, -832.0, -2880.0)
     InitCustomPlayerSlots()
-    SetPlayerSlotAvailable(Player(0), MAP_CONTROL_USER)
-    SetPlayerSlotAvailable(Player(1), MAP_CONTROL_USER)
-    InitGenericPlayerSlots()
+    InitCustomTeams()
     InitAllyPriorities()
 end
 

@@ -38,6 +38,8 @@ function InitSpellTrigger()
 					end
 					TimerStart(CreateTimer(), 0.4, false, function()
 						local damage = (BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage) * AbilityStats.Q.damage
+						casterX, casterY=GetUnitXY(caster)
+						angleCast=GetUnitFacing(caster)--AngleBetweenXY(casterX, casterY, x, y) / bj_DEGTORAD
 						local xs, ys = MoveXY(casterX, casterY, 80, angleCast)
 						CreateAndForceBullet(caster, angleCast, 50, "Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile", xs, ys, damage)
 					end)
@@ -171,8 +173,71 @@ function InitSpellTrigger()
 			end)
 
 		end
+		if spellId == SpellIDD then -- На гребне волны
+			local effModel="Units\\Creeps\\DragonSeaTurtle\\DragonSeaTurtle"
+			data.OnWater=true
+			--local cd = BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1)
+			local ship=AddSpecialEffect(effModel,OutPoint,OutPoint)
+			BlzSpecialEffectAddSubAnimation(ship,SUBANIM_TYPE_SWIM)
+			UnitAddAbility(caster,FourCC("Abun"))
+			TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+				BlzStartUnitAbilityCooldown(caster, spellId, BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1))
+				local xs,ys=GetUnitXY(caster)
+				local eff=AddSpecialEffect("AdmiralAssets\\Torrent1",xs,ys)
+				local angle=GetUnitFacing(caster)
+				local speed=30
+				local nx,ny=MoveXY(xs,ys,speed,angle)
+				local nz=GetUnitZ(caster)
+				if not InMapXY(nx,ny) then
+				--	print("y="..ny)
+					local hor = 1
+					if isHitLeftOrRight(nx) then
+						hor = -1
+					end
+					local ver = 1
+					if isHitTopOrBottom(ny) then
+						ver = -1
+					end
+					local vector = Vector:new((nx - xs)*hor,( ny- ys)*ver, nz - nz)
+					local yaw = vector:yaw()
+					BlzSetUnitFacingEx(caster,math.deg(yaw))
+				end
+				BlzSetSpecialEffectPosition(ship,nx,ny,nz-20)
+				BlzSetSpecialEffectYaw(ship,math.rad(angle))
+
+				BlzPlaySpecialEffectWithTimeScale(ship,ANIM_TYPE_WALK,2)
+
+				BlzSetSpecialEffectYaw(eff,math.rad(angle-180))
+				BlzSetSpecialEffectPitch(eff,math.rad(-90))
+				BlzSetSpecialEffectZ(eff,GetUnitZ(caster)-50)
+				BlzSetSpecialEffectScale(eff,0.2)
+				DestroyEffect(eff)
+				SetUnitX(caster,nx)
+				SetUnitY(caster,ny)
+
+				SetCameraQuickPosition(nx,ny)
+				SetCameraTargetControllerNoZForPlayer(GetOwningPlayer(caster), caster, 10, 10, true) -- не дергается
+
+				--SetUnitZ(caster,nz)
+				if GetUnitZ(caster)>=WaterZ  or not UnitAlive(caster) then
+					print("end")
+					data.OnWater=false
+					UnitRemoveAbility(caster,FourCC("Abun"))
+					BlzSetSpecialEffectPosition(ship,OutPoint,OutPoint,0)
+					DestroyEffect(ship)
+					DestroyTimer(GetExpiredTimer())
+					ResetToGameCameraForPlayer(GetOwningPlayer(caster),0)
+				--	SetUnitZ(caster,GetUnitZ(caster)-200)
+				end
+			end)
+		end
 	end)
 end
 
+function isHitTopOrBottom(ny)
+	return ny<=GetRectMinY(bj_mapInitialPlayableArea) or ny>=GetRectMaxY(bj_mapInitialPlayableArea)
+end
 
-
+function isHitLeftOrRight(nx)
+	return nx<=GetRectMinX(bj_mapInitialPlayableArea) or nx>=GetRectMaxX(bj_mapInitialPlayableArea)
+end

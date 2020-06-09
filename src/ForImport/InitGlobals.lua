@@ -48,6 +48,7 @@ function InitHEROTable()
 			bonusCD = 0,
 			HeroGreenDamage = 0,
 			AnchorPitch = 0,
+			OnWater=false,
 		}
 	end
 end

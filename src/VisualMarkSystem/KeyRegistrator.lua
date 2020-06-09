@@ -175,6 +175,26 @@ function InitSelectionRegister()
 						data.HeroGreenDamage = GetUnitGreenAttackBonus(hero)
 					end
 				end)
+				local enable=false
+				local disable=true
+				TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+					local z=GetUnitZ(hero)
+					--print(z)
+					if z<=WaterZ  then
+						if enable then
+							BlzUnitDisableAbility(hero,SpellIDD,false,false)
+							enable=false
+							disable=true
+						end
+					else
+						if disable then
+							BlzUnitDisableAbility(hero,SpellIDD,true,false)
+							enable=true
+							disable=false
+						end
+					end
+				end)
+
 			end
 		end
 	end)
