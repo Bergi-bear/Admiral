@@ -23,5 +23,20 @@ function InitUnitDeath()
 			local x,y=GetUnitXY(DeadUnit)
 			AnyHPEARandomBuild(x,y,GetUnitTypeId(DeadUnit))
 		end
+		if GetUnitTypeId(DeadUnit)==FourCC('opeo') then--убит пеон
+			TimerStart(CreateTimer(), 1, false, function()
+				local Town = FindUnitOfType(FourCC('ogre'), 2500, GetUnitXY(DeadUnit))
+				if Town then
+					TimerStart(CreateTimer(), 5, false, function()
+						local xlim,ylum=GetUnitXY(Town)
+						local new=CreateUnit(GetOwningPlayer(DeadUnit), FourCC('opeo'),xlim, ylum, 0)
+						IssueImmediateOrder(new,"autoharvestlumber")
+						if GetRandomInt(1,2)==1 then
+							IssueImmediateOrder(new,"autoharvestgold")
+						end
+					end)
+				end
+			end)
+		end
 	end)
 end

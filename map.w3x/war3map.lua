@@ -37,6 +37,12 @@ function CreateBuildingsForPlayer1()
     u = BlzCreateUnitWithSkin(p, FourCC("oshy"), -1920.0, 1344.0, 270.000, FourCC("oshy"))
     u = BlzCreateUnitWithSkin(p, FourCC("owtw"), 256.0, 704.0, 270.000, FourCC("owtw"))
     u = BlzCreateUnitWithSkin(p, FourCC("owtw"), 768.0, 192.0, 270.000, FourCC("owtw"))
+    u = BlzCreateUnitWithSkin(p, FourCC("obar"), 320.0, 1536.0, 270.000, FourCC("obar"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owtw"), -192.0, 64.0, 270.000, FourCC("owtw"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owtw"), 960.0, -512.0, 270.000, FourCC("owtw"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ovln"), -2048.0, 0.0, 270.000, FourCC("ovln"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owtw"), -832.0, 1536.0, 270.000, FourCC("owtw"))
+    u = BlzCreateUnitWithSkin(p, FourCC("owtw"), -384.0, 1088.0, 270.000, FourCC("owtw"))
 end
 
 function CreateUnitsForPlayer1()
@@ -70,7 +76,7 @@ function CreateUnitsForPlayer1()
     u = BlzCreateUnitWithSkin(p, FourCC("okod"), 488.2, -136.4, 198.562, FourCC("okod"))
     u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -424.5, 379.9, 260.162, FourCC("opeo"))
     u = BlzCreateUnitWithSkin(p, FourCC("opeo"), -885.1, -2153.2, 201.243, FourCC("opeo"))
-    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1760.7, 163.7, 2.406, FourCC("ogru"))
+    u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1810.0, -77.5, 2.406, FourCC("ogru"))
     u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1853.8, 222.6, 274.194, FourCC("ogru"))
     u = BlzCreateUnitWithSkin(p, FourCC("ogru"), -1852.3, 394.6, 110.669, FourCC("ogru"))
     u = BlzCreateUnitWithSkin(p, FourCC("ogru"), 883.2, 278.0, 348.200, FourCC("ogru"))
@@ -117,6 +123,15 @@ function CreateUnitsForPlayer1()
     u = BlzCreateUnitWithSkin(p, FourCC("odes"), 2135.4, -1874.6, 182.434, FourCC("odes"))
     u = BlzCreateUnitWithSkin(p, FourCC("nhyc"), -2457.9, 108.0, 273.730, FourCC("nhyc"))
     SetUnitAcquireRange(u, 200.0)
+    u = BlzCreateUnitWithSkin(p, FourCC("ohun"), 1216.8, -64.3, 37.981, FourCC("ohun"))
+    SetUnitAcquireRange(u, 200.0)
+    u = BlzCreateUnitWithSkin(p, FourCC("ohun"), 1290.1, -148.2, 37.981, FourCC("ohun"))
+    SetUnitAcquireRange(u, 200.0)
+    u = BlzCreateUnitWithSkin(p, FourCC("ohun"), 1385.9, -221.0, 102.154, FourCC("ohun"))
+    SetUnitAcquireRange(u, 200.0)
+    u = BlzCreateUnitWithSkin(p, FourCC("ohun"), 1485.1, -227.1, 125.698, FourCC("ohun"))
+    SetUnitAcquireRange(u, 200.0)
+    u = BlzCreateUnitWithSkin(p, FourCC("ocat"), -948.1, 1757.9, 142.684, FourCC("ocat"))
 end
 
 function CreateNeutralPassiveBuildings()
@@ -219,6 +234,7 @@ do
 	function InitGlobals()
 		InitGlobalsOrigin()
 		perebor = CreateGroup() --1 едиснвенная глобальная группа на всю игру, никакие Destroy Привет гуишники
+		GlobalTimer=CreateTimer() --
 		InitSpellTrigger() -- Инициализация функции кастов
 		InitHEROTable() -- Инициализация таблицы героев
 		KeyRegistration() -- инициализация отлова нажатия клавиш
@@ -262,8 +278,11 @@ function InitHEROTable()
 			HeroGreenDamage = 0,
 			AnchorPitch = 0,
 			OnWater=false,
+
 		}
 	end
+	TimerStart(GlobalTimer, TIMER_PERIOD, true, function()
+	end)
 end
 
 
@@ -358,6 +377,7 @@ function InitSpellTrigger()
 							end
 							if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e, GetOwningPlayer(caster)) and IsPointInSector(GetUnitX(e), GetUnitY(e), casterX, casterY, angleCast, 235 // 2, attackRange) then
 								k = k + 1
+								--print(k)
 							end
 							GroupRemoveUnit(perebor, e)
 						end
@@ -372,7 +392,7 @@ function InitSpellTrigger()
 							end
 							if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e, GetOwningPlayer(caster)) and IsPointInSector(GetUnitX(e), GetUnitY(e), casterX, casterY, angleCast, 235 // 2, attackRange) then
 								UnitDamageTarget(caster, e, totalDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
-								FlyTextTagCriticalStrike(caster, R2I(totalDamage) .. "!", GetOwningPlayer(caster))
+								--FlyTextTagCriticalStrike(caster, R2I(totalDamage) .. "!", GetOwningPlayer(caster))
 								isUnit = true
 								local r2 = GetRandomInt(1, 3)
 								if r2 == 1 then
@@ -382,6 +402,8 @@ function InitSpellTrigger()
 								elseif r2 == 3 then
 									PlaySoundAtPointBJ(gg_snd_MetalHeavySliceFlesh3, 100, tl, 0)
 								end
+							else
+								--print("юнит не прошёл условие"..GetUnitName(e))
 							end
 							GroupRemoveUnit(perebor, e)
 						end
@@ -444,60 +466,62 @@ function InitSpellTrigger()
 		end
 		if spellId == SpellIDD then -- На гребне волны
 			local effModel="Units\\Creeps\\DragonSeaTurtle\\DragonSeaTurtle"
-			data.OnWater=true
-			--local cd = BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1)
-			local ship=AddSpecialEffect(effModel,OutPoint,OutPoint)
-			BlzSpecialEffectAddSubAnimation(ship,SUBANIM_TYPE_SWIM)
-			UnitAddAbility(caster,FourCC("Abun"))
-			TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
-				BlzStartUnitAbilityCooldown(caster, spellId, BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1))
-				local xs,ys=GetUnitXY(caster)
-				local eff=AddSpecialEffect("AdmiralAssets\\Torrent1",xs,ys)
-				local angle=GetUnitFacing(caster)
-				local speed=30
-				local nx,ny=MoveXY(xs,ys,speed,angle)
-				local nz=GetUnitZ(caster)
-				if not InMapXY(nx,ny) then
-				--	print("y="..ny)
-					local hor = 1
-					if isHitLeftOrRight(nx) then
-						hor = -1
+			--data.OnWater=true
+			local delay=TIMER_PERIOD-TimerGetElapsed(GlobalTimer)
+			TimerStart(CreateTimer(), delay, false, function()
+				local ship=AddSpecialEffect(effModel,OutPoint,OutPoint)
+				BlzSpecialEffectAddSubAnimation(ship,SUBANIM_TYPE_SWIM)
+				UnitAddAbility(caster,FourCC("Abun"))
+				TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+					BlzStartUnitAbilityCooldown(caster, spellId, BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1))
+					local xs,ys=GetUnitXY(caster)
+					local eff=AddSpecialEffect("AdmiralAssets\\Torrent1",xs,ys)
+					local angle=GetUnitFacing(caster)
+					local speed=30
+					local nx,ny=MoveXY(xs,ys,speed,angle)
+					local nz=GetUnitZ(caster)
+					if not InMapXY(nx,ny) then
+						--	print("y="..ny)
+						local hor = 1
+						if isHitLeftOrRight(nx) then
+							hor = -1
+						end
+						local ver = 1
+						if isHitTopOrBottom(ny) then
+							ver = -1
+						end
+						local vector = Vector:new((nx - xs)*hor,( ny- ys)*ver, nz - nz)
+						local yaw = vector:yaw()
+						BlzSetUnitFacingEx(caster,math.deg(yaw))
 					end
-					local ver = 1
-					if isHitTopOrBottom(ny) then
-						ver = -1
+					BlzSetSpecialEffectPosition(ship,nx,ny,nz-20)
+					BlzSetSpecialEffectYaw(ship,math.rad(angle))
+
+					BlzPlaySpecialEffectWithTimeScale(ship,ANIM_TYPE_WALK,2)
+
+					BlzSetSpecialEffectYaw(eff,math.rad(angle-180))
+					BlzSetSpecialEffectPitch(eff,math.rad(-90))
+					BlzSetSpecialEffectZ(eff,GetUnitZ(caster)-50)
+					BlzSetSpecialEffectScale(eff,0.2)
+					DestroyEffect(eff)
+					SetUnitX(caster,nx)
+					SetUnitY(caster,ny)
+
+					SetCameraQuickPosition(nx,ny)
+					SetCameraTargetControllerNoZForPlayer(GetOwningPlayer(caster), caster, 10, 10, true) -- не дергается
+
+					--SetUnitZ(caster,nz)
+					if GetUnitZ(caster)>=WaterZ  or not UnitAlive(caster) then
+						--print("end")
+						data.OnWater=false
+						UnitRemoveAbility(caster,FourCC("Abun"))
+						BlzSetSpecialEffectPosition(ship,OutPoint,OutPoint,0)
+						DestroyEffect(ship)
+						DestroyTimer(GetExpiredTimer())
+						ResetToGameCameraForPlayer(GetOwningPlayer(caster),0)
+						--	SetUnitZ(caster,GetUnitZ(caster)-200)
 					end
-					local vector = Vector:new((nx - xs)*hor,( ny- ys)*ver, nz - nz)
-					local yaw = vector:yaw()
-					BlzSetUnitFacingEx(caster,math.deg(yaw))
-				end
-				BlzSetSpecialEffectPosition(ship,nx,ny,nz-20)
-				BlzSetSpecialEffectYaw(ship,math.rad(angle))
-
-				BlzPlaySpecialEffectWithTimeScale(ship,ANIM_TYPE_WALK,2)
-
-				BlzSetSpecialEffectYaw(eff,math.rad(angle-180))
-				BlzSetSpecialEffectPitch(eff,math.rad(-90))
-				BlzSetSpecialEffectZ(eff,GetUnitZ(caster)-50)
-				BlzSetSpecialEffectScale(eff,0.2)
-				DestroyEffect(eff)
-				SetUnitX(caster,nx)
-				SetUnitY(caster,ny)
-
-				SetCameraQuickPosition(nx,ny)
-				SetCameraTargetControllerNoZForPlayer(GetOwningPlayer(caster), caster, 10, 10, true) -- не дергается
-
-				--SetUnitZ(caster,nz)
-				if GetUnitZ(caster)>=WaterZ  or not UnitAlive(caster) then
-					print("end")
-					data.OnWater=false
-					UnitRemoveAbility(caster,FourCC("Abun"))
-					BlzSetSpecialEffectPosition(ship,OutPoint,OutPoint,0)
-					DestroyEffect(ship)
-					DestroyTimer(GetExpiredTimer())
-					ResetToGameCameraForPlayer(GetOwningPlayer(caster),0)
-				--	SetUnitZ(caster,GetUnitZ(caster)-200)
-				end
+				end)
 			end)
 		end
 	end)
@@ -542,11 +566,13 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 	local heroCurrent = hero
 	local dist = 0
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+
 		dist = dist + speed
 		local x, y, z = BlzGetLocalSpecialEffectX(bullet), BlzGetLocalSpecialEffectY(bullet), BlzGetLocalSpecialEffectZ(bullet)
 		local zGround = GetTerrainZ(MoveX(x, speed * 2, angleCurrent), MoveY(y, speed * 2, angleCurrent))
 		BlzSetSpecialEffectYaw(bullet, math.rad(angleCurrent))
 		BlzSetSpecialEffectPosition(bullet, MoveX(x, speed, angleCurrent), MoveY(y, speed, angleCurrent), z - 2)
+		SetFogStateRadius(GetOwningPlayer(heroCurrent), FOG_OF_WAR_VISIBLE, x, y, 400, true)-- Небольгая подсветка
 		local ZBullet = BlzGetLocalSpecialEffectZ(bullet)
 		CollisionEnemy, DamagingUnit = UnitDamageArea(heroCurrent, 0, x, y, CollisionRange, ZBullet)
 		CollisisonDestr = PointContentDestructable(x, y, CollisionRange, false, 0, hero)
@@ -555,6 +581,10 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 			PointContentDestructable(x, y, CollisionRange, true, 0, hero)
 			if GetTerrainZ(x, y) <= WaterZ then
 				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", x, y))
+			else
+				--print("Где взрыв мать его")
+				DestroyEffect(AddSpecialEffect("Abilities\\Weapons\\BoatMissile\\BoatMissile", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
+				DestroyEffect(AddSpecialEffect("Abilities\\Weapons\\SteamTank\\SteamTankImpact.mdl", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
 			end
 			local stunDuration = 1
 			StunArea(hero, x, y, CollisionRange, stunDuration)
@@ -592,124 +622,128 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 	end
 	local HookGroup = CreateGroup()
 	local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
-	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
-		local x, y = BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff)
-		if flag == 3 then
-			angle = AngleBetweenXY(x, y, GetUnitXY(hero)) / bj_DEGTORAD
-			BlzSetSpecialEffectYaw(eff, math.rad(angle - 180)) --выворот на обратному ходу
-		end
+	local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
+	--print(TimerGetElapsed(GlobalTimer))
+	TimerStart(CreateTimer(), delay, false, function()
+		TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+			local x, y = BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff)
+			if flag == 3 then
+				angle = AngleBetweenXY(x, y, GetUnitXY(hero)) / bj_DEGTORAD
+				BlzSetSpecialEffectYaw(eff, math.rad(angle - 180)) --выворот на обратному ходу
+			end
 
-		local nx, ny = MoveXY(x, y, speed, angle)
-		local f = ParabolaZ(maxHeight, distance, i * speed) + ZStart
-		local pitchPoint = GetParabolaPitch(maxHeight, distance, i, speed)
-		local z = BlzGetLocalSpecialEffectZ(eff)
-		local zGround = GetTerrainZ(nx, ny)
-		local zn = f
-		if zn <= GetTerrainZ(nx, ny) then
-			zn = GetTerrainZ(nx, ny)
-		end
+			local nx, ny = MoveXY(x, y, speed, angle)
+			local f = ParabolaZ(maxHeight, distance, i * speed) + ZStart
+			local pitchPoint = GetParabolaPitch(maxHeight, distance, i, speed)
+			local z = BlzGetLocalSpecialEffectZ(eff)
+			local zGround = GetTerrainZ(nx, ny)
+			local zn = f
+			if zn <= GetTerrainZ(nx, ny) then
+				zn = GetTerrainZ(nx, ny)
+			end
 
-		if flag == 3 then
-			BlzSetSpecialEffectPosition(eff, nx, ny, GetTerrainZ(nx, ny) + 30)
-		else
-			BlzSetSpecialEffectPosition(eff, nx, ny, zn)
-		end
-
-		i = i + 1
-
-		if flag == 3 then
-			local e = nil
-			local tempEff = nil
-			if GetTerrainZ(nx, ny) <= WaterZ then
-				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", nx, ny))
+			if flag == 3 then
+				BlzSetSpecialEffectPosition(eff, nx, ny, GetTerrainZ(nx, ny) + 30)
 			else
-				tempEff = AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0", x, y)
-				TimerStart(CreateTimer(), 5, false, function()
-					DestroyEffect(tempEff)
-				end)
+				BlzSetSpecialEffectPosition(eff, nx, ny, zn)
 			end
 
-			GroupEnumUnitsInRange(perebor, x, y, 75, nil)
-			while true do
-				e = FirstOfGroup(perebor)
-				if e == nil then
-					break
-				end
-				if IsUnitEnemy(e, GetOwningPlayer(hero)) and not IsUnitType(e, UNIT_TYPE_STRUCTURE) then
-					PauseUnit(e, true)
-					GroupAddUnit(HookGroup, e)
-				end
-				GroupRemoveUnit(perebor, e)
-			end
-			ForGroup(HookGroup, function()
-				local enum = GetEnumUnit()
-				if not IsUnitInRange(enum, hero, 75) then
-					local nxe, nye = MoveXY(GetUnitX(enum), GetUnitY(enum), speed, angle)
+			i = i + 1
 
-					SetUnitX(enum, nxe)
-					SetUnitY(enum, nye)
-				end
-			end)
-		end
-		if flag == 2 then
-			local fStart = GetUnitZ(hero) + 70
-			--BlzSetSpecialEffectPitch(eff, -(pitchPoint)) --и якорь полетит навесом
-			BlzSetSpecialEffectPitch(eff, -(data.AnchorPitch)) --верная рабочая
-			local step = 20
-			data.AnchorPitch = MoveEffectLighting3D(GetUnitX(hero), GetUnitY(hero), fStart, nx, ny, BlzGetLocalSpecialEffectZ(eff), step, data.ChainEff)
-		end
-
-		if flag == 3 then
-			BlzSetSpecialEffectPitch(eff, math.rad(0))
-			if IsUnitInRangeXY(hero, nx, ny, 50) then
-				for i2 = 1, #chainElement do
-					BlzSetSpecialEffectPosition(chainElement[i2], OutPoint, OutPoint, 0)
-					DestroyEffect(chainElement[i2])
-				end
-				BlzSetSpecialEffectPosition(eff, OutPoint, OutPoint, 0)
-				DestroyEffect(eff)
-				DestroyTimer(GetExpiredTimer())
-				DestroyEffectLighting3D(data.ChainEff)
-				ForGroup(HookGroup, function()
-					local enum = GetEnumUnit()
-					PauseUnit(enum, false)
-					IssueImmediateOrder(enum, "stop")
-				end)
-				DestroyGroup(HookGroup)
-			else
-				local step = 20
-				local fStart = GetUnitZ(hero) + 70
-				--print("fStart="..fStart-zn)
-				BlzSetSpecialEffectPitch(eff, -(data.AnchorPitch))
-				data.AnchorPitch = MoveEffectLighting3D(GetUnitX(hero), GetUnitY(hero), fStart, nx, ny, GetTerrainZ(nx, ny) + 30, step, data.ChainEff)
-			end
-		end
-		if (z <= zGround and i > 5 and flag ~= 3) or i > 23 then
-			if flag == 2 then
+			if flag == 3 then
+				local e = nil
+				local tempEff = nil
 				if GetTerrainZ(nx, ny) <= WaterZ then
-					--	print("в воде")
 					DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", nx, ny))
 				else
-					--	print("на суше")
-					DestroyEffect(AddSpecialEffect("AdmiralAssets\\ThunderclapCasterClassic", nx, ny))
+					tempEff = AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0", x, y)
+					TimerStart(CreateTimer(), 5, false, function()
+						DestroyEffect(tempEff)
+					end)
 				end
-				local damage = GetHeroStr(hero, true) * AbilityStats.W.damage
-				DestroyTimer(GetExpiredTimer())
-				StunArea(hero, nx, ny, 150, 2)
-				JumpEffect(eff, 30, 0, angle - 180, distance, hero, 3)
-				local d, du = UnitDamageArea(hero, damage, nx, ny, 150)
-				if d then
-					FlyTextTagCriticalStrike(du, R2I(damage) .. "!", GetOwningPlayer(hero))
-				end
-				for i2 = 1, #chainElement do
-					BlzSetSpecialEffectPosition(chainElement[i2], OutPoint, OutPoint, 0)
-					DestroyEffect(chainElement[i2])
-				end
-				DestroyTimer(GetExpiredTimer())
 
+				GroupEnumUnitsInRange(perebor, x, y, 75, nil)
+				while true do
+					e = FirstOfGroup(perebor)
+					if e == nil then
+						break
+					end
+					if IsUnitEnemy(e, GetOwningPlayer(hero)) and not IsUnitType(e, UNIT_TYPE_STRUCTURE) then
+						PauseUnit(e, true)
+						GroupAddUnit(HookGroup, e)
+					end
+					GroupRemoveUnit(perebor, e)
+				end
+				ForGroup(HookGroup, function()
+					local enum = GetEnumUnit()
+					if not IsUnitInRange(enum, hero, 75) then
+						local nxe, nye = MoveXY(GetUnitX(enum), GetUnitY(enum), speed, angle)
+
+						SetUnitX(enum, nxe)
+						SetUnitY(enum, nye)
+					end
+				end)
+			end
+			if flag == 2 then
+				local fStart = GetUnitZ(hero) + 70
+				--BlzSetSpecialEffectPitch(eff, -(pitchPoint)) --и якорь полетит навесом
+				BlzSetSpecialEffectPitch(eff, -(data.AnchorPitch)) --верная рабочая
+				local step = 20
+				data.AnchorPitch = MoveEffectLighting3D(GetUnitX(hero), GetUnitY(hero), fStart, nx, ny, BlzGetLocalSpecialEffectZ(eff), step, data.ChainEff)
 			end
 
-		end
+			if flag == 3 then
+				BlzSetSpecialEffectPitch(eff, math.rad(0))
+				if IsUnitInRangeXY(hero, nx, ny, 50) then
+					for i2 = 1, #chainElement do
+						BlzSetSpecialEffectPosition(chainElement[i2], OutPoint, OutPoint, 0)
+						DestroyEffect(chainElement[i2])
+					end
+					BlzSetSpecialEffectPosition(eff, OutPoint, OutPoint, 0)
+					DestroyEffect(eff)
+					DestroyTimer(GetExpiredTimer())
+					DestroyEffectLighting3D(data.ChainEff)
+					ForGroup(HookGroup, function()
+						local enum = GetEnumUnit()
+						PauseUnit(enum, false)
+						IssueImmediateOrder(enum, "stop")
+					end)
+					DestroyGroup(HookGroup)
+				else
+					local step = 20
+					local fStart = GetUnitZ(hero) + 70
+					--print("fStart="..fStart-zn)
+					BlzSetSpecialEffectPitch(eff, -(data.AnchorPitch))
+					data.AnchorPitch = MoveEffectLighting3D(GetUnitX(hero), GetUnitY(hero), fStart, nx, ny, GetTerrainZ(nx, ny) + 30, step, data.ChainEff)
+				end
+			end
+			if (z <= zGround and i > 5 and flag ~= 3) or i > 23 then
+				if flag == 2 then
+					if GetTerrainZ(nx, ny) <= WaterZ then
+						--	print("в воде")
+						DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", nx, ny))
+					else
+						--	print("на суше")
+						DestroyEffect(AddSpecialEffect("AdmiralAssets\\ThunderclapCasterClassic", nx, ny))
+					end
+					local damage = GetHeroStr(hero, true) * AbilityStats.W.damage
+					DestroyTimer(GetExpiredTimer())
+					StunArea(hero, nx, ny, 150, 2)
+					JumpEffect(eff, 30, 0, angle - 180, distance, hero, 3)
+					local d, du = UnitDamageArea(hero, damage, nx, ny, 150)
+					if d then
+						FlyTextTagCriticalStrike(du, R2I(damage) .. "!", GetOwningPlayer(hero))
+					end
+					for i2 = 1, #chainElement do
+						BlzSetSpecialEffectPosition(chainElement[i2], OutPoint, OutPoint, 0)
+						DestroyEffect(chainElement[i2])
+					end
+					DestroyTimer(GetExpiredTimer())
+
+				end
+
+			end
+		end)
 	end)
 end
 
@@ -1420,6 +1454,21 @@ function InitUnitDeath()
 			--print("Погибло здание")
 			local x,y=GetUnitXY(DeadUnit)
 			AnyHPEARandomBuild(x,y,GetUnitTypeId(DeadUnit))
+		end
+		if GetUnitTypeId(DeadUnit)==FourCC('opeo') then--убит пеон
+			TimerStart(CreateTimer(), 1, false, function()
+				local Town = FindUnitOfType(FourCC('ogre'), 2500, GetUnitXY(DeadUnit))
+				if Town then
+					TimerStart(CreateTimer(), 5, false, function()
+						local xlim,ylum=GetUnitXY(Town)
+						local new=CreateUnit(GetOwningPlayer(DeadUnit), FourCC('opeo'),xlim, ylum, 0)
+						IssueImmediateOrder(new,"autoharvestlumber")
+						if GetRandomInt(1,2)==1 then
+							IssueImmediateOrder(new,"autoharvestgold")
+						end
+					end)
+				end
+			end)
 		end
 	end)
 end

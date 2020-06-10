@@ -29,11 +29,13 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 	local heroCurrent = hero
 	local dist = 0
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+
 		dist = dist + speed
 		local x, y, z = BlzGetLocalSpecialEffectX(bullet), BlzGetLocalSpecialEffectY(bullet), BlzGetLocalSpecialEffectZ(bullet)
 		local zGround = GetTerrainZ(MoveX(x, speed * 2, angleCurrent), MoveY(y, speed * 2, angleCurrent))
 		BlzSetSpecialEffectYaw(bullet, math.rad(angleCurrent))
 		BlzSetSpecialEffectPosition(bullet, MoveX(x, speed, angleCurrent), MoveY(y, speed, angleCurrent), z - 2)
+		SetFogStateRadius(GetOwningPlayer(heroCurrent), FOG_OF_WAR_VISIBLE, x, y, 400, true)-- Небольгая подсветка
 		local ZBullet = BlzGetLocalSpecialEffectZ(bullet)
 		CollisionEnemy, DamagingUnit = UnitDamageArea(heroCurrent, 0, x, y, CollisionRange, ZBullet)
 		CollisisonDestr = PointContentDestructable(x, y, CollisionRange, false, 0, hero)
@@ -42,6 +44,10 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 			PointContentDestructable(x, y, CollisionRange, true, 0, hero)
 			if GetTerrainZ(x, y) <= WaterZ then
 				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", x, y))
+			else
+				--print("Где взрыв мать его")
+				DestroyEffect(AddSpecialEffect("Abilities\\Weapons\\BoatMissile\\BoatMissile", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
+				DestroyEffect(AddSpecialEffect("Abilities\\Weapons\\SteamTank\\SteamTankImpact.mdl", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
 			end
 			local stunDuration = 1
 			StunArea(hero, x, y, CollisionRange, stunDuration)
@@ -79,123 +85,127 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 	end
 	local HookGroup = CreateGroup()
 	local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
-	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
-		local x, y = BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff)
-		if flag == 3 then
-			angle = AngleBetweenXY(x, y, GetUnitXY(hero)) / bj_DEGTORAD
-			BlzSetSpecialEffectYaw(eff, math.rad(angle - 180)) --выворот на обратному ходу
-		end
+	local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
+	--print(TimerGetElapsed(GlobalTimer))
+	TimerStart(CreateTimer(), delay, false, function()
+		TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+			local x, y = BlzGetLocalSpecialEffectX(eff), BlzGetLocalSpecialEffectY(eff)
+			if flag == 3 then
+				angle = AngleBetweenXY(x, y, GetUnitXY(hero)) / bj_DEGTORAD
+				BlzSetSpecialEffectYaw(eff, math.rad(angle - 180)) --выворот на обратному ходу
+			end
 
-		local nx, ny = MoveXY(x, y, speed, angle)
-		local f = ParabolaZ(maxHeight, distance, i * speed) + ZStart
-		local pitchPoint = GetParabolaPitch(maxHeight, distance, i, speed)
-		local z = BlzGetLocalSpecialEffectZ(eff)
-		local zGround = GetTerrainZ(nx, ny)
-		local zn = f
-		if zn <= GetTerrainZ(nx, ny) then
-			zn = GetTerrainZ(nx, ny)
-		end
+			local nx, ny = MoveXY(x, y, speed, angle)
+			local f = ParabolaZ(maxHeight, distance, i * speed) + ZStart
+			local pitchPoint = GetParabolaPitch(maxHeight, distance, i, speed)
+			local z = BlzGetLocalSpecialEffectZ(eff)
+			local zGround = GetTerrainZ(nx, ny)
+			local zn = f
+			if zn <= GetTerrainZ(nx, ny) then
+				zn = GetTerrainZ(nx, ny)
+			end
 
-		if flag == 3 then
-			BlzSetSpecialEffectPosition(eff, nx, ny, GetTerrainZ(nx, ny) + 30)
-		else
-			BlzSetSpecialEffectPosition(eff, nx, ny, zn)
-		end
-
-		i = i + 1
-
-		if flag == 3 then
-			local e = nil
-			local tempEff = nil
-			if GetTerrainZ(nx, ny) <= WaterZ then
-				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", nx, ny))
+			if flag == 3 then
+				BlzSetSpecialEffectPosition(eff, nx, ny, GetTerrainZ(nx, ny) + 30)
 			else
-				tempEff = AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0", x, y)
-				TimerStart(CreateTimer(), 5, false, function()
-					DestroyEffect(tempEff)
-				end)
+				BlzSetSpecialEffectPosition(eff, nx, ny, zn)
 			end
 
-			GroupEnumUnitsInRange(perebor, x, y, 75, nil)
-			while true do
-				e = FirstOfGroup(perebor)
-				if e == nil then
-					break
-				end
-				if IsUnitEnemy(e, GetOwningPlayer(hero)) and not IsUnitType(e, UNIT_TYPE_STRUCTURE) then
-					PauseUnit(e, true)
-					GroupAddUnit(HookGroup, e)
-				end
-				GroupRemoveUnit(perebor, e)
-			end
-			ForGroup(HookGroup, function()
-				local enum = GetEnumUnit()
-				if not IsUnitInRange(enum, hero, 75) then
-					local nxe, nye = MoveXY(GetUnitX(enum), GetUnitY(enum), speed, angle)
+			i = i + 1
 
-					SetUnitX(enum, nxe)
-					SetUnitY(enum, nye)
-				end
-			end)
-		end
-		if flag == 2 then
-			local fStart = GetUnitZ(hero) + 70
-			--BlzSetSpecialEffectPitch(eff, -(pitchPoint)) --и якорь полетит навесом
-			BlzSetSpecialEffectPitch(eff, -(data.AnchorPitch)) --верная рабочая
-			local step = 20
-			data.AnchorPitch = MoveEffectLighting3D(GetUnitX(hero), GetUnitY(hero), fStart, nx, ny, BlzGetLocalSpecialEffectZ(eff), step, data.ChainEff)
-		end
-
-		if flag == 3 then
-			BlzSetSpecialEffectPitch(eff, math.rad(0))
-			if IsUnitInRangeXY(hero, nx, ny, 50) then
-				for i2 = 1, #chainElement do
-					BlzSetSpecialEffectPosition(chainElement[i2], OutPoint, OutPoint, 0)
-					DestroyEffect(chainElement[i2])
-				end
-				BlzSetSpecialEffectPosition(eff, OutPoint, OutPoint, 0)
-				DestroyEffect(eff)
-				DestroyTimer(GetExpiredTimer())
-				DestroyEffectLighting3D(data.ChainEff)
-				ForGroup(HookGroup, function()
-					local enum = GetEnumUnit()
-					PauseUnit(enum, false)
-					IssueImmediateOrder(enum, "stop")
-				end)
-				DestroyGroup(HookGroup)
-			else
-				local step = 20
-				local fStart = GetUnitZ(hero) + 70
-				--print("fStart="..fStart-zn)
-				BlzSetSpecialEffectPitch(eff, -(data.AnchorPitch))
-				data.AnchorPitch = MoveEffectLighting3D(GetUnitX(hero), GetUnitY(hero), fStart, nx, ny, GetTerrainZ(nx, ny) + 30, step, data.ChainEff)
-			end
-		end
-		if (z <= zGround and i > 5 and flag ~= 3) or i > 23 then
-			if flag == 2 then
+			if flag == 3 then
+				local e = nil
+				local tempEff = nil
 				if GetTerrainZ(nx, ny) <= WaterZ then
-					--	print("в воде")
 					DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", nx, ny))
 				else
-					--	print("на суше")
-					DestroyEffect(AddSpecialEffect("AdmiralAssets\\ThunderclapCasterClassic", nx, ny))
+					tempEff = AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0", x, y)
+					TimerStart(CreateTimer(), 5, false, function()
+						DestroyEffect(tempEff)
+					end)
 				end
-				local damage = GetHeroStr(hero, true) * AbilityStats.W.damage
-				DestroyTimer(GetExpiredTimer())
-				StunArea(hero, nx, ny, 150, 2)
-				JumpEffect(eff, 30, 0, angle - 180, distance, hero, 3)
-				local d, du = UnitDamageArea(hero, damage, nx, ny, 150)
-				if d then
-					FlyTextTagCriticalStrike(du, R2I(damage) .. "!", GetOwningPlayer(hero))
-				end
-				for i2 = 1, #chainElement do
-					BlzSetSpecialEffectPosition(chainElement[i2], OutPoint, OutPoint, 0)
-					DestroyEffect(chainElement[i2])
-				end
-				DestroyTimer(GetExpiredTimer())
 
+				GroupEnumUnitsInRange(perebor, x, y, 75, nil)
+				while true do
+					e = FirstOfGroup(perebor)
+					if e == nil then
+						break
+					end
+					if IsUnitEnemy(e, GetOwningPlayer(hero)) and not IsUnitType(e, UNIT_TYPE_STRUCTURE) then
+						PauseUnit(e, true)
+						GroupAddUnit(HookGroup, e)
+					end
+					GroupRemoveUnit(perebor, e)
+				end
+				ForGroup(HookGroup, function()
+					local enum = GetEnumUnit()
+					if not IsUnitInRange(enum, hero, 75) then
+						local nxe, nye = MoveXY(GetUnitX(enum), GetUnitY(enum), speed, angle)
+
+						SetUnitX(enum, nxe)
+						SetUnitY(enum, nye)
+					end
+				end)
+			end
+			if flag == 2 then
+				local fStart = GetUnitZ(hero) + 70
+				--BlzSetSpecialEffectPitch(eff, -(pitchPoint)) --и якорь полетит навесом
+				BlzSetSpecialEffectPitch(eff, -(data.AnchorPitch)) --верная рабочая
+				local step = 20
+				data.AnchorPitch = MoveEffectLighting3D(GetUnitX(hero), GetUnitY(hero), fStart, nx, ny, BlzGetLocalSpecialEffectZ(eff), step, data.ChainEff)
 			end
 
-		end
+			if flag == 3 then
+				BlzSetSpecialEffectPitch(eff, math.rad(0))
+				if IsUnitInRangeXY(hero, nx, ny, 50) then
+					for i2 = 1, #chainElement do
+						BlzSetSpecialEffectPosition(chainElement[i2], OutPoint, OutPoint, 0)
+						DestroyEffect(chainElement[i2])
+					end
+					BlzSetSpecialEffectPosition(eff, OutPoint, OutPoint, 0)
+					DestroyEffect(eff)
+					DestroyTimer(GetExpiredTimer())
+					DestroyEffectLighting3D(data.ChainEff)
+					ForGroup(HookGroup, function()
+						local enum = GetEnumUnit()
+						PauseUnit(enum, false)
+						IssueImmediateOrder(enum, "stop")
+					end)
+					DestroyGroup(HookGroup)
+				else
+					local step = 20
+					local fStart = GetUnitZ(hero) + 70
+					--print("fStart="..fStart-zn)
+					BlzSetSpecialEffectPitch(eff, -(data.AnchorPitch))
+					data.AnchorPitch = MoveEffectLighting3D(GetUnitX(hero), GetUnitY(hero), fStart, nx, ny, GetTerrainZ(nx, ny) + 30, step, data.ChainEff)
+				end
+			end
+			if (z <= zGround and i > 5 and flag ~= 3) or i > 23 then
+				if flag == 2 then
+					if GetTerrainZ(nx, ny) <= WaterZ then
+						--	print("в воде")
+						DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", nx, ny))
+					else
+						--	print("на суше")
+						DestroyEffect(AddSpecialEffect("AdmiralAssets\\ThunderclapCasterClassic", nx, ny))
+					end
+					local damage = GetHeroStr(hero, true) * AbilityStats.W.damage
+					DestroyTimer(GetExpiredTimer())
+					StunArea(hero, nx, ny, 150, 2)
+					JumpEffect(eff, 30, 0, angle - 180, distance, hero, 3)
+					local d, du = UnitDamageArea(hero, damage, nx, ny, 150)
+					if d then
+						FlyTextTagCriticalStrike(du, R2I(damage) .. "!", GetOwningPlayer(hero))
+					end
+					for i2 = 1, #chainElement do
+						BlzSetSpecialEffectPosition(chainElement[i2], OutPoint, OutPoint, 0)
+						DestroyEffect(chainElement[i2])
+					end
+					DestroyTimer(GetExpiredTimer())
+
+				end
+
+			end
+		end)
 	end)
 end

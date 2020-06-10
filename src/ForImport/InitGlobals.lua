@@ -6,6 +6,7 @@ do
 	function InitGlobals()
 		InitGlobalsOrigin()
 		perebor = CreateGroup() --1 едиснвенная глобальная группа на всю игру, никакие Destroy Привет гуишники
+		GlobalTimer=CreateTimer() --
 		InitSpellTrigger() -- Инициализация функции кастов
 		InitHEROTable() -- Инициализация таблицы героев
 		KeyRegistration() -- инициализация отлова нажатия клавиш
@@ -49,7 +50,10 @@ function InitHEROTable()
 			HeroGreenDamage = 0,
 			AnchorPitch = 0,
 			OnWater=false,
+
 		}
 	end
+	TimerStart(GlobalTimer, TIMER_PERIOD, true, function()
+	end)
 end
 
