@@ -6,7 +6,7 @@ do
 	function InitGlobals()
 		InitGlobalsOrigin()
 		perebor = CreateGroup() --1 едиснвенная глобальная группа на всю игру, никакие Destroy Привет гуишники
-		GlobalTimer=CreateTimer() --
+		GlobalTimer=CreateTimer() -- Глобальный синхронизатор таймеров малого периода
 		InitSpellTrigger() -- Инициализация функции кастов
 		InitHEROTable() -- Инициализация таблицы героев
 		KeyRegistration() -- инициализация отлова нажатия клавиш
@@ -14,6 +14,10 @@ do
 		InitMouseMoveTrigger() -- Запуск отслеживания положения мыши
 		InitSoundsA()--Создаём звуки
 		InitUnitDeath()-- инициализация смерти
+		local text=CreateBigText("Не дайте пеонам сбежать",2)
+		TimerStart(CreateTimer(), 20, true, function()
+			BlzDestroyFrame(text)
+		end)
 	end
 
 end

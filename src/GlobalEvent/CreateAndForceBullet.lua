@@ -46,8 +46,8 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", x, y))
 			else
 				--print("Где взрыв мать его")
-				DestroyEffect(AddSpecialEffect("Abilities\\Weapons\\BoatMissile\\BoatMissile", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
-				DestroyEffect(AddSpecialEffect("Abilities\\Weapons\\SteamTank\\SteamTankImpact.mdl", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
+				DestroyEffect(AddSpecialEffect("AdmiralAssets\\CannonTowerMissile", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
+				--DestroyEffect(AddSpecialEffect("Abilities\\Weapons\\SteamTank\\SteamTankImpact.mdl", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
 			end
 			local stunDuration = 1
 			StunArea(hero, x, y, CollisionRange, stunDuration)
@@ -55,9 +55,11 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 			if DamagingUnit and IsUnitType(hero, UNIT_TYPE_HERO) then
 				FlyTextTagCriticalStrike(DamagingUnit, R2I(damage) .. "!", GetOwningPlayer(hero))
 			end
+			BlzSetSpecialEffectPosition(bullet,OutPoint,OutPoint,0)
 			DestroyEffect(bullet)
 			DestroyTimer(GetExpiredTimer())
 			if not DamagingUnit then
+				BlzSetSpecialEffectPosition(bullet,OutPoint,OutPoint,0)
 				DestroyEffect(bullet)
 				DestroyTimer(GetExpiredTimer())
 			end
