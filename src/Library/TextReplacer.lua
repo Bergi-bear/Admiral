@@ -63,10 +63,23 @@ do
 			if id==SpellIDR then
 				local count= AbilityStats.R.count
 				NativeString =string.gsub(NativeString,'count',count)
+				if hasHat then
+					NativeString=NativeString.."|cff5078f8".."\nПушки оглушают врагов при приземлении на 2 секунды".."|r"
+				end
 			end
 			if id==SpellIDS then
 				local dmg= data.bonusCD
 				NativeString =string.gsub(NativeString,'dmg',dmg)
+				if hasHat then
+					NativeString=NativeString.."|cff5078f8".."\nПоднимается убитых орков в виде скелетов.\nСила атаки скелета: Текущий бонус ярости\nВремя жизни: 30\nПерезарядка: 10".."|r"
+				end
+			end
+			if id==SpellIDD then
+				--local dmg= data.bonusCD
+				--NativeString =string.gsub(NativeString,'dmg',dmg)
+				if hasHat then
+					NativeString=NativeString.."|cff5078f8".."\nЧерепаха наносит урон касанием в области 250".."|r"
+				end
 			end
 		end
 		if hasHat then
@@ -84,4 +97,5 @@ function AllAbilityRefresh(hero)
 	UnitRefreshAbilityTooltip(hero,SpellIDE)
 	UnitRefreshAbilityTooltip(hero,SpellIDR)
 	UnitRefreshAbilityTooltip(hero,SpellIDS)
+	UnitRefreshAbilityTooltip(hero,SpellIDD)
 end

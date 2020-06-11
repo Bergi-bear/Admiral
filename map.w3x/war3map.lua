@@ -247,10 +247,10 @@ do
 		InitMouseMoveTrigger() -- Запуск отслеживания положения мыши
 		InitSoundsA()--Создаём звуки
 		InitUnitDeath()-- инициализация смерти
-		-- то что ниже удали при релизе
-
+		-- то что ниже удалить при релизе
 		OnAttack()
-		local text=CreateBigText("Не дайте пеонам сбежать",2)
+		InitUnitDeathMap()
+		local text=CreateBigText("Не дайте пеонам сбежать",3)
 		TimerStart(CreateTimer(), 20, true, function()
 			BlzDestroyFrame(text)
 		end)
@@ -333,6 +333,7 @@ function InitSpellTrigger()
 			-- Выстрел
 			BlzPauseUnitEx(caster, true)
 			TimerStart(CreateTimer(), 0.1, false, function()
+				local speed=50
 				if UnitAlive(caster) then
 					SetUnitAnimationByIndex(caster, 17)
 					if CustomFrameSystem then
@@ -341,9 +342,16 @@ function InitSpellTrigger()
 					TimerStart(CreateTimer(), 0.4, false, function()
 						local damage = (BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage) * AbilityStats.Q.damage
 						casterX, casterY = GetUnitXY(caster)
-						angleCast = GetUnitFacing(caster)--AngleBetweenXY(casterX, casterY, x, y) / bj_DEGTORAD
+						if data.OnWater then
+							angleCast = GetUnitFacing(caster)
+						else
+							angleCast =AngleBetweenXY(casterX, casterY, x, y) / bj_DEGTORAD
+						end
 						local xs, ys = MoveXY(casterX, casterY, 80, angleCast)
-						CreateAndForceBullet(caster, angleCast, 50, "Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile", xs, ys, damage)
+						if data.OnWater then
+							speed=speed+30
+						end
+						CreateAndForceBullet(caster, angleCast, speed, "Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile", xs, ys, damage)
 					end)
 					TimerStart(CreateTimer(), 1, false, function()
 						if UnitAlive(caster) then
@@ -384,7 +392,9 @@ function InitSpellTrigger()
 						local k = 0
 						local damage = BlzGetUnitBaseDamage(caster, 0)
 						local multiplier = 1
+						local multiplierHeal = 1
 						local totalDamage = 0
+						local kHeal=0
 						local tl = Location(GetUnitXY(caster))
 						GroupEnumUnitsInRange(perebor, casterX, casterY, attackRange, nil)
 						while true do
@@ -394,14 +404,20 @@ function InitSpellTrigger()
 							end
 							if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e, GetOwningPlayer(caster)) and IsPointInSector(GetUnitX(e), GetUnitY(e), casterX, casterY, angleCast, 235 // 2, attackRange) then
 								k = k + 1
+								if not IsUnitType(e,UNIT_TYPE_MECHANICAL) then
+									kHeal=kHeal+1
+								end
 								--print(k)
 							end
 							GroupRemoveUnit(perebor, e)
 						end
 						multiplier = multiplier + AbilityStats.E.damage * k
+						multiplierHeal=multiplierHeal+AbilityStats.E.damage * kHeal
 						totalDamage = damage * multiplier
+						local totalHeal=damage*multiplierHeal
 						local isUnit = false
 						GroupEnumUnitsInRange(perebor, casterX, casterY, attackRange, nil)
+
 						while true do
 							e = FirstOfGroup(perebor)
 							if e == nil then
@@ -424,8 +440,8 @@ function InitSpellTrigger()
 							end
 							GroupRemoveUnit(perebor, e)
 						end
-						if data.HasHat then
-							HealUnit(caster,totalDamage*.1)
+						if data.HasHat and isUnit then
+							HealUnit(caster,totalHeal*.1)
 						end
 						if not isUnit then
 							UnitDamageArea(caster, totalDamage, casterX, casterY, attackRange)
@@ -488,7 +504,7 @@ function InitSpellTrigger()
 		if spellId == SpellIDD then
 			-- На гребне волны
 			local effModel = "Units\\Creeps\\DragonSeaTurtle\\DragonSeaTurtle"
-			--data.OnWater=true
+			data.OnWater=true
 			local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
 			TimerStart(CreateTimer(), delay, false, function()
 				local ship = AddSpecialEffect(effModel, OutPoint, OutPoint)
@@ -518,7 +534,9 @@ function InitSpellTrigger()
 					end
 					BlzSetSpecialEffectPosition(ship, nx, ny, nz - 20)
 					BlzSetSpecialEffectYaw(ship, math.rad(angle))
-
+					if data.HasHat then
+						UnitDamageArea(caster,(BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage),GetUnitX(caster),GetUnitY(caster),250)
+					end
 					BlzPlaySpecialEffectWithTimeScale(ship, ANIM_TYPE_WALK, 2)
 
 					BlzSetSpecialEffectYaw(eff, math.rad(angle - 180))
@@ -536,6 +554,7 @@ function InitSpellTrigger()
 					if GetUnitZ(caster) >= WaterZ or not UnitAlive(caster) then
 						--print("end")
 						data.OnWater = false
+						UnitDamageArea(caster,(BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage),GetUnitX(caster),GetUnitY(caster),250)
 						UnitRemoveAbility(caster, FourCC("Abun"))
 						BlzSetSpecialEffectPosition(ship, OutPoint, OutPoint, 0)
 						DestroyEffect(ship)
@@ -638,7 +657,7 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 				local data=HERO[GetPlayerId(GetOwningPlayer(hero))]
 				FlyTextTagCriticalStrike(DamagingUnit, R2I(damage) .. "!", GetOwningPlayer(hero))
 				if not UnitAlive(DamagingUnit) and data.HasHat then
-					print("звук перезарядки")
+				--	print("звук перезарядки")
 					local tl = Location(GetUnitXY(hero))
 					PlaySoundAtPointBJ(soundReload, 100, tl, 0)
 					RemoveLocation(tl)
@@ -1370,10 +1389,23 @@ do
 			if id==SpellIDR then
 				local count= AbilityStats.R.count
 				NativeString =string.gsub(NativeString,'count',count)
+				if hasHat then
+					NativeString=NativeString.."|cff5078f8".."\nПушки оглушают врагов при приземлении на 2 секунды".."|r"
+				end
 			end
 			if id==SpellIDS then
 				local dmg= data.bonusCD
 				NativeString =string.gsub(NativeString,'dmg',dmg)
+				if hasHat then
+					NativeString=NativeString.."|cff5078f8".."\nПоднимается убитых орков в виде скелетов.\nСила атаки скелета: Текущий бонус ярости\nВремя жизни: 30\nПерезарядка: 10".."|r"
+				end
+			end
+			if id==SpellIDD then
+				--local dmg= data.bonusCD
+				--NativeString =string.gsub(NativeString,'dmg',dmg)
+				if hasHat then
+					NativeString=NativeString.."|cff5078f8".."\nЧерепаха наносит урон касанием в области 250".."|r"
+				end
 			end
 		end
 		if hasHat then
@@ -1391,6 +1423,7 @@ function AllAbilityRefresh(hero)
 	UnitRefreshAbilityTooltip(hero,SpellIDE)
 	UnitRefreshAbilityTooltip(hero,SpellIDR)
 	UnitRefreshAbilityTooltip(hero,SpellIDS)
+	UnitRefreshAbilityTooltip(hero,SpellIDD)
 end
 ---@param text string
 ---@param textSize real
@@ -1450,6 +1483,46 @@ end
 ---
 --- Generated by EmmyLua(https://github.com/EmmyLua)
 --- Created by Bergi.
+--- DateTime: 23.01.2020 20:11
+function InitUnitDeath()
+	local gg_trg_DEADGUI = CreateTrigger()
+	TriggerRegisterAnyUnitEventBJ(gg_trg_DEADGUI, EVENT_PLAYER_UNIT_DEATH)
+	TriggerAddAction(gg_trg_DEADGUI, function()
+		local DeadUnit=GetTriggerUnit()
+		local killer=GetKillingUnit()
+		local data = HERO[GetPlayerId(GetOwningPlayer(killer))]
+		if IsUnitType(DeadUnit,UNIT_TYPE_HERO) then --герой умер
+			if CustomFrameSystem then
+				CreateCallingBar(DeadUnit,10,"Воскрешение")
+			end
+			local PD=GetOwningPlayer(DeadUnit)
+			TimerStart(CreateTimer(), 10, false, function()
+				ReviveHero(DeadUnit,GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD),true)
+				SelectUnitForPlayerSingle(DeadUnit,PD)
+				SetCameraPosition(GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD))
+			end)
+		end
+
+		if IsUnitType(killer,UNIT_TYPE_HERO) and data.HasHat then --герой убил
+			if BlzGetUnitAbilityCooldownRemaining(killer,SpellIDS)<=.01 and not IsUnitType(DeadUnit,UNIT_TYPE_MECHANICAL) and IsUnitRace(DeadUnit,RACE_ORC) then
+				BlzStartUnitAbilityCooldown(killer,SpellIDS,10)
+				--print("Время создать зомби")
+				TimerStart(CreateTimer(), 1, false, function()
+					ShowUnit(DeadUnit,false)
+					local eff=AddSpecialEffect("Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton",GetUnitXY(DeadUnit))
+					BlzPlaySpecialEffect(eff,ANIM_TYPE_BIRTH)
+					local new=CreateUnit(GetOwningPlayer(killer),FourCC('nsko'),GetUnitX(DeadUnit),GetUnitY(DeadUnit),GetRandomInt(0,360))
+					BlzSetUnitBaseDamage(new,data.bonusCD,0)
+					DestroyEffect(eff)
+					UnitApplyTimedLife(new,FourCC('BTLF'),30)
+				end)
+			end
+		end
+	end)
+end
+---
+--- Generated by EmmyLua(https://github.com/EmmyLua)
+--- Created by Bergi.
 --- DateTime: 17.05.2020 22:30
 ---
 
@@ -1493,7 +1566,7 @@ end
 function CreateBigText(text,maxSize)
 	local newText = BlzCreateFrameByType("TEXT", "", BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), "", 0)
 	BlzFrameSetText(newText, text)
-	BlzFrameSetAbsPoint(newText,FRAMEPOINT_CENTER,0.4,0.51)
+	BlzFrameSetAbsPoint(newText,FRAMEPOINT_CENTER,0.4,0.5)
 	BlzFrameSetScale(newText, maxSize)
 	return newText
 end
@@ -1511,7 +1584,9 @@ function OnAttack()
 
 		if GetUnitTypeId(hero)==FourCC('opeo') then
 			local boat=FindUnitOfType(FourCC('obot'))
-			IssueTargetOrder(hero,"smart",boat)
+			if GetUnitCurrentOrder(hero)~=String2OrderIdBJ("smart") then
+				IssueTargetOrder(hero,"smart",boat)
+			end
 		end
 	end)
 end
@@ -1571,22 +1646,11 @@ end
 --- Generated by EmmyLua(https://github.com/EmmyLua)
 --- Created by Bergi.
 --- DateTime: 23.01.2020 20:11
-function InitUnitDeath()
+function InitUnitDeathMap()
 	local gg_trg_DEADGUI = CreateTrigger()
 	TriggerRegisterAnyUnitEventBJ(gg_trg_DEADGUI, EVENT_PLAYER_UNIT_DEATH)
 	TriggerAddAction(gg_trg_DEADGUI, function()
 		local DeadUnit=GetTriggerUnit()
-		if IsUnitType(DeadUnit,UNIT_TYPE_HERO) then --герой умер
-			if CustomFrameSystem then
-				CreateCallingBar(DeadUnit,10,"Воскрешение")
-			end
-			local PD=GetOwningPlayer(DeadUnit)
-			TimerStart(CreateTimer(), 10, false, function()
-				ReviveHero(DeadUnit,GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD),true)
-				SelectUnitForPlayerSingle(DeadUnit,PD)
-				SetCameraPosition(GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD))
-			end)
-		end
 		if IsUnitType(DeadUnit,UNIT_TYPE_STRUCTURE) then
 			--print("Погибло здание")
 			local x,y=GetUnitXY(DeadUnit)
@@ -1952,25 +2016,28 @@ function MarkCreatorW(data)
 			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
 			--BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
 			local a=0
-			TimerStart(CreateTimer(),TIMER_PERIOD, true, function()
-				local z,x,y=GetUnitZ(data.UnitHero)+200,GetUnitXY(data.UnitHero)
-				BlzSetSpecialEffectPosition(data.Anchor,x,y,z)
-				if a>=360 then a=a-360 end
-				a=a+40
-				--print(a)
-				BlzSetSpecialEffectYaw(data.Anchor,math.rad(a))
+			local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
+			TimerStart(CreateTimer(), delay, false, function()
+				TimerStart(CreateTimer(),TIMER_PERIOD, true, function()
+					local z,x,y=GetUnitZ(data.UnitHero)+200,GetUnitXY(data.UnitHero)
+					BlzSetSpecialEffectPosition(data.Anchor,x,y,z)
+					if a>=360 then a=a-360 end
+					a=a+40
+					--print(a)
+					BlzSetSpecialEffectYaw(data.Anchor,math.rad(a))
 
-				if data.AnchorSpinTag then
-					DestroyTextTag(data.AnchorSpinTag)
-					data.AnchorSpinTag=StaticTag(R2I(data.AnchorSpinDamage), 0.04, GetWidgetX(hero), GetWidgetY(hero), 260, 130, 0, 255, 255, 0, 0.04, 2, 5, GetOwningPlayer(hero))
-				end
+					if data.AnchorSpinTag then
+						DestroyTextTag(data.AnchorSpinTag)
+						data.AnchorSpinTag=StaticTag(R2I(data.AnchorSpinDamage), 0.04, GetWidgetX(hero), GetWidgetY(hero), 260, 130, 0, 255, 255, 0, 0.04, 2, 5, GetOwningPlayer(hero))
+					end
 
-				if not data.MarkIsActivated then
-					--print("уничтожем якорь")
-					DestroyTimer(GetExpiredTimer())
-					DestroyEffect(data.Anchor)
-					BlzSetSpecialEffectPosition(data.Anchor,OutPoint,OutPoint,0)
-				end
+					if not data.MarkIsActivated then
+						--print("уничтожем якорь")
+						DestroyTimer(GetExpiredTimer())
+						DestroyEffect(data.Anchor)
+						BlzSetSpecialEffectPosition(data.Anchor,OutPoint,OutPoint,0)
+					end
+				end)
 			end)
 			local sec=1
 			data.AnchorSpinDamage=1

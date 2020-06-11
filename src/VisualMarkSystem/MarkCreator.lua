@@ -35,25 +35,28 @@ function MarkCreatorW(data)
 			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
 			--BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
 			local a=0
-			TimerStart(CreateTimer(),TIMER_PERIOD, true, function()
-				local z,x,y=GetUnitZ(data.UnitHero)+200,GetUnitXY(data.UnitHero)
-				BlzSetSpecialEffectPosition(data.Anchor,x,y,z)
-				if a>=360 then a=a-360 end
-				a=a+40
-				--print(a)
-				BlzSetSpecialEffectYaw(data.Anchor,math.rad(a))
+			local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
+			TimerStart(CreateTimer(), delay, false, function()
+				TimerStart(CreateTimer(),TIMER_PERIOD, true, function()
+					local z,x,y=GetUnitZ(data.UnitHero)+200,GetUnitXY(data.UnitHero)
+					BlzSetSpecialEffectPosition(data.Anchor,x,y,z)
+					if a>=360 then a=a-360 end
+					a=a+40
+					--print(a)
+					BlzSetSpecialEffectYaw(data.Anchor,math.rad(a))
 
-				if data.AnchorSpinTag then
-					DestroyTextTag(data.AnchorSpinTag)
-					data.AnchorSpinTag=StaticTag(R2I(data.AnchorSpinDamage), 0.04, GetWidgetX(hero), GetWidgetY(hero), 260, 130, 0, 255, 255, 0, 0.04, 2, 5, GetOwningPlayer(hero))
-				end
+					if data.AnchorSpinTag then
+						DestroyTextTag(data.AnchorSpinTag)
+						data.AnchorSpinTag=StaticTag(R2I(data.AnchorSpinDamage), 0.04, GetWidgetX(hero), GetWidgetY(hero), 260, 130, 0, 255, 255, 0, 0.04, 2, 5, GetOwningPlayer(hero))
+					end
 
-				if not data.MarkIsActivated then
-					--print("уничтожем якорь")
-					DestroyTimer(GetExpiredTimer())
-					DestroyEffect(data.Anchor)
-					BlzSetSpecialEffectPosition(data.Anchor,OutPoint,OutPoint,0)
-				end
+					if not data.MarkIsActivated then
+						--print("уничтожем якорь")
+						DestroyTimer(GetExpiredTimer())
+						DestroyEffect(data.Anchor)
+						BlzSetSpecialEffectPosition(data.Anchor,OutPoint,OutPoint,0)
+					end
+				end)
 			end)
 			local sec=1
 			data.AnchorSpinDamage=1

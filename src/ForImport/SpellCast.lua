@@ -31,6 +31,7 @@ function InitSpellTrigger()
 			-- Выстрел
 			BlzPauseUnitEx(caster, true)
 			TimerStart(CreateTimer(), 0.1, false, function()
+				local speed=50
 				if UnitAlive(caster) then
 					SetUnitAnimationByIndex(caster, 17)
 					if CustomFrameSystem then
@@ -39,9 +40,16 @@ function InitSpellTrigger()
 					TimerStart(CreateTimer(), 0.4, false, function()
 						local damage = (BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage) * AbilityStats.Q.damage
 						casterX, casterY = GetUnitXY(caster)
-						angleCast = GetUnitFacing(caster)--AngleBetweenXY(casterX, casterY, x, y) / bj_DEGTORAD
+						if data.OnWater then
+							angleCast = GetUnitFacing(caster)
+						else
+							angleCast =AngleBetweenXY(casterX, casterY, x, y) / bj_DEGTORAD
+						end
 						local xs, ys = MoveXY(casterX, casterY, 80, angleCast)
-						CreateAndForceBullet(caster, angleCast, 50, "Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile", xs, ys, damage)
+						if data.OnWater then
+							speed=speed+30
+						end
+						CreateAndForceBullet(caster, angleCast, speed, "Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile", xs, ys, damage)
 					end)
 					TimerStart(CreateTimer(), 1, false, function()
 						if UnitAlive(caster) then
@@ -82,7 +90,9 @@ function InitSpellTrigger()
 						local k = 0
 						local damage = BlzGetUnitBaseDamage(caster, 0)
 						local multiplier = 1
+						local multiplierHeal = 1
 						local totalDamage = 0
+						local kHeal=0
 						local tl = Location(GetUnitXY(caster))
 						GroupEnumUnitsInRange(perebor, casterX, casterY, attackRange, nil)
 						while true do
@@ -92,14 +102,20 @@ function InitSpellTrigger()
 							end
 							if UnitAlive(e) and UnitAlive(caster) and IsUnitEnemy(e, GetOwningPlayer(caster)) and IsPointInSector(GetUnitX(e), GetUnitY(e), casterX, casterY, angleCast, 235 // 2, attackRange) then
 								k = k + 1
+								if not IsUnitType(e,UNIT_TYPE_MECHANICAL) then
+									kHeal=kHeal+1
+								end
 								--print(k)
 							end
 							GroupRemoveUnit(perebor, e)
 						end
 						multiplier = multiplier + AbilityStats.E.damage * k
+						multiplierHeal=multiplierHeal+AbilityStats.E.damage * kHeal
 						totalDamage = damage * multiplier
+						local totalHeal=damage*multiplierHeal
 						local isUnit = false
 						GroupEnumUnitsInRange(perebor, casterX, casterY, attackRange, nil)
+
 						while true do
 							e = FirstOfGroup(perebor)
 							if e == nil then
@@ -122,8 +138,8 @@ function InitSpellTrigger()
 							end
 							GroupRemoveUnit(perebor, e)
 						end
-						if data.HasHat then
-							HealUnit(caster,totalDamage*.1)
+						if data.HasHat and isUnit then
+							HealUnit(caster,totalHeal*.1)
 						end
 						if not isUnit then
 							UnitDamageArea(caster, totalDamage, casterX, casterY, attackRange)
@@ -186,7 +202,7 @@ function InitSpellTrigger()
 		if spellId == SpellIDD then
 			-- На гребне волны
 			local effModel = "Units\\Creeps\\DragonSeaTurtle\\DragonSeaTurtle"
-			--data.OnWater=true
+			data.OnWater=true
 			local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
 			TimerStart(CreateTimer(), delay, false, function()
 				local ship = AddSpecialEffect(effModel, OutPoint, OutPoint)
@@ -216,7 +232,9 @@ function InitSpellTrigger()
 					end
 					BlzSetSpecialEffectPosition(ship, nx, ny, nz - 20)
 					BlzSetSpecialEffectYaw(ship, math.rad(angle))
-
+					if data.HasHat then
+						UnitDamageArea(caster,(BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage),GetUnitX(caster),GetUnitY(caster),125)
+					end
 					BlzPlaySpecialEffectWithTimeScale(ship, ANIM_TYPE_WALK, 2)
 
 					BlzSetSpecialEffectYaw(eff, math.rad(angle - 180))
@@ -234,6 +252,7 @@ function InitSpellTrigger()
 					if GetUnitZ(caster) >= WaterZ or not UnitAlive(caster) then
 						--print("end")
 						data.OnWater = false
+						UnitDamageArea(caster,(BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage),GetUnitX(caster),GetUnitY(caster),250)
 						UnitRemoveAbility(caster, FourCC("Abun"))
 						BlzSetSpecialEffectPosition(ship, OutPoint, OutPoint, 0)
 						DestroyEffect(ship)

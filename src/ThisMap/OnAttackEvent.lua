@@ -12,7 +12,9 @@ function OnAttack()
 
 		if GetUnitTypeId(hero)==FourCC('opeo') then
 			local boat=FindUnitOfType(FourCC('obot'))
-			IssueTargetOrder(hero,"smart",boat)
+			if GetUnitCurrentOrder(hero)~=String2OrderIdBJ("smart") then
+				IssueTargetOrder(hero,"smart",boat)
+			end
 		end
 	end)
 end
