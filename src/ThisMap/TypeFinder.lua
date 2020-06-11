@@ -18,6 +18,7 @@ function FindUnitOfType(id,flag,x,y)
 			if e == nil then break end
 			if UnitAlive(e) and GetUnitTypeId(e)==id then
 				k=k+1
+				rg[k]=e
 				unit=e
 			end
 			GroupRemoveUnit(perebor,e)

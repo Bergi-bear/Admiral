@@ -38,8 +38,8 @@ function InitSpellTrigger()
 					end
 					TimerStart(CreateTimer(), 0.4, false, function()
 						local damage = (BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage) * AbilityStats.Q.damage
-						casterX, casterY=GetUnitXY(caster)
-						angleCast=GetUnitFacing(caster)--AngleBetweenXY(casterX, casterY, x, y) / bj_DEGTORAD
+						casterX, casterY = GetUnitXY(caster)
+						angleCast = GetUnitFacing(caster)--AngleBetweenXY(casterX, casterY, x, y) / bj_DEGTORAD
 						local xs, ys = MoveXY(casterX, casterY, 80, angleCast)
 						CreateAndForceBullet(caster, angleCast, 50, "Abilities\\Weapons\\CannonTowerMissile\\CannonTowerMissile", xs, ys, damage)
 					end)
@@ -49,6 +49,9 @@ function InitSpellTrigger()
 						end
 						BlzPauseUnitEx(caster, false)
 					end)
+				else
+					print("мертвый каст, сообщите автору о баге, код МУТНО-ЗЕЛНЫЙ, если есть проблемы при стрельбе")
+					BlzPauseUnitEx(caster, false)
 				end
 			end)
 		end
@@ -119,6 +122,9 @@ function InitSpellTrigger()
 							end
 							GroupRemoveUnit(perebor, e)
 						end
+						if data.HasHat then
+							HealUnit(caster,totalDamage*.1)
+						end
 						if not isUnit then
 							UnitDamageArea(caster, totalDamage, casterX, casterY, attackRange)
 							local r = GetRandomInt(1, 3)
@@ -142,7 +148,8 @@ function InitSpellTrigger()
 				end
 			end)
 		end
-		if spellId == SpellIDR then -- Пушечные ряды
+		if spellId == SpellIDR then
+			-- Пушечные ряды
 			local cannon = {}
 			for i = 1, AbilityStats.R.count do
 				cannon[i] = AddSpecialEffect("AdmiralAssets\\SiegeCannon", OutPoint, OutPoint)
@@ -159,7 +166,7 @@ function InitSpellTrigger()
 					angleCast = AngleBetweenXY(xEnd, yEnd, GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]) / bj_DEGTORAD
 					curAngle = lerpTheta(curAngle, angleCast, TIMER_PERIOD * 8)
 					for i = 1, AbilityStats.R.count do
-						local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count//2))), curAngle - 90)
+						local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count // 2))), curAngle - 90)
 						BlzSetSpecialEffectPosition(cannon[i], nx, ny, GetTerrainZ(nx, ny))
 						BlzSetSpecialEffectYaw(cannon[i], math.rad(curAngle))
 					end
@@ -167,7 +174,7 @@ function InitSpellTrigger()
 				if not data.ReleaseLMB then
 					DestroyTimer(GetExpiredTimer())
 					for i = 1, AbilityStats.R.count do
-						local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count//2))), curAngle - 90)
+						local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count // 2))), curAngle - 90)
 						CreateFallCannonOnEffectPosition(data, curAngle, nx, ny)
 						BlzSetSpecialEffectPosition(cannon[i], OutPoint, OutPoint, 0)
 						DestroyEffect(cannon[i])
@@ -176,23 +183,24 @@ function InitSpellTrigger()
 			end)
 
 		end
-		if spellId == SpellIDD then -- На гребне волны
-			local effModel="Units\\Creeps\\DragonSeaTurtle\\DragonSeaTurtle"
+		if spellId == SpellIDD then
+			-- На гребне волны
+			local effModel = "Units\\Creeps\\DragonSeaTurtle\\DragonSeaTurtle"
 			--data.OnWater=true
-			local delay=TIMER_PERIOD-TimerGetElapsed(GlobalTimer)
+			local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
 			TimerStart(CreateTimer(), delay, false, function()
-				local ship=AddSpecialEffect(effModel,OutPoint,OutPoint)
-				BlzSpecialEffectAddSubAnimation(ship,SUBANIM_TYPE_SWIM)
-				UnitAddAbility(caster,FourCC("Abun"))
+				local ship = AddSpecialEffect(effModel, OutPoint, OutPoint)
+				BlzSpecialEffectAddSubAnimation(ship, SUBANIM_TYPE_SWIM)
+				UnitAddAbility(caster, FourCC("Abun"))
 				TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 					BlzStartUnitAbilityCooldown(caster, spellId, BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1))
-					local xs,ys=GetUnitXY(caster)
-					local eff=AddSpecialEffect("AdmiralAssets\\Torrent1",xs,ys)
-					local angle=GetUnitFacing(caster)
-					local speed=30
-					local nx,ny=MoveXY(xs,ys,speed,angle)
-					local nz=GetUnitZ(caster)
-					if not InMapXY(nx,ny) then
+					local xs, ys = GetUnitXY(caster)
+					local eff = AddSpecialEffect("AdmiralAssets\\Torrent1", xs, ys)
+					local angle = GetUnitFacing(caster)
+					local speed = 30
+					local nx, ny = MoveXY(xs, ys, speed, angle)
+					local nz = GetUnitZ(caster)
+					if not InMapXY(nx, ny) then
 						--	print("y="..ny)
 						local hor = 1
 						if isHitLeftOrRight(nx) then
@@ -202,35 +210,35 @@ function InitSpellTrigger()
 						if isHitTopOrBottom(ny) then
 							ver = -1
 						end
-						local vector = Vector:new((nx - xs)*hor,( ny- ys)*ver, nz - nz)
+						local vector = Vector:new((nx - xs) * hor, (ny - ys) * ver, nz - nz)
 						local yaw = vector:yaw()
-						BlzSetUnitFacingEx(caster,math.deg(yaw))
+						BlzSetUnitFacingEx(caster, math.deg(yaw))
 					end
-					BlzSetSpecialEffectPosition(ship,nx,ny,nz-20)
-					BlzSetSpecialEffectYaw(ship,math.rad(angle))
+					BlzSetSpecialEffectPosition(ship, nx, ny, nz - 20)
+					BlzSetSpecialEffectYaw(ship, math.rad(angle))
 
-					BlzPlaySpecialEffectWithTimeScale(ship,ANIM_TYPE_WALK,2)
+					BlzPlaySpecialEffectWithTimeScale(ship, ANIM_TYPE_WALK, 2)
 
-					BlzSetSpecialEffectYaw(eff,math.rad(angle-180))
-					BlzSetSpecialEffectPitch(eff,math.rad(-90))
-					BlzSetSpecialEffectZ(eff,GetUnitZ(caster)-50)
-					BlzSetSpecialEffectScale(eff,0.2)
+					BlzSetSpecialEffectYaw(eff, math.rad(angle - 180))
+					BlzSetSpecialEffectPitch(eff, math.rad(-90))
+					BlzSetSpecialEffectZ(eff, GetUnitZ(caster) - 50)
+					BlzSetSpecialEffectScale(eff, 0.2)
 					DestroyEffect(eff)
-					SetUnitX(caster,nx)
-					SetUnitY(caster,ny)
+					SetUnitX(caster, nx)
+					SetUnitY(caster, ny)
 
-					SetCameraQuickPosition(nx,ny)
+					SetCameraQuickPosition(nx, ny)
 					SetCameraTargetControllerNoZForPlayer(GetOwningPlayer(caster), caster, 10, 10, true) -- не дергается
 
 					--SetUnitZ(caster,nz)
-					if GetUnitZ(caster)>=WaterZ  or not UnitAlive(caster) then
+					if GetUnitZ(caster) >= WaterZ or not UnitAlive(caster) then
 						--print("end")
-						data.OnWater=false
-						UnitRemoveAbility(caster,FourCC("Abun"))
-						BlzSetSpecialEffectPosition(ship,OutPoint,OutPoint,0)
+						data.OnWater = false
+						UnitRemoveAbility(caster, FourCC("Abun"))
+						BlzSetSpecialEffectPosition(ship, OutPoint, OutPoint, 0)
 						DestroyEffect(ship)
 						DestroyTimer(GetExpiredTimer())
-						ResetToGameCameraForPlayer(GetOwningPlayer(caster),0)
+						ResetToGameCameraForPlayer(GetOwningPlayer(caster), 0)
 						--	SetUnitZ(caster,GetUnitZ(caster)-200)
 					end
 				end)
@@ -240,9 +248,33 @@ function InitSpellTrigger()
 end
 
 function isHitTopOrBottom(ny)
-	return ny<=GetRectMinY(bj_mapInitialPlayableArea) or ny>=GetRectMaxY(bj_mapInitialPlayableArea)
+	return ny <= GetRectMinY(bj_mapInitialPlayableArea) or ny >= GetRectMaxY(bj_mapInitialPlayableArea)
 end
 
 function isHitLeftOrRight(nx)
-	return nx<=GetRectMinX(bj_mapInitialPlayableArea) or nx>=GetRectMaxX(bj_mapInitialPlayableArea)
+	return nx <= GetRectMinX(bj_mapInitialPlayableArea) or nx >= GetRectMaxX(bj_mapInitialPlayableArea)
+end
+
+function HealUnit(hero,amount,flag,eff)
+	--1 или nil Сколько вылчено
+	--2 Сверхлечение
+	if not eff then eff="Abilities\\Spells\\Human\\Heal\\HealTarget" end
+	local p=GetOwningPlayer(hero)
+	local MaxHP=BlzGetUnitMaxHP(hero)
+	local CurrentHP=GetUnitState(hero,UNIT_STATE_LIFE)
+	local LoosingHP=MaxHP-CurrentHP
+	local OverHeal=amount-LoosingHP
+	local TotalHeal=amount
+	if LoosingHP<=amount then TotalHeal=LoosingHP	end
+	DestroyEffect(AddSpecialEffectTarget(eff,hero,"overhead"))
+	SetUnitState(hero,UNIT_STATE_LIFE,CurrentHP+TotalHeal)
+	if TotalHeal>1 then
+		FlyTextTagHealXY(GetUnitX(hero),GetUnitY(hero),"+"..R2I(TotalHeal),p)
+	end
+	if not flag or flag==1 then
+		return TotalHeal
+	end
+	if  flag==2 then
+		return OverHeal
+	end
 end

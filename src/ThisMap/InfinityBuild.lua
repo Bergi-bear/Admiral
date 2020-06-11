@@ -20,13 +20,11 @@ function AnyHPEARandomBuild(x, y,id)
 		--	print("Иду строить")
 			IssueImmediateOrder(builder, "repairon")
 		else
-
 			if i>=5 then
 				IssueImmediateOrder(builder, "autoharvestgold")
 			else
 				IssueImmediateOrder(builder, "autoharvestlumber")
 			end
-			--print("Не могу построить")
 		end
 		TimerStart(CreateTimer(), 2, true, function()
 			--print(OrderId2String(GetUnitCurrentOrder(builder)))

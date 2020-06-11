@@ -42,6 +42,12 @@ function MarkCreatorW(data)
 				a=a+40
 				--print(a)
 				BlzSetSpecialEffectYaw(data.Anchor,math.rad(a))
+
+				if data.AnchorSpinTag then
+					DestroyTextTag(data.AnchorSpinTag)
+					data.AnchorSpinTag=StaticTag(R2I(data.AnchorSpinDamage), 0.04, GetWidgetX(hero), GetWidgetY(hero), 260, 130, 0, 255, 255, 0, 0.04, 2, 5, GetOwningPlayer(hero))
+				end
+
 				if not data.MarkIsActivated then
 					--print("уничтожем якорь")
 					DestroyTimer(GetExpiredTimer())
@@ -49,6 +55,24 @@ function MarkCreatorW(data)
 					BlzSetSpecialEffectPosition(data.Anchor,OutPoint,OutPoint,0)
 				end
 			end)
+			local sec=1
+			data.AnchorSpinDamage=1
+			if data.HasHat then
+				data.AnchorSpinTag=StaticTag(R2I(sec), 0.04, GetWidgetX(hero), GetWidgetY(hero), 0, 255, 0, 255, 255, 0, 0.04, 2, 5, GetOwningPlayer(hero))
+				TimerStart(CreateTimer(),0.1, true, function()
+					--print(sec.. "подготовака")
+
+					data.AnchorSpinDamage=sec
+					if sec<5 then
+						sec=sec+0.1
+					end
+					if not data.MarkIsActivated then
+						DestroyTimer(GetExpiredTimer())
+						DestroyTextTag(data.AnchorSpinTag)
+						data.AnchorSpinTag=nil
+					end
+				end)
+			end
 		end
 	end
 end

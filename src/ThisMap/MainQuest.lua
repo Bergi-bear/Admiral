@@ -6,7 +6,7 @@
 function CreateBigText(text,maxSize)
 	local newText = BlzCreateFrameByType("TEXT", "", BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), "", 0)
 	BlzFrameSetText(newText, text)
-	BlzFrameSetAbsPoint(newText,FRAMEPOINT_CENTER,0.4,0.55)
+	BlzFrameSetAbsPoint(newText,FRAMEPOINT_CENTER,0.4,0.51)
 	BlzFrameSetScale(newText, maxSize)
 	return newText
 end

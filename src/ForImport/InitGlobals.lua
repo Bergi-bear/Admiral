@@ -14,6 +14,9 @@ do
 		InitMouseMoveTrigger() -- Запуск отслеживания положения мыши
 		InitSoundsA()--Создаём звуки
 		InitUnitDeath()-- инициализация смерти
+		-- то что ниже удали при релизе
+
+		OnAttack()
 		local text=CreateBigText("Не дайте пеонам сбежать",2)
 		TimerStart(CreateTimer(), 20, true, function()
 			BlzDestroyFrame(text)
@@ -54,7 +57,9 @@ function InitHEROTable()
 			HeroGreenDamage = 0,
 			AnchorPitch = 0,
 			OnWater=false,
-
+			HasHat=false, --Проверка начилия адмиральской шляпы
+			AnchorSpinDamage=1, -- Доп урон при активации Q
+			AnchorSpinTag=nil, -- текст движущийся вместе с героем
 		}
 	end
 	TimerStart(GlobalTimer, TIMER_PERIOD, true, function()

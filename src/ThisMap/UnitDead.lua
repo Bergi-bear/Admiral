@@ -24,8 +24,13 @@ function InitUnitDeath()
 			AnyHPEARandomBuild(x,y,GetUnitTypeId(DeadUnit))
 		end
 		if GetUnitTypeId(DeadUnit)==FourCC('opeo') then--убит пеон
+			local x,y=GetUnitXY(DeadUnit)
 			TimerStart(CreateTimer(), 1, false, function()
-				local Town = FindUnitOfType(FourCC('ogre'), 2500, GetUnitXY(DeadUnit))
+				local Town = FindUnitOfType(FourCC('ogre'))
+				local builder = FindUnitOfType(FourCC('opeo'), 2500, x,y)
+				for i2=1,5 do
+					IssueBuildOrderById(builder, FourCC('owtw'), x + GetRandomInt(-100*i2, 100*i2), y + GetRandomInt(-100*i2, 100*i2))
+				end
 				if Town then
 					TimerStart(CreateTimer(), 5, false, function()
 						local xlim,ylum=GetUnitXY(Town)
@@ -33,6 +38,22 @@ function InitUnitDeath()
 						IssueImmediateOrder(new,"autoharvestlumber")
 						if GetRandomInt(1,2)==1 then
 							IssueImmediateOrder(new,"autoharvestgold")
+						end
+					end)
+				end
+			end)
+		end
+		if GetUnitTypeId(DeadUnit)==FourCC('obot') then-- убит транспортник
+			local x,y=GetUnitXY(DeadUnit)
+			TimerStart(CreateTimer(), 1, false, function()
+				local Doc = FindUnitOfType(FourCC('oshy'))
+				if Doc then
+				--	print("нашли верфт"..GetUnitName(Doc))
+					TimerStart(CreateTimer(), 5, false, function()
+						if UnitAlive(Doc) then
+							local xlim,ylum=GetUnitXY(Doc)
+							local new=CreateUnit(Player(1), FourCC('obot'),xlim, ylum, 0)
+							--	print(" построили лодку"..GetUnitName(new))
 						end
 					end)
 				end

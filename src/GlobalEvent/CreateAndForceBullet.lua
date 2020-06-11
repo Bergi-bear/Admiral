@@ -53,7 +53,16 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 			StunArea(hero, x, y, CollisionRange, stunDuration)
 			UnitDamageArea(hero, damage, x, y, CollisionRange, ZBullet)
 			if DamagingUnit and IsUnitType(hero, UNIT_TYPE_HERO) then
+				local data=HERO[GetPlayerId(GetOwningPlayer(hero))]
 				FlyTextTagCriticalStrike(DamagingUnit, R2I(damage) .. "!", GetOwningPlayer(hero))
+				if not UnitAlive(DamagingUnit) and data.HasHat then
+				--	print("звук перезарядки")
+					local tl = Location(GetUnitXY(hero))
+					PlaySoundAtPointBJ(soundReload, 100, tl, 0)
+					RemoveLocation(tl)
+					--BlzEndUnitAbilityCooldown(hero,SpellIDQ)
+					BlzStartUnitAbilityCooldown(hero,SpellIDQ,1)
+				end
 			end
 			BlzSetSpecialEffectPosition(bullet,OutPoint,OutPoint,0)
 			DestroyEffect(bullet)
@@ -191,12 +200,12 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 						--	print("на суше")
 						DestroyEffect(AddSpecialEffect("AdmiralAssets\\ThunderclapCasterClassic", nx, ny))
 					end
-					local damage = GetHeroStr(hero, true) * AbilityStats.W.damage
+					local damage = GetHeroStr(hero, true) * AbilityStats.W.damage*data.AnchorSpinDamage
 					DestroyTimer(GetExpiredTimer())
 					StunArea(hero, nx, ny, 150, 2)
 					JumpEffect(eff, 30, 0, angle - 180, distance, hero, 3)
-					local d, du = UnitDamageArea(hero, damage, nx, ny, 150)
-					if d then
+					local _, du = UnitDamageArea(hero, damage, nx, ny, 150)
+					if du then
 						FlyTextTagCriticalStrike(du, R2I(damage) .. "!", GetOwningPlayer(hero))
 					end
 					for i2 = 1, #chainElement do
