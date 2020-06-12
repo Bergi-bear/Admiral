@@ -50,14 +50,14 @@ do
 				local dmg= R2I(GetHeroStr(hero, true) * AbilityStats.W.damage)
 				NativeString =string.gsub(NativeString,'dmg',dmg)
 				if hasHat then
-					NativeString=NativeString.."|cff5078f8".."\nУдержвивайте якорь в режиме вращения, чтобы увеличить множитель финального урона. Максимальный множитель X 5. ("..R2I(dmg*5)..")".."|r"
+					NativeString=NativeString.."|cff5078f8".."\nУдерживайте якорь в режиме вращения, чтобы увеличить множитель финального урона. Максимальный множитель X 5. ("..R2I(dmg*5)..")".."|r"
 				end
 			end
 			if id==SpellIDE then
 				local dmg= BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage
 				NativeString =string.gsub(NativeString,'dmg',dmg)
 				if hasHat then
-					NativeString=NativeString.."|cff5078f8".."\nИсцеляет героя на 10%% от ненсённого урона".."|r"
+					NativeString=NativeString.."|cff5078f8".."\nИсцеляет героя на 10%% от нанесённого урона".."|r"
 				end
 			end
 			if id==SpellIDR then

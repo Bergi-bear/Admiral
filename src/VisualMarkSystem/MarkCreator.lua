@@ -143,6 +143,9 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",x,y))
 			else
 				cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)
+				if data.HasHat then
+					StunArea(cannon,x,y,200,2)
+				end
 			end
 
 			if cannon then --пушка существует

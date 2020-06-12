@@ -199,6 +199,12 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 					else
 						--	print("на суше")
 						DestroyEffect(AddSpecialEffect("AdmiralAssets\\ThunderclapCasterClassic", nx, ny))
+						--local tempEff=
+						if data.HasHat then
+							DestroyEffectHD(AddSpecialEffect("Abilities\\Weapons\\DemolisherFireMissile\\DemolisherFireMissile",nx,ny))
+													end
+
+
 					end
 					local damage = GetHeroStr(hero, true) * AbilityStats.W.damage*data.AnchorSpinDamage
 					DestroyTimer(GetExpiredTimer())
@@ -218,5 +224,12 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 
 			end
 		end)
+	end)
+end
+
+
+function DestroyEffectHD(whichEffect)
+	TimerStart(CreateTimer(), 0.01, false, function()
+		DestroyEffect(whichEffect)
 	end)
 end

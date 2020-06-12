@@ -390,7 +390,7 @@ function InitSpellTrigger()
 						eff = AddSpecialEffectTarget("AdmiralAssets\\animeslashfinal", caster, "weapon")
 						local e = nil
 						local k = 0
-						local damage = BlzGetUnitBaseDamage(caster, 0)
+						local damage = BlzGetUnitBaseDamage(caster, 0)+data.HeroGreenDamage
 						local multiplier = 1
 						local multiplierHeal = 1
 						local totalDamage = 0
@@ -535,7 +535,7 @@ function InitSpellTrigger()
 					BlzSetSpecialEffectPosition(ship, nx, ny, nz - 20)
 					BlzSetSpecialEffectYaw(ship, math.rad(angle))
 					if data.HasHat then
-						UnitDamageArea(caster,(BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage),GetUnitX(caster),GetUnitY(caster),250)
+						UnitDamageArea(caster,(BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage),GetUnitX(caster),GetUnitY(caster),125)
 					end
 					BlzPlaySpecialEffectWithTimeScale(ship, ANIM_TYPE_WALK, 2)
 
@@ -800,6 +800,12 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 					else
 						--	print("на суше")
 						DestroyEffect(AddSpecialEffect("AdmiralAssets\\ThunderclapCasterClassic", nx, ny))
+						--local tempEff=
+						if data.HasHat then
+							DestroyEffectHD(AddSpecialEffect("Abilities\\Weapons\\DemolisherFireMissile\\DemolisherFireMissile",nx,ny))
+													end
+
+
 					end
 					local damage = GetHeroStr(hero, true) * AbilityStats.W.damage*data.AnchorSpinDamage
 					DestroyTimer(GetExpiredTimer())
@@ -822,6 +828,12 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 	end)
 end
 
+
+function DestroyEffectHD(whichEffect)
+	TimerStart(CreateTimer(), 0.01, false, function()
+		DestroyEffect(whichEffect)
+	end)
+end
 function UnitDamageArea(u,damage,x,y,range)
 	local isdamage=false
 	local e=nil
@@ -1376,14 +1388,14 @@ do
 				local dmg= R2I(GetHeroStr(hero, true) * AbilityStats.W.damage)
 				NativeString =string.gsub(NativeString,'dmg',dmg)
 				if hasHat then
-					NativeString=NativeString.."|cff5078f8".."\nУдержвивайте якорь в режиме вращения, чтобы увеличить множитель финального урона. Максимальный множитель X 5. ("..R2I(dmg*5)..")".."|r"
+					NativeString=NativeString.."|cff5078f8".."\nУдерживайте якорь в режиме вращения, чтобы увеличить множитель финального урона. Максимальный множитель X 5. ("..R2I(dmg*5)..")".."|r"
 				end
 			end
 			if id==SpellIDE then
 				local dmg= BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage
 				NativeString =string.gsub(NativeString,'dmg',dmg)
 				if hasHat then
-					NativeString=NativeString.."|cff5078f8".."\nИсцеляет героя на 10% от ненсённого урона".."|r"
+					NativeString=NativeString.."|cff5078f8".."\nИсцеляет героя на 10% от нанесённого урона".."|r"
 				end
 			end
 			if id==SpellIDR then
@@ -1503,18 +1515,18 @@ function InitUnitDeath()
 			end)
 		end
 
-		if IsUnitType(killer,UNIT_TYPE_HERO) and data.HasHat then --герой убил
+		if IsUnitType(killer,UNIT_TYPE_HERO) and data.HasHat then --герой убил и создаёт зомба
 			if BlzGetUnitAbilityCooldownRemaining(killer,SpellIDS)<=.01 and not IsUnitType(DeadUnit,UNIT_TYPE_MECHANICAL) and IsUnitRace(DeadUnit,RACE_ORC) then
 				BlzStartUnitAbilityCooldown(killer,SpellIDS,10)
 				--print("Время создать зомби")
 				TimerStart(CreateTimer(), 1, false, function()
 					ShowUnit(DeadUnit,false)
-					local eff=AddSpecialEffect("Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton",GetUnitXY(DeadUnit))
-					BlzPlaySpecialEffect(eff,ANIM_TYPE_BIRTH)
+					DestroyEffectHD(AddSpecialEffect("Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton",GetUnitXY(DeadUnit)))
 					local new=CreateUnit(GetOwningPlayer(killer),FourCC('nsko'),GetUnitX(DeadUnit),GetUnitY(DeadUnit),GetRandomInt(0,360))
 					BlzSetUnitBaseDamage(new,data.bonusCD,0)
-					DestroyEffect(eff)
+
 					UnitApplyTimedLife(new,FourCC('BTLF'),30)
+					IssueTargetOrder(new,"patrol",killer)
 				end)
 			end
 		end
@@ -2124,6 +2136,9 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",x,y))
 			else
 				cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)
+				if data.HasHat then
+					StunArea(cannon,x,y,200,2)
+				end
 			end
 
 			if cannon then --пушка существует

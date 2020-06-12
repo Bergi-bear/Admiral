@@ -88,7 +88,7 @@ function InitSpellTrigger()
 						eff = AddSpecialEffectTarget("AdmiralAssets\\animeslashfinal", caster, "weapon")
 						local e = nil
 						local k = 0
-						local damage = BlzGetUnitBaseDamage(caster, 0)
+						local damage = BlzGetUnitBaseDamage(caster, 0)+data.HeroGreenDamage
 						local multiplier = 1
 						local multiplierHeal = 1
 						local totalDamage = 0

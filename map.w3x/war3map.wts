@@ -370,12 +370,6 @@ STRING 97
 На гребне волны
 }
 
-STRING 100
-// Abilities: A005 (На гребне волны), Ubertip (Tooltip - Normal - Extended)
-{
-Активируйте способность около воды, чтобы включить режим плаванья
-}
-
 STRING 106
 // Abilities: A005 (На гребне волны), Tip (Tooltip - Normal)
 {
@@ -426,5 +420,12 @@ STRING 114
 // Items: I000 (Шляпа адмирала), Description (Description)
 {
 |cff5078f8Улучшает характеристики всех способностей героя|r
+}
+
+STRING 115
+// Abilities: A005 (На гребне волны), Ubertip (Tooltip - Normal - Extended)
+{
+Активируйте способность около воды, чтобы включить режим плавания
+Скорость передвижения: |cffffff001600|r
 }
 
