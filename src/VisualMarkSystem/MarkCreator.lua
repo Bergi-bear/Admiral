@@ -111,7 +111,7 @@ function MarkCreatorR(data)
 end
 
 
---есть мана, не в кд, юнит жив
+--есть мана, не в кд, юнит жив, юнит выбран
 function  UnitHaveReadyAbility(hero,abiID)
 	local isReady=false
 	if GetUnitAbilityLevel(hero,abiID)>0

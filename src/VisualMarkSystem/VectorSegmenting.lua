@@ -76,6 +76,7 @@ function CreateEffectLighting3D(x1, y1, z1, x2, y2, z2, step, effModel)
 			BlzSetSpecialEffectPosition(eff[i], x1 + v.x, y1 + v.y, z1 + v.z)
 			BlzSetSpecialEffectPitch(eff[i], -pitch)
 			BlzSetSpecialEffectYaw(eff[i], yaw)
+			BlzSetSpecialEffectMatrixScale(eff[i],2,3,4)
 		else
 			eff[i] = AddSpecialEffect(effModel, OutPoint, OutPoint)
 		end

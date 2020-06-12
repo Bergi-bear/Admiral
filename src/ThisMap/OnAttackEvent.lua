@@ -14,6 +14,8 @@ function OnAttack()
 			local boat=FindUnitOfType(FourCC('obot'))
 			if GetUnitCurrentOrder(hero)~=String2OrderIdBJ("smart") then
 				IssueTargetOrder(hero,"smart",boat)
+			else
+
 			end
 		end
 	end)

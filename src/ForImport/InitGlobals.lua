@@ -21,6 +21,7 @@ do
 		TimerStart(CreateTimer(), 20, true, function()
 			BlzDestroyFrame(text)
 		end)
+		CreatePeonCountFrame()
 	end
 
 end
