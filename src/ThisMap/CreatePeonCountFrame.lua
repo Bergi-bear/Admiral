@@ -16,8 +16,24 @@ function CreatePeonCountFrame()
 	BlzFrameSetScale(newText,3)
 	BlzFrameSetTextColor(newText,BlzConvertColor(255,250,200,0))
 	BlzFrameSetAbsPoint(newText,FRAMEPOINT_CENTER,x+.05,y)
+	local sec=0
 	TimerStart(CreateTimer(), 1, true, function()
 		local _,k=FindUnitOfType(FourCC("opeo"))
+		sec=sec+1
+		if sec>=10 then
+			sec=0
+			local e=nil
+			GroupEnumUnitsInRect(perebor,bj_mapInitialPlayableArea,nil)
+			while true do
+				e = FirstOfGroup(perebor)
+				if e == nil then break end
+				if UnitAlive(e) and GetUnitTypeId(e)==FourCC("opeo") then
+					local xp,yp=GetUnitXY(e)
+					PingMinimap(xp,yp,2)
+				end
+				GroupRemoveUnit(perebor,e)
+			end
+		end
 		BlzFrameSetText(newText, k)
 		if k==0 then
 			CustomVictoryBJ(Player(0),true,true)

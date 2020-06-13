@@ -314,22 +314,6 @@ STRING 88
 Перезарядка: |cffffff004|r
 }
 
-STRING 90
-{
-Player 2
-}
-
-STRING 91
-// Abilities: A000 (Выстрел), Ubertip (Tooltip - Normal - Extended)
-{
-Укажите направление, чтобы выстрелить туда, выстрел нанесёт урон и оглушение всем юнитам в небольшой области.
-Урон: Сила атаки x |cffffff005|r. Текущий: |cffffff00dmg|r
-Максимальная дистанция: |cffffff001200|r
-Перезарядка: |cffffff005|r
-Длительность оглушения: |cffffff001|r
-Область оглушения: |cffffff00100|r
-}
-
 STRING 92
 // Abilities: A001 (Бросок якоря), Ubertip (Tooltip - Normal - Extended)
 {
@@ -445,5 +429,35 @@ STRING 118
 // Doodads: D002 (Firepit), Name (Name)
 {
 Firepit
+}
+
+STRING 119
+// Abilities: A000 (Выстрел), Ubertip (Tooltip - Normal - Extended)
+{
+Укажите направление, чтобы выстрелить туда, выстрел нанесёт урон и оглушение всем юнитам в небольшой области.
+Урон: Сила атаки x |cffffff005|r. Текущий: |cffffff00dmg|r
+Максимальная дистанция: |cffffff001200|r
+Задержка:|cffffff00 0.4|r
+Длительность оглушения: |cffffff001|r
+Область оглушения: |cffffff00100|r
+Перезарядка: |cffffff005|r
+}
+
+STRING 120
+// Units: H000 (Морской волк), Name (Name)
+{
+Морской волк
+}
+
+STRING 121
+// Units: H000 (Морской волк), Awakentip (Tooltip - Awaken)
+{
+Хватит мокать адмирала, пора воскресить
+}
+
+STRING 122
+// Units: H000 (Морской волк), Revivetip (Tooltip - Revive)
+{
+Хватит мокать адмирала, пора воскресить
 }
 

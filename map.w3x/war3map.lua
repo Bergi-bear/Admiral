@@ -185,7 +185,7 @@ AdmiralHatItemID = FourCC('I000') -- Шляпа Адмирала
 WaterZ = 170 -- Минимуальный уровень высоты, после которого начинается вода, это нужно для водных эффектов ,брызг и некоторых условий, введите введите очень мало значение, чтобы отключить воду
 OutPoint=6000 -- пространство за экраном, для резконого перемещения эффектов и уберсплатов, рекомендуеются изменять только на больших картах
 --Включение и отключение прочих систем true включено, false  отключено
-MarkSystem = false -- Система подсветки радиуса способностей героев
+MarkSystem = true -- Система подсветки радиуса способностей героев
 TexTagSystem = true -- Система всплывающего текста
 CustomFrameSystem = true -- Система Фрейма увеличения пассивки, каста способностей и таймера вокрешения
 AbilityStats={
@@ -510,10 +510,11 @@ function InitSpellTrigger()
 				local ship = AddSpecialEffect(effModel, OutPoint, OutPoint)
 				BlzSpecialEffectAddSubAnimation(ship, SUBANIM_TYPE_SWIM)
 				UnitAddAbility(caster, FourCC("Abun"))
+				local sec=0
 				TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 					BlzStartUnitAbilityCooldown(caster, spellId, BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1))
 					local xs, ys = GetUnitXY(caster)
-					local eff = AddSpecialEffect("AdmiralAssets\\Torrent1", xs, ys)
+
 					local angle = GetUnitFacing(caster)
 					local speed = 30
 					local nx, ny = MoveXY(xs, ys, speed, angle)
@@ -538,12 +539,17 @@ function InitSpellTrigger()
 						UnitDamageArea(caster,(BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage),GetUnitX(caster),GetUnitY(caster),125)
 					end
 					BlzPlaySpecialEffectWithTimeScale(ship, ANIM_TYPE_WALK, 2)
+					sec=sec+1
+					if sec==2 then
+						sec=0
+						local eff = AddSpecialEffect("AdmiralAssets\\TorrentNoSND", xs, ys)
+						BlzSetSpecialEffectYaw(eff, math.rad(angle - 180))
+						BlzSetSpecialEffectPitch(eff, math.rad(-90))
+						BlzSetSpecialEffectZ(eff, GetUnitZ(caster) - 50)
+						BlzSetSpecialEffectScale(eff, 0.2)
+						DestroyEffect(eff)
+					end
 
-					BlzSetSpecialEffectYaw(eff, math.rad(angle - 180))
-					BlzSetSpecialEffectPitch(eff, math.rad(-90))
-					BlzSetSpecialEffectZ(eff, GetUnitZ(caster) - 50)
-					BlzSetSpecialEffectScale(eff, 0.2)
-					DestroyEffect(eff)
 					SetUnitX(caster, nx)
 					SetUnitY(caster, ny)
 
@@ -1550,8 +1556,24 @@ function CreatePeonCountFrame()
 	BlzFrameSetScale(newText,3)
 	BlzFrameSetTextColor(newText,BlzConvertColor(255,250,200,0))
 	BlzFrameSetAbsPoint(newText,FRAMEPOINT_CENTER,x+.05,y)
+	local sec=0
 	TimerStart(CreateTimer(), 1, true, function()
 		local _,k=FindUnitOfType(FourCC("opeo"))
+		sec=sec+1
+		if sec>=10 then
+			sec=0
+			local e=nil
+			GroupEnumUnitsInRect(perebor,bj_mapInitialPlayableArea,nil)
+			while true do
+				e = FirstOfGroup(perebor)
+				if e == nil then break end
+				if UnitAlive(e) and GetUnitTypeId(e)==FourCC("opeo") then
+					local xp,yp=GetUnitXY(e)
+					PingMinimap(xp,yp,2)
+				end
+				GroupRemoveUnit(perebor,e)
+			end
+		end
 		BlzFrameSetText(newText, k)
 		if k==0 then
 			CustomVictoryBJ(Player(0),true,true)
@@ -2617,24 +2639,10 @@ function InitCustomPlayerSlots()
     SetPlayerRacePreference(Player(0), RACE_PREF_HUMAN)
     SetPlayerRaceSelectable(Player(0), false)
     SetPlayerController(Player(0), MAP_CONTROL_USER)
-    SetPlayerStartLocation(Player(1), 1)
-    ForcePlayerStartLocation(Player(1), 1)
-    SetPlayerColor(Player(1), ConvertPlayerColor(1))
-    SetPlayerRacePreference(Player(1), RACE_PREF_ORC)
-    SetPlayerRaceSelectable(Player(1), false)
-    SetPlayerController(Player(1), MAP_CONTROL_USER)
 end
 
 function InitCustomTeams()
     SetPlayerTeam(Player(0), 0)
-    SetPlayerTeam(Player(1), 1)
-end
-
-function InitAllyPriorities()
-    SetStartLocPrioCount(0, 1)
-    SetStartLocPrio(0, 0, 1, MAP_LOC_PRIO_HIGH)
-    SetStartLocPrioCount(1, 1)
-    SetStartLocPrio(1, 0, 0, MAP_LOC_PRIO_HIGH)
 end
 
 function main()
@@ -2653,13 +2661,11 @@ end
 function config()
     SetMapName("TRIGSTR_001")
     SetMapDescription("TRIGSTR_003")
-    SetPlayers(2)
-    SetTeams(2)
-    SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)
+    SetPlayers(1)
+    SetTeams(1)
+    SetGamePlacement(MAP_PLACEMENT_USE_MAP_SETTINGS)
     DefineStartLocation(0, -1536.0, -2560.0)
-    DefineStartLocation(1, -832.0, -2880.0)
     InitCustomPlayerSlots()
     InitCustomTeams()
-    InitAllyPriorities()
 end
 

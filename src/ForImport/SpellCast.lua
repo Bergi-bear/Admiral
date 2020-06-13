@@ -208,10 +208,11 @@ function InitSpellTrigger()
 				local ship = AddSpecialEffect(effModel, OutPoint, OutPoint)
 				BlzSpecialEffectAddSubAnimation(ship, SUBANIM_TYPE_SWIM)
 				UnitAddAbility(caster, FourCC("Abun"))
+				local sec=0
 				TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 					BlzStartUnitAbilityCooldown(caster, spellId, BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1))
 					local xs, ys = GetUnitXY(caster)
-					local eff = AddSpecialEffect("AdmiralAssets\\Torrent1", xs, ys)
+
 					local angle = GetUnitFacing(caster)
 					local speed = 30
 					local nx, ny = MoveXY(xs, ys, speed, angle)
@@ -236,12 +237,17 @@ function InitSpellTrigger()
 						UnitDamageArea(caster,(BlzGetUnitBaseDamage(caster, 0) + data.HeroGreenDamage),GetUnitX(caster),GetUnitY(caster),125)
 					end
 					BlzPlaySpecialEffectWithTimeScale(ship, ANIM_TYPE_WALK, 2)
+					sec=sec+1
+					if sec==2 then
+						sec=0
+						local eff = AddSpecialEffect("AdmiralAssets\\TorrentNoSND", xs, ys)
+						BlzSetSpecialEffectYaw(eff, math.rad(angle - 180))
+						BlzSetSpecialEffectPitch(eff, math.rad(-90))
+						BlzSetSpecialEffectZ(eff, GetUnitZ(caster) - 50)
+						BlzSetSpecialEffectScale(eff, 0.2)
+						DestroyEffect(eff)
+					end
 
-					BlzSetSpecialEffectYaw(eff, math.rad(angle - 180))
-					BlzSetSpecialEffectPitch(eff, math.rad(-90))
-					BlzSetSpecialEffectZ(eff, GetUnitZ(caster) - 50)
-					BlzSetSpecialEffectScale(eff, 0.2)
-					DestroyEffect(eff)
 					SetUnitX(caster, nx)
 					SetUnitY(caster, ny)
 
