@@ -429,3 +429,21 @@ STRING 115
 Скорость передвижения: |cffffff001600|r
 }
 
+STRING 116
+// Doodads: D000 (rufontan), Name (Name)
+{
+rufontan
+}
+
+STRING 117
+// Doodads: D001 (Waterfall1), Name (Name)
+{
+Waterfall1
+}
+
+STRING 118
+// Doodads: D002 (Firepit), Name (Name)
+{
+Firepit
+}
+
