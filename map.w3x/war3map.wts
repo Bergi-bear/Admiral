@@ -394,14 +394,8 @@ STRING 112
 Шляпа адмирала
 }
 
-STRING 113
-// Items: I000 (Шляпа адмирала), Ubertip (Tooltip - Extended)
-{
-Шляпа адмирала
-}
-
 STRING 114
-// Items: I000 (Шляпа адмирала), Description (Description)
+// Items: I000 (Шляпа адмирала), Ubertip (Tooltip - Extended)
 {
 |cff5078f8Улучшает характеристики всех способностей героя|r
 }
@@ -459,5 +453,11 @@ STRING 122
 // Units: H000 (Морской волк), Revivetip (Tooltip - Revive)
 {
 Хватит мокать адмирала, пора воскресить
+}
+
+STRING 123
+// Items: I000 (Шляпа адмирала), Description (Description)
+{
+|cff5078f8Улучшает характеристики всех способностей героя|r
 }
 

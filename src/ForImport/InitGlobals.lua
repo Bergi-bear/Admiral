@@ -14,16 +14,9 @@ do
 		InitMouseMoveTrigger() -- Запуск отслеживания положения мыши
 		InitSoundsA()--Создаём звуки
 		InitUnitDeath()-- инициализация смерти
-		-- то что ниже удалить при релизе
-		OnAttack()
-		InitUnitDeathMap()
-		local text=CreateBigText("Не дайте пеонам сбежать",3)
-		TimerStart(CreateTimer(), 20, true, function()
-			BlzDestroyFrame(text)
-		end)
-		CreatePeonCountFrame()
-	end
 
+		InitMap()
+	end
 end
 
 do

@@ -9,6 +9,9 @@ function InitUnitDeath()
 		local DeadUnit=GetTriggerUnit()
 		local killer=GetKillingUnit()
 		local data = HERO[GetPlayerId(GetOwningPlayer(killer))]
+		if GetUnitTypeId(killer)==FourCC('nsko') then
+			killer=data.UnitHero
+		end
 		if IsUnitType(DeadUnit,UNIT_TYPE_HERO) then --герой умер
 			if CustomFrameSystem then
 				CreateCallingBar(DeadUnit,10,"Воскрешение")
@@ -24,6 +27,7 @@ function InitUnitDeath()
 		if IsUnitType(killer,UNIT_TYPE_HERO) and data.HasHat then --герой убил и создаёт зомба
 			if BlzGetUnitAbilityCooldownRemaining(killer,SpellIDS)<=.01 and not IsUnitType(DeadUnit,UNIT_TYPE_MECHANICAL) and IsUnitRace(DeadUnit,RACE_ORC) then
 				BlzStartUnitAbilityCooldown(killer,SpellIDS,10)
+				ArgBonus(data,SpellIDS,10)
 				--print("Время создать зомби")
 				TimerStart(CreateTimer(), 1, false, function()
 					ShowUnit(DeadUnit,false)

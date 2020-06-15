@@ -43,11 +43,13 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 		if dist > 1000 or CollisionEnemy or CollisisonDestr or IsUnitType(DamagingUnit, UNIT_TYPE_STRUCTURE) or PerepadZ > 20 then
 			PointContentDestructable(x, y, CollisionRange, true, 0, hero)
 			if GetTerrainZ(x, y) <= WaterZ then
-				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", x, y))
+				if not DamagingUnit then
+					DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", x, y))
+				else
+					DestroyEffect(AddSpecialEffect("AdmiralAssets\\CannonTowerMissile", x, y))
+				end
 			else
-				--print("Где взрыв мать его")
-				DestroyEffect(AddSpecialEffect("AdmiralAssets\\CannonTowerMissile", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
-				--DestroyEffect(AddSpecialEffect("Abilities\\Weapons\\SteamTank\\SteamTankImpact.mdl", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
+				DestroyEffect(AddSpecialEffect("AdmiralAssets\\CannonTowerMissile", x, y))
 			end
 			local stunDuration = 1
 			StunArea(hero, x, y, CollisionRange, stunDuration)
@@ -90,6 +92,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 			distance = 600
 		end
 		speed = distance / speed
+
 		for i2 = 1, 50 do
 			chainElement[i2] = AddSpecialEffect("AdmiralAssets\\ChainElement", GetUnitXY(hero))
 		end

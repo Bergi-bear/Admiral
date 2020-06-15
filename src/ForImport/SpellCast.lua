@@ -14,19 +14,10 @@ function InitSpellTrigger()
 		local data = HERO[GetPlayerId(GetOwningPlayer(caster))]
 
 		if GetUnitAbilityLevel(caster, SpellIDS) > 0 then
-			-- Ярость адмирала?
-			local bonusAttack = AbilityStats.S.damage-- 20
-			local cd = BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1)
-			data.bonusCD = data.bonusCD + bonusAttack
-			if CustomFrameSystem then
-				FrameBigSize(BlzGetAbilityIcon(SpellIDS), 0.2, 5, data.bonusCD)
-			end
-			BlzSetUnitBaseDamage(caster, BlzGetUnitBaseDamage(caster, 0) + bonusAttack, 0)
-			TimerStart(CreateTimer(), cd, false, function()
-				BlzSetUnitBaseDamage(caster, BlzGetUnitBaseDamage(caster, 0) - bonusAttack, 0)
-				data.bonusCD = data.bonusCD - bonusAttack
-			end)
+			-- Ярость адмирала
+			ArgBonus(data,spellId)
 		end
+
 		if spellId == SpellIDQ then
 			-- Выстрел
 			BlzPauseUnitEx(caster, true)
@@ -58,7 +49,7 @@ function InitSpellTrigger()
 						BlzPauseUnitEx(caster, false)
 					end)
 				else
-					print("мертвый каст, сообщите автору о баге, код МУТНО-ЗЕЛНЫЙ, если есть проблемы при стрельбе")
+					print("мертвый каст, сообщите автору о баге, код МУТНО-ЗЕЛНЫЙ, если есть проблемы при стрельбе, должа сломаться задержка")
 					BlzPauseUnitEx(caster, false)
 				end
 			end)
@@ -247,7 +238,7 @@ function InitSpellTrigger()
 						BlzSetSpecialEffectScale(eff, 0.2)
 						DestroyEffect(eff)
 					end
-
+ 
 					SetUnitX(caster, nx)
 					SetUnitY(caster, ny)
 
