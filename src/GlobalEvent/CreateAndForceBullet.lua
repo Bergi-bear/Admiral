@@ -138,8 +138,8 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 						DestroyEffect(tempEff)
 					end)
 				end
-
-				GroupEnumUnitsInRange(perebor, x, y, 75, nil)
+				local px,py=MoveXY(x, y, -2*speed, angle)
+				GroupEnumUnitsInRange(perebor, px, py, 75, nil)
 				while true do
 					e = FirstOfGroup(perebor)
 					if e == nil then

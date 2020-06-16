@@ -14,7 +14,6 @@ do
 		InitMouseMoveTrigger() -- Запуск отслеживания положения мыши
 		InitSoundsA()--Создаём звуки
 		InitUnitDeath()-- инициализация смерти
-
 		InitMap()
 	end
 end
