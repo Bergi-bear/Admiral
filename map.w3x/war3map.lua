@@ -663,9 +663,7 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 					DestroyEffect(AddSpecialEffect("AdmiralAssets\\CannonTowerMissile", x, y))
 				end
 			else
-				--print("Где взрыв мать его")
-				DestroyEffect(AddSpecialEffect("AdmiralAssets\\CannonTowerMissile", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
-				--DestroyEffect(AddSpecialEffect("Abilities\\Weapons\\SteamTank\\SteamTankImpact.mdl", x, y)) --эффект зрыва для рефорджа --Abilities\Weapons\SteamTank\SteamTankImpact.mdl
+				DestroyEffect(AddSpecialEffect("AdmiralAssets\\CannonTowerMissile", x, y))
 			end
 			local stunDuration = 1
 			StunArea(hero, x, y, CollisionRange, stunDuration)
@@ -1546,9 +1544,23 @@ function InitUnitDeath()
 					DestroyEffectHD(AddSpecialEffect("Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton",GetUnitXY(DeadUnit)))
 					local new=CreateUnit(GetOwningPlayer(killer),FourCC('nsko'),GetUnitX(DeadUnit),GetUnitY(DeadUnit),GetRandomInt(0,360))
 					BlzSetUnitBaseDamage(new,data.bonusCD,0)
-
 					UnitApplyTimedLife(new,FourCC('BTLF'),30)
 					IssueTargetOrder(new,"patrol",killer)
+					TimerStart(CreateTimer(), 1, true, function()
+						local x,y=GetUnitXY(killer)
+						local distance=DistanceBetweenXY(x,y,GetUnitXY(new))
+						if distance>600 then
+							IssuePointOrder(new,"move", x,y)
+						else
+							if GetUnitCurrentOrder(new)~=String2OrderIdBJ("attack") then
+								local rx,ry=x+GetRandomInt(-500,500),y+GetRandomInt(-500,500)
+								IssuePointOrder(new,"attack", rx,ry)
+							end
+						end
+						if not UnitAlive(new) then
+							DestroyTimer(GetExpiredTimer())
+						end
+					end)
 				end)
 			end
 		end
@@ -1644,6 +1656,8 @@ end
 ---
 
 function InitMap()
+	local hero=FindUnitOfType(HeroID)
+	SelectUnitForPlayerSingle(hero,GetOwningPlayer(hero))
 	OnAttack()
 	InitUnitDeathMap()
 	local text=CreateBigText("Не дайте пеонам сбежать",3)

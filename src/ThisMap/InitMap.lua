@@ -5,6 +5,8 @@
 ---
 
 function InitMap()
+	local hero=FindUnitOfType(HeroID)
+	SelectUnitForPlayerSingle(hero,GetOwningPlayer(hero))
 	OnAttack()
 	InitUnitDeathMap()
 	local text=CreateBigText("Не дайте пеонам сбежать",3)
