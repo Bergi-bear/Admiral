@@ -59,7 +59,7 @@ function InitSpellTrigger()
 			local anchor = AddSpecialEffect("AdmiralAssets\\AnchorHD2", casterX, casterY)
 			local dist = DistanceBetweenXY(x, y, casterX, casterY)
 			TimerStart(CreateTimer(), 0.01, false, function()
-				BlzStartUnitAbilityCooldown(caster,SpellIDW,4)
+				--BlzStartUnitAbilityCooldown(caster,SpellIDW,4)-- uncomment for test
 			end)
 			BlzSetSpecialEffectYaw(anchor, math.rad(angleCast))
 			BlzSetSpecialEffectZ(anchor, GetUnitZ(caster) + 200)
@@ -109,7 +109,11 @@ function InitSpellTrigger()
 						local totalHeal=damage*multiplierHeal
 						local isUnit = false
 						if CustomFrameSystem then
-							FrameBigSize(BlzGetAbilityIcon(SpellIDE), 0.1*k, 10,k)
+							local show=0.2
+							if k>=3 then
+								show=k*0.1
+							end
+							FrameBigSize(BlzGetAbilityIcon(SpellIDE), show, 10,k,caster)
 						end
 						GroupEnumUnitsInRange(perebor, casterX, casterY, attackRange, nil)
 

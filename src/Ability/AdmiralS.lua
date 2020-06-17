@@ -13,7 +13,7 @@ function ArgBonus(data,spellId,cdAbility)
 	--print(cd)
 	data.bonusCD = data.bonusCD + bonusAttack
 	if CustomFrameSystem then
-		FrameBigSize(BlzGetAbilityIcon(SpellIDS), 0.2, 5, data.bonusCD)
+		FrameBigSize(BlzGetAbilityIcon(SpellIDS), 0.2, 5, data.bonusCD,caster)
 	end
 	BlzSetUnitBaseDamage(caster, BlzGetUnitBaseDamage(caster, 0) + bonusAttack, 0)
 	TimerStart(CreateTimer(), cd, false, function()

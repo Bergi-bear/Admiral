@@ -188,7 +188,7 @@ function ArgBonus(data,spellId,cdAbility)
 	--print(cd)
 	data.bonusCD = data.bonusCD + bonusAttack
 	if CustomFrameSystem then
-		FrameBigSize(BlzGetAbilityIcon(SpellIDS), 0.2, 5, data.bonusCD)
+		FrameBigSize(BlzGetAbilityIcon(SpellIDS), 0.2, 5, data.bonusCD,caster)
 	end
 	BlzSetUnitBaseDamage(caster, BlzGetUnitBaseDamage(caster, 0) + bonusAttack, 0)
 	TimerStart(CreateTimer(), cd, false, function()
@@ -376,7 +376,7 @@ function InitSpellTrigger()
 			local anchor = AddSpecialEffect("AdmiralAssets\\AnchorHD2", casterX, casterY)
 			local dist = DistanceBetweenXY(x, y, casterX, casterY)
 			TimerStart(CreateTimer(), 0.01, false, function()
-				BlzStartUnitAbilityCooldown(caster,SpellIDW,4)
+				--BlzStartUnitAbilityCooldown(caster,SpellIDW,4)-- uncomment for test
 			end)
 			BlzSetSpecialEffectYaw(anchor, math.rad(angleCast))
 			BlzSetSpecialEffectZ(anchor, GetUnitZ(caster) + 200)
@@ -426,7 +426,11 @@ function InitSpellTrigger()
 						local totalHeal=damage*multiplierHeal
 						local isUnit = false
 						if CustomFrameSystem then
-							FrameBigSize(BlzGetAbilityIcon(SpellIDE), 0.2, 10,k)
+							local show=0.2
+							if k>=3 then
+								show=k*0.1
+							end
+							FrameBigSize(BlzGetAbilityIcon(SpellIDE), show, 10,k,caster)
 						end
 						GroupEnumUnitsInRange(perebor, casterX, casterY, attackRange, nil)
 
@@ -1857,7 +1861,10 @@ end
 ---
 
 
-function FrameBigSize(FrameTexture, secShow, i2, bonus)
+function FrameBigSize(FrameTexture, secShow, i2, bonus,hero)
+	if not IsUnitSelected(hero,GetOwningPlayer(hero))  then
+		return
+	end
 	local size = 0
 	local sec = 0
 	local i = 1
@@ -1872,21 +1879,21 @@ function FrameBigSize(FrameTexture, secShow, i2, bonus)
 	BlzFrameSetText(newText, bonus)
 	BlzFrameSetPoint(newText, FRAMEPOINT_CENTER, CBPoz, FRAMEPOINT_CENTER, 0, 0)
 
+	if not GetLocalPlayer()==GetOwningPlayer(hero) then
+		BlzFrameSetVisible(fh,false)
+		BlzFrameSetVisible(fh,false)
+	end
+
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		sec = sec + TIMER_PERIOD
 		size = size + (i * 0.005)
-
-		--print(sec)
 		if sec >= secShow and turn then
-			--print("off")
 			turn = false
 			i = i * (-1)
 		end
 		if size <= 0 then
 			DestroyTimer(GetExpiredTimer())
 			BlzDestroyFrame(fh)
-			--BlzDestroyFrame(fh1)
-			--BlzDestroyFrame(fh2)
 			BlzDestroyFrame(newText)
 			size = 0
 		end

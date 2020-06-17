@@ -5,7 +5,10 @@
 ---
 
 
-function FrameBigSize(FrameTexture, secShow, i2, bonus)
+function FrameBigSize(FrameTexture, secShow, i2, bonus,hero)
+	if not IsUnitSelected(hero,GetOwningPlayer(hero))  then
+		return
+	end
 	local size = 0
 	local sec = 0
 	local i = 1
@@ -20,21 +23,21 @@ function FrameBigSize(FrameTexture, secShow, i2, bonus)
 	BlzFrameSetText(newText, bonus)
 	BlzFrameSetPoint(newText, FRAMEPOINT_CENTER, CBPoz, FRAMEPOINT_CENTER, 0, 0)
 
+	if not GetLocalPlayer()==GetOwningPlayer(hero) then
+		BlzFrameSetVisible(fh,false)
+		BlzFrameSetVisible(fh,false)
+	end
+
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		sec = sec + TIMER_PERIOD
 		size = size + (i * 0.005)
-
-		--print(sec)
 		if sec >= secShow and turn then
-			--print("off")
 			turn = false
 			i = i * (-1)
 		end
 		if size <= 0 then
 			DestroyTimer(GetExpiredTimer())
 			BlzDestroyFrame(fh)
-			--BlzDestroyFrame(fh1)
-			--BlzDestroyFrame(fh2)
 			BlzDestroyFrame(newText)
 			size = 0
 		end
