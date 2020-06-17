@@ -56,14 +56,14 @@ function InitSpellTrigger()
 		end
 		if spellId == SpellIDW then
 			-- Бросок якоря
-			local anchor = AddSpecialEffect("AdmiralAssets\\AnchorHD2", casterX, casterY)
+			local anchor = AddSpecialEffect(ImportPath.."\\AnchorHD2", casterX, casterY)
 			local dist = DistanceBetweenXY(x, y, casterX, casterY)
 			TimerStart(CreateTimer(), 0.01, false, function()
 				--BlzStartUnitAbilityCooldown(caster,SpellIDW,4)-- uncomment for test
 			end)
 			BlzSetSpecialEffectYaw(anchor, math.rad(angleCast))
 			BlzSetSpecialEffectZ(anchor, GetUnitZ(caster) + 200)
-			data.ChainEff = CreateEffectLighting3D(0, 0, 0, 0, 0, 0, 0, "AdmiralAssets\\ChainElement")
+			data.ChainEff = CreateEffectLighting3D(0, 0, 0, 0, 0, 0, 0, ImportPath.."\\ChainElement")
 			JumpEffect(anchor, 20, 300, angleCast, dist, caster, 2, GetUnitZ(caster) + 200)
 		end
 
@@ -79,7 +79,7 @@ function InitSpellTrigger()
 						CreateCallingBar(caster, 0.2)
 					end
 					TimerStart(CreateTimer(), 0.2, false, function()
-						eff = AddSpecialEffectTarget("AdmiralAssets\\animeslashfinal", caster, "weapon")
+						eff = AddSpecialEffectTarget(ImportPath.."\\animeslashfinal", caster, "weapon")
 						local e = nil
 						local k = 0
 						local damage = BlzGetUnitBaseDamage(caster, 0)+data.HeroGreenDamage
@@ -169,11 +169,10 @@ function InitSpellTrigger()
 			-- Пушечные ряды
 			local cannon = {}
 			for i = 1, AbilityStats.R.count do
-				cannon[i] = AddSpecialEffect("AdmiralAssets\\SiegeCannon", OutPoint, OutPoint)
+				cannon[i] = AddSpecialEffect(ImportPath.."\\SiegeCannon", OutPoint, OutPoint)
 				BlzSetSpecialEffectAlpha(cannon[i], 40)
 				BlzSetSpecialEffectScale(cannon[i], 1.3)
 			end
-			--print((((AbilityStats.R.count//2))))
 			local curAngle = angleCast
 			local angleCast2 = angleCast
 			TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
@@ -186,6 +185,14 @@ function InitSpellTrigger()
 						local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count // 2))), curAngle - 90)
 						BlzSetSpecialEffectPosition(cannon[i], nx, ny, GetTerrainZ(nx, ny))
 						BlzSetSpecialEffectYaw(cannon[i], math.rad(curAngle))
+						if GetTerrainZ(nx,ny)<=WaterZ then
+							BlzSetSpecialEffectColor(cannon[i],255,0,0)
+							--print("красный")
+							BlzSetSpecialEffectAlpha(cannon[i], 255)
+						else
+							BlzSetSpecialEffectColor(cannon[i],255,255,255)
+							BlzSetSpecialEffectAlpha(cannon[i], 40)
+						end
 					end
 				end
 				if not data.ReleaseLMB then
@@ -210,6 +217,11 @@ function InitSpellTrigger()
 				BlzSpecialEffectAddSubAnimation(ship, SUBANIM_TYPE_SWIM)
 				UnitAddAbility(caster, FourCC("Abun"))
 				local sec=0
+
+				local tl = Location(GetUnitXY(hero))
+				PlaySoundAtPointBJ(soundMotor, 100, tl, 0)
+				RemoveLocation(tl)
+				AttachSoundToUnit(soundMotor,caster)
 				TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 					BlzStartUnitAbilityCooldown(caster, spellId, BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1))
 					local xs, ys = GetUnitXY(caster)
@@ -241,7 +253,7 @@ function InitSpellTrigger()
 					sec=sec+1
 					if sec==2 then
 						sec=0
-						local eff = AddSpecialEffect("AdmiralAssets\\TorrentNoSND", xs, ys)
+						local eff = AddSpecialEffect(ImportPath.."\\TorrentNoSND", xs, ys)
 						BlzSetSpecialEffectYaw(eff, math.rad(angle - 180))
 						BlzSetSpecialEffectPitch(eff, math.rad(-90))
 						BlzSetSpecialEffectZ(eff, GetUnitZ(caster) - 50)
@@ -265,7 +277,7 @@ function InitSpellTrigger()
 						DestroyEffect(ship)
 						DestroyTimer(GetExpiredTimer())
 						ResetToGameCameraForPlayer(GetOwningPlayer(caster), 0)
-						--	SetUnitZ(caster,GetUnitZ(caster)-200)
+						StopSound(soundMotor,false,false)
 					end
 				end)
 			end)

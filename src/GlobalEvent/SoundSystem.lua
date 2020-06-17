@@ -11,6 +11,7 @@ gg_snd_MetalHeavySliceFlesh1 = nil
 gg_snd_MetalHeavySliceFlesh2 = nil
 gg_snd_MetalHeavySliceFlesh3 = nil
 soundReload = nil
+soundMotor = nil
 
 function InitSoundsA()
 	gg_snd_BristleBackMissileLaunch1 = CreateSound("Abilities/Weapons/BristleBackMissile/BristleBackMissileLaunch1.flac", false, true, true, 0, 0, "MissilesEAX")
@@ -39,8 +40,13 @@ function InitSoundsA()
 	SetSoundDuration(gg_snd_MetalHeavySliceFlesh3, 853)
 	SetSoundVolume(gg_snd_MetalHeavySliceFlesh3, 250)
 
-	soundReload = CreateSound("AdmiralAssets\\Reload.flac", false, true, true, 0, 0, "MissilesEAX")
+	soundReload = CreateSound(ImportPath.."\\Reload.flac", false, true, true, 0, 0, "MissilesEAX")
 	SetSoundParamsFromLabel(soundReload, "MetalHeavySliceFlesh")
 	SetSoundDuration(soundReload, 853)
 	SetSoundVolume(soundReload, 250)
+
+	soundMotor = CreateSound(ImportPath.."\\Motor.flac", true, true, true, 0, 0, "MissilesEAX")
+	SetSoundParamsFromLabel(soundMotor, "MetalHeavySliceFlesh")
+	SetSoundDuration(soundMotor, 853)
+	SetSoundVolume(soundMotor, 250)
 end

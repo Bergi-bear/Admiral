@@ -17,7 +17,7 @@ function CreateVisualConusForUnitBySplat(hero,flag,long,step,range,angleSector)
 	local LastMouseX=0
 
 	for i=1,long*2 do
-		image[i]=CreateImage("AdmiralAssets\\pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
+		image[i]=CreateImage(ImportPath.."\\pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
 		SetImageColor(image[i],0,255,0,128)
 		SetImageRenderAlways(image[i], true)
 		if GetLocalPlayer()~=Player(pid) then

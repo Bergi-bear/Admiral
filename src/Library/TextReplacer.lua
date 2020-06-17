@@ -41,7 +41,13 @@ do
 		if GetLocalPlayer()==GetOwningPlayer(hero) then
 			if id==SpellIDQ then
 				local dmg=(BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage)*AbilityStats.Q.damage
+				local scale=AbilityStats.Q.damage
+				local area=AbilityStats.Q.damageArea
+				local stun=AbilityStats.Q.stunDuration
 				NativeString =string.gsub(NativeString,'dmg',dmg)
+				NativeString =string.gsub(NativeString,'scale',scale)
+				NativeString =string.gsub(NativeString,'area',area)
+				NativeString =string.gsub(NativeString,'stun',stun)
 				if hasHat then
 					NativeString=NativeString.."|cff5078f8".."\nЕсли цель погибает под действием этой способности, то её перезарядка уменьшается до 1 секунды".."|r"
 				end

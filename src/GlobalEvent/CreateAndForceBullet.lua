@@ -19,6 +19,7 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 		--print("Пуля из мушкета капитана")
 		BlzSetSpecialEffectScale(bullet, 0.1)
 		zhero = GetUnitZ(hero) + 120
+		CollisionRange=AbilityStats.Q.damageArea
 	end
 	BlzSetSpecialEffectScale(bam, 0.1)
 	BlzSetSpecialEffectScale(cloud, 0.02)
@@ -44,33 +45,37 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 			PointContentDestructable(x, y, CollisionRange, true, 0, hero)
 			if GetTerrainZ(x, y) <= WaterZ then
 				if not DamagingUnit then
-					DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", x, y))
+					DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1", x, y))
 				else
-					DestroyEffect(AddSpecialEffect("AdmiralAssets\\CannonTowerMissile", x, y))
+					local eff1=AddSpecialEffect(ImportPath.."\\CannonTowerMissile",x, y)
+					BlzSetSpecialEffectZ(eff1,GetUnitZ(DamagingUnit))
+					DestroyEffect(eff1)
 				end
 			else
-				DestroyEffect(AddSpecialEffect("AdmiralAssets\\CannonTowerMissile", x, y))
+				local eff1=AddSpecialEffect(ImportPath.."\\CannonTowerMissile",x, y)
+				BlzSetSpecialEffectZ(eff1,z)
+				DestroyEffect(eff1)
 			end
-			local stunDuration = 1
+			local stunDuration = AbilityStats.Q.stunDuration
 			StunArea(hero, x, y, CollisionRange, stunDuration)
 			UnitDamageArea(hero, damage, x, y, CollisionRange, ZBullet)
 			if DamagingUnit and IsUnitType(hero, UNIT_TYPE_HERO) then
-				local data=HERO[GetPlayerId(GetOwningPlayer(hero))]
+				local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
 				FlyTextTagCriticalStrike(DamagingUnit, R2I(damage) .. "!", GetOwningPlayer(hero))
 				if not UnitAlive(DamagingUnit) and data.HasHat then
-				--	print("звук перезарядки")
+					--	print("звук перезарядки")
 					local tl = Location(GetUnitXY(hero))
 					PlaySoundAtPointBJ(soundReload, 100, tl, 0)
 					RemoveLocation(tl)
 					--BlzEndUnitAbilityCooldown(hero,SpellIDQ)
-					BlzStartUnitAbilityCooldown(hero,SpellIDQ,1)
+					BlzStartUnitAbilityCooldown(hero, SpellIDQ, 1)
 				end
 			end
-			BlzSetSpecialEffectPosition(bullet,OutPoint,OutPoint,0)
+			BlzSetSpecialEffectPosition(bullet, OutPoint, OutPoint, 0)
 			DestroyEffect(bullet)
 			DestroyTimer(GetExpiredTimer())
 			if not DamagingUnit then
-				BlzSetSpecialEffectPosition(bullet,OutPoint,OutPoint,0)
+				BlzSetSpecialEffectPosition(bullet, OutPoint, OutPoint, 0)
 				DestroyEffect(bullet)
 				DestroyTimer(GetExpiredTimer())
 			end
@@ -94,13 +99,13 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		speed = distance / speed
 
 		for i2 = 1, 50 do
-			chainElement[i2] = AddSpecialEffect("AdmiralAssets\\ChainElement", GetUnitXY(hero))
+			chainElement[i2] = AddSpecialEffect(ImportPath.."\\ChainElement", GetUnitXY(hero))
 		end
 	end
 	local HookGroup = CreateGroup()
 	local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
 	local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
-	local damage = GetHeroStr(hero, true) * AbilityStats.W.damage*data.AnchorSpinDamage
+	local damage = GetHeroStr(hero, true) * AbilityStats.W.damage * data.AnchorSpinDamage
 	--print(TimerGetElapsed(GlobalTimer))
 	TimerStart(CreateTimer(), delay, false, function()
 		TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
@@ -132,15 +137,15 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 				local e = nil
 				local tempEff = nil
 				if GetTerrainZ(nx, ny) <= WaterZ then
-					DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", nx, ny))
+					DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1", nx, ny))
 				else
 					tempEff = AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0", x, y)
 					TimerStart(CreateTimer(), 5, false, function()
 						DestroyEffect(tempEff)
 					end)
 				end
-				local px,py=MoveXY(x, y, -2*speed, angle)
-				PointContentDestructable(px,py,75,true,damage,hero)
+				local px, py = MoveXY(x, y, -2 * speed, angle)
+				PointContentDestructable(px, py, 75, true, damage, hero)
 				GroupEnumUnitsInRange(perebor, px, py, 75, nil)
 				while true do
 					e = FirstOfGroup(perebor)
@@ -199,14 +204,14 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 				if flag == 2 then
 					if GetTerrainZ(nx, ny) <= WaterZ then
 						--	print("в воде")
-						DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", nx, ny))
+						DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1", nx, ny))
 					else
 						--	print("на суше")
-						DestroyEffect(AddSpecialEffect("AdmiralAssets\\ThunderclapCasterClassic", nx, ny))
+						DestroyEffect(AddSpecialEffect(ImportPath.."\\ThunderclapCasterClassic", nx, ny))
 						--local tempEff=
 						if data.HasHat then
-							DestroyEffectHD(AddSpecialEffect("Abilities\\Weapons\\DemolisherFireMissile\\DemolisherFireMissile",nx,ny))
-													end
+							DestroyEffectHD(AddSpecialEffect("Abilities\\Weapons\\DemolisherFireMissile\\DemolisherFireMissile", nx, ny))
+						end
 
 
 					end
@@ -230,7 +235,6 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		end)
 	end)
 end
-
 
 function DestroyEffectHD(whichEffect)
 	TimerStart(CreateTimer(), 0.01, false, function()

@@ -205,6 +205,7 @@ SpellIDR = FourCC("A003") -- Пушки из ларца
 SpellIDS = FourCC("A004") -- Ярость адмирала
 SpellIDD = FourCC("A005") -- На гребне волны
 AdmiralHatItemID = FourCC('I000') -- Шляпа Адмирала
+ImportPath="AdmiralAssets"
 WaterZ = 170 -- Минимуальный уровень высоты, после которого начинается вода, это нужно для водных эффектов ,брызг и некоторых условий, введите введите очень мало значение, чтобы отключить воду
 OutPoint=6000 -- пространство за экраном, для резконого перемещения эффектов и уберсплатов, рекомендуеются изменять только на больших картах
 --Включение и отключение прочих систем true включено, false  отключено
@@ -213,7 +214,9 @@ TexTagSystem = true -- Система всплывающего текста
 CustomFrameSystem = true -- Система Фрейма увеличения пассивки, каста способностей и таймера вокрешения
 AbilityStats={
 	Q={
-		damage=5 --множитель урона при выстреле, умноженный на силу атаки
+		damage=5, -- множитель урона при выстреле, умноженный на силу атаки
+		stunDuration=1, -- длительность оглушения при выстреле
+		damageArea=100 -- область поражения, рекомендуется 50-150
 	},
 	W={
 		damage=10 -- множитель урона при приземлении якоря, умноженный на силу героя
@@ -373,14 +376,14 @@ function InitSpellTrigger()
 		end
 		if spellId == SpellIDW then
 			-- Бросок якоря
-			local anchor = AddSpecialEffect("AdmiralAssets\\AnchorHD2", casterX, casterY)
+			local anchor = AddSpecialEffect(ImportPath.."\\AnchorHD2", casterX, casterY)
 			local dist = DistanceBetweenXY(x, y, casterX, casterY)
 			TimerStart(CreateTimer(), 0.01, false, function()
 				--BlzStartUnitAbilityCooldown(caster,SpellIDW,4)-- uncomment for test
 			end)
 			BlzSetSpecialEffectYaw(anchor, math.rad(angleCast))
 			BlzSetSpecialEffectZ(anchor, GetUnitZ(caster) + 200)
-			data.ChainEff = CreateEffectLighting3D(0, 0, 0, 0, 0, 0, 0, "AdmiralAssets\\ChainElement")
+			data.ChainEff = CreateEffectLighting3D(0, 0, 0, 0, 0, 0, 0, ImportPath.."\\ChainElement")
 			JumpEffect(anchor, 20, 300, angleCast, dist, caster, 2, GetUnitZ(caster) + 200)
 		end
 
@@ -396,7 +399,7 @@ function InitSpellTrigger()
 						CreateCallingBar(caster, 0.2)
 					end
 					TimerStart(CreateTimer(), 0.2, false, function()
-						eff = AddSpecialEffectTarget("AdmiralAssets\\animeslashfinal", caster, "weapon")
+						eff = AddSpecialEffectTarget(ImportPath.."\\animeslashfinal", caster, "weapon")
 						local e = nil
 						local k = 0
 						local damage = BlzGetUnitBaseDamage(caster, 0)+data.HeroGreenDamage
@@ -486,11 +489,10 @@ function InitSpellTrigger()
 			-- Пушечные ряды
 			local cannon = {}
 			for i = 1, AbilityStats.R.count do
-				cannon[i] = AddSpecialEffect("AdmiralAssets\\SiegeCannon", OutPoint, OutPoint)
+				cannon[i] = AddSpecialEffect(ImportPath.."\\SiegeCannon", OutPoint, OutPoint)
 				BlzSetSpecialEffectAlpha(cannon[i], 40)
 				BlzSetSpecialEffectScale(cannon[i], 1.3)
 			end
-			--print((((AbilityStats.R.count//2))))
 			local curAngle = angleCast
 			local angleCast2 = angleCast
 			TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
@@ -503,6 +505,14 @@ function InitSpellTrigger()
 						local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count // 2))), curAngle - 90)
 						BlzSetSpecialEffectPosition(cannon[i], nx, ny, GetTerrainZ(nx, ny))
 						BlzSetSpecialEffectYaw(cannon[i], math.rad(curAngle))
+						if GetTerrainZ(nx,ny)<=WaterZ then
+							BlzSetSpecialEffectColor(cannon[i],255,0,0)
+							--print("красный")
+							BlzSetSpecialEffectAlpha(cannon[i], 255)
+						else
+							BlzSetSpecialEffectColor(cannon[i],255,255,255)
+							BlzSetSpecialEffectAlpha(cannon[i], 40)
+						end
 					end
 				end
 				if not data.ReleaseLMB then
@@ -527,6 +537,11 @@ function InitSpellTrigger()
 				BlzSpecialEffectAddSubAnimation(ship, SUBANIM_TYPE_SWIM)
 				UnitAddAbility(caster, FourCC("Abun"))
 				local sec=0
+
+				local tl = Location(GetUnitXY(hero))
+				PlaySoundAtPointBJ(soundMotor, 100, tl, 0)
+				RemoveLocation(tl)
+				AttachSoundToUnit(soundMotor,caster)
 				TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 					BlzStartUnitAbilityCooldown(caster, spellId, BlzGetUnitAbilityCooldown(caster, spellId, GetUnitAbilityLevel(caster, spellId) - 1))
 					local xs, ys = GetUnitXY(caster)
@@ -558,7 +573,7 @@ function InitSpellTrigger()
 					sec=sec+1
 					if sec==2 then
 						sec=0
-						local eff = AddSpecialEffect("AdmiralAssets\\TorrentNoSND", xs, ys)
+						local eff = AddSpecialEffect(ImportPath.."\\TorrentNoSND", xs, ys)
 						BlzSetSpecialEffectYaw(eff, math.rad(angle - 180))
 						BlzSetSpecialEffectPitch(eff, math.rad(-90))
 						BlzSetSpecialEffectZ(eff, GetUnitZ(caster) - 50)
@@ -582,7 +597,7 @@ function InitSpellTrigger()
 						DestroyEffect(ship)
 						DestroyTimer(GetExpiredTimer())
 						ResetToGameCameraForPlayer(GetOwningPlayer(caster), 0)
-						--	SetUnitZ(caster,GetUnitZ(caster)-200)
+						StopSound(soundMotor,false,false)
 					end
 				end)
 			end)
@@ -642,6 +657,7 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 		--print("Пуля из мушкета капитана")
 		BlzSetSpecialEffectScale(bullet, 0.1)
 		zhero = GetUnitZ(hero) + 120
+		CollisionRange=AbilityStats.Q.damageArea
 	end
 	BlzSetSpecialEffectScale(bam, 0.1)
 	BlzSetSpecialEffectScale(cloud, 0.02)
@@ -667,33 +683,37 @@ function CreateAndForceBullet(hero, angle, speed, effectmodel, xs, ys, damage)
 			PointContentDestructable(x, y, CollisionRange, true, 0, hero)
 			if GetTerrainZ(x, y) <= WaterZ then
 				if not DamagingUnit then
-					DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", x, y))
+					DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1", x, y))
 				else
-					DestroyEffect(AddSpecialEffect("AdmiralAssets\\CannonTowerMissile", x, y))
+					local eff1=AddSpecialEffect(ImportPath.."\\CannonTowerMissile",x, y)
+					BlzSetSpecialEffectZ(eff1,GetUnitZ(DamagingUnit))
+					DestroyEffect(eff1)
 				end
 			else
-				DestroyEffect(AddSpecialEffect("AdmiralAssets\\CannonTowerMissile", x, y))
+				local eff1=AddSpecialEffect(ImportPath.."\\CannonTowerMissile",x, y)
+				BlzSetSpecialEffectZ(eff1,z)
+				DestroyEffect(eff1)
 			end
-			local stunDuration = 1
+			local stunDuration = AbilityStats.Q.stunDuration
 			StunArea(hero, x, y, CollisionRange, stunDuration)
 			UnitDamageArea(hero, damage, x, y, CollisionRange, ZBullet)
 			if DamagingUnit and IsUnitType(hero, UNIT_TYPE_HERO) then
-				local data=HERO[GetPlayerId(GetOwningPlayer(hero))]
+				local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
 				FlyTextTagCriticalStrike(DamagingUnit, R2I(damage) .. "!", GetOwningPlayer(hero))
 				if not UnitAlive(DamagingUnit) and data.HasHat then
-				--	print("звук перезарядки")
+					--	print("звук перезарядки")
 					local tl = Location(GetUnitXY(hero))
 					PlaySoundAtPointBJ(soundReload, 100, tl, 0)
 					RemoveLocation(tl)
 					--BlzEndUnitAbilityCooldown(hero,SpellIDQ)
-					BlzStartUnitAbilityCooldown(hero,SpellIDQ,1)
+					BlzStartUnitAbilityCooldown(hero, SpellIDQ, 1)
 				end
 			end
-			BlzSetSpecialEffectPosition(bullet,OutPoint,OutPoint,0)
+			BlzSetSpecialEffectPosition(bullet, OutPoint, OutPoint, 0)
 			DestroyEffect(bullet)
 			DestroyTimer(GetExpiredTimer())
 			if not DamagingUnit then
-				BlzSetSpecialEffectPosition(bullet,OutPoint,OutPoint,0)
+				BlzSetSpecialEffectPosition(bullet, OutPoint, OutPoint, 0)
 				DestroyEffect(bullet)
 				DestroyTimer(GetExpiredTimer())
 			end
@@ -717,13 +737,13 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		speed = distance / speed
 
 		for i2 = 1, 50 do
-			chainElement[i2] = AddSpecialEffect("AdmiralAssets\\ChainElement", GetUnitXY(hero))
+			chainElement[i2] = AddSpecialEffect(ImportPath.."\\ChainElement", GetUnitXY(hero))
 		end
 	end
 	local HookGroup = CreateGroup()
 	local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
 	local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
-	local damage = GetHeroStr(hero, true) * AbilityStats.W.damage*data.AnchorSpinDamage
+	local damage = GetHeroStr(hero, true) * AbilityStats.W.damage * data.AnchorSpinDamage
 	--print(TimerGetElapsed(GlobalTimer))
 	TimerStart(CreateTimer(), delay, false, function()
 		TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
@@ -755,15 +775,15 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 				local e = nil
 				local tempEff = nil
 				if GetTerrainZ(nx, ny) <= WaterZ then
-					DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", nx, ny))
+					DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1", nx, ny))
 				else
 					tempEff = AddSpecialEffect("Doodads\\Cinematic\\DemonFootPrint\\DemonFootPrint0", x, y)
 					TimerStart(CreateTimer(), 5, false, function()
 						DestroyEffect(tempEff)
 					end)
 				end
-				local px,py=MoveXY(x, y, -2*speed, angle)
-				PointContentDestructable(px,py,75,true,damage,hero)
+				local px, py = MoveXY(x, y, -2 * speed, angle)
+				PointContentDestructable(px, py, 75, true, damage, hero)
 				GroupEnumUnitsInRange(perebor, px, py, 75, nil)
 				while true do
 					e = FirstOfGroup(perebor)
@@ -822,14 +842,14 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 				if flag == 2 then
 					if GetTerrainZ(nx, ny) <= WaterZ then
 						--	print("в воде")
-						DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1", nx, ny))
+						DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1", nx, ny))
 					else
 						--	print("на суше")
-						DestroyEffect(AddSpecialEffect("AdmiralAssets\\ThunderclapCasterClassic", nx, ny))
+						DestroyEffect(AddSpecialEffect(ImportPath.."\\ThunderclapCasterClassic", nx, ny))
 						--local tempEff=
 						if data.HasHat then
-							DestroyEffectHD(AddSpecialEffect("Abilities\\Weapons\\DemolisherFireMissile\\DemolisherFireMissile",nx,ny))
-													end
+							DestroyEffectHD(AddSpecialEffect("Abilities\\Weapons\\DemolisherFireMissile\\DemolisherFireMissile", nx, ny))
+						end
 
 
 					end
@@ -853,7 +873,6 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 		end)
 	end)
 end
-
 
 function DestroyEffectHD(whichEffect)
 	TimerStart(CreateTimer(), 0.01, false, function()
@@ -948,6 +967,7 @@ gg_snd_MetalHeavySliceFlesh1 = nil
 gg_snd_MetalHeavySliceFlesh2 = nil
 gg_snd_MetalHeavySliceFlesh3 = nil
 soundReload = nil
+soundMotor = nil
 
 function InitSoundsA()
 	gg_snd_BristleBackMissileLaunch1 = CreateSound("Abilities/Weapons/BristleBackMissile/BristleBackMissileLaunch1.flac", false, true, true, 0, 0, "MissilesEAX")
@@ -976,10 +996,15 @@ function InitSoundsA()
 	SetSoundDuration(gg_snd_MetalHeavySliceFlesh3, 853)
 	SetSoundVolume(gg_snd_MetalHeavySliceFlesh3, 250)
 
-	soundReload = CreateSound("AdmiralAssets\\Reload.flac", false, true, true, 0, 0, "MissilesEAX")
+	soundReload = CreateSound(ImportPath.."\\Reload.flac", false, true, true, 0, 0, "MissilesEAX")
 	SetSoundParamsFromLabel(soundReload, "MetalHeavySliceFlesh")
 	SetSoundDuration(soundReload, 853)
 	SetSoundVolume(soundReload, 250)
+
+	soundMotor = CreateSound(ImportPath.."\\Motor.flac", true, true, true, 0, 0, "MissilesEAX")
+	SetSoundParamsFromLabel(soundMotor, "MetalHeavySliceFlesh")
+	SetSoundDuration(soundMotor, 853)
+	SetSoundVolume(soundMotor, 250)
 end
 
 ---
@@ -1405,7 +1430,13 @@ do
 		if GetLocalPlayer()==GetOwningPlayer(hero) then
 			if id==SpellIDQ then
 				local dmg=(BlzGetUnitBaseDamage(hero,0)+data.HeroGreenDamage)*AbilityStats.Q.damage
+				local scale=AbilityStats.Q.damage
+				local area=AbilityStats.Q.damageArea
+				local stun=AbilityStats.Q.stunDuration
 				NativeString =string.gsub(NativeString,'dmg',dmg)
+				NativeString =string.gsub(NativeString,'scale',scale)
+				NativeString =string.gsub(NativeString,'area',area)
+				NativeString =string.gsub(NativeString,'stun',stun)
 				if hasHat then
 					NativeString=NativeString.."|cff5078f8".."\nЕсли цель погибает под действием этой способности, то её перезарядка уменьшается до 1 секунды".."|r"
 				end
@@ -1685,7 +1716,7 @@ function CreateGlue()
 	BlzFrameSetAllPoints(buttonIconFrame, buttonFrame)
 	BlzFrameSetTexture(buttonIconFrame, "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn", 0, true)
 	BlzFrameSetSize(buttonFrame,next,next)
-	BlzFrameSetAbsPoint(buttonFrame,FRAMEPOINT_CENTER,0.4,next/2)
+	BlzFrameSetAbsPoint(buttonFrame,FRAMEPOINT_CENTER,next/2,0.17)
 	local  this = CreateTrigger()
 	BlzTriggerRegisterFrameEvent(this, buttonFrame, FRAMEEVENT_CONTROL_CLICK)
 	local mark=MarkSystem
@@ -1908,7 +1939,7 @@ end
 --- DateTime: 03.06.2020 17:02
 ---
 function CreateCallingBar(u, cd, text)
-	if BlzLoadTOCFile("AdmiralAssets\\Main.toc") then
+	if BlzLoadTOCFile(ImportPath.."\\Main.toc") then
 	else
 		--	print("ошибка загрузки fdf")
 	end
@@ -1925,7 +1956,7 @@ function CreateCallingBar(u, cd, text)
 		BlzFrameSetVisible(bar, true)
 	end
 	BlzFrameSetTexture(bar, "Replaceabletextures\\Teamcolor\\Teamcolor0" .. (GetConvertedPlayerId(GetOwningPlayer(u)) - 1) .. ".blp", 0, true)
-	BlzFrameSetTexture(BlzGetFrameByName("MyFakeBarBorder", 0), "AdmiralAssets\\MyBarBorder.blp", 0, true)
+	BlzFrameSetTexture(BlzGetFrameByName("MyFakeBarBorder", 0), ImportPath.."\\MyBarBorder.blp", 0, true)
 	BlzFrameSetText(BlzGetFrameByName("MyFakeBarTitle", 0), text)--‡ Сердце ™ щит
 	local lefttext = BlzGetFrameByName("MyFakeBarLeftText", 0)
 	local righttext = BlzGetFrameByName("MyFakeBarRightText", 0)
@@ -2175,7 +2206,7 @@ function MarkCreatorW(data)
 				CreateVisualPointerForUnitBySplat(hero,1,900//5,5,600//5)
 			end
 			data.MarkIsActivated=true--
-			data.Anchor=AddSpecialEffect("AdmiralAssets\\AnchorHD2",GetUnitXY(data.UnitHero))
+			data.Anchor=AddSpecialEffect(ImportPath.."\\AnchorHD2",GetUnitXY(data.UnitHero))
 			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
 			--BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
 			local a=0
@@ -2275,7 +2306,8 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 	local hero=data.UnitHero
 	DestroyEffect(AddSpecialEffect("Abilities\\Spells\\NightElf\\Starfall\\StarfallTarget",x,y))
 	local zTerr=GetTerrainZ(x,y)
-	local z=1150
+	local z=1150+-220+zTerr
+	--print(zTerr)
 	local speed=40
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		z=z-speed
@@ -2284,7 +2316,7 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 			z=zTerr
 			DestroyTimer(GetExpiredTimer())
 			if GetTerrainZ(x,y)<=WaterZ then
-				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",x,y))
+				DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1",x,y))
 			else
 				cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)
 				if data.HasHat then
@@ -2455,7 +2487,7 @@ function CreateVisualConusForUnitBySplat(hero,flag,long,step,range,angleSector)
 	local LastMouseX=0
 
 	for i=1,long*2 do
-		image[i]=CreateImage("AdmiralAssets\\pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
+		image[i]=CreateImage(ImportPath.."\\pointerORIG",16,16,16,4000,4000,0,0,0,150,4)
 		SetImageColor(image[i],0,255,0,128)
 		SetImageRenderAlways(image[i], true)
 		if GetLocalPlayer()~=Player(pid) then
@@ -2575,7 +2607,7 @@ function CreateVisualPointerForUnitBySplat(hero, flag, long, step, minlong)
 	local LastMouseX = 0
 
 	for i = 1, long do
-		image[i] = CreateImage("AdmiralAssets\\pointerORIG", 16, 16, 9999, 4000, 4000, 0, 0, 0, 0, 4)
+		image[i] = CreateImage(ImportPath.."\\pointerORIG", 16, 16, 9999, 4000, 4000, 0, 0, 0, 0, 4)
 		SetImageColor(image[i], 0, 255, 0, 128)
 		SetImageRenderAlways(image[i], true)
 		if GetLocalPlayer() ~= Player(pid) then
@@ -2583,7 +2615,7 @@ function CreateVisualPointerForUnitBySplat(hero, flag, long, step, minlong)
 		else
 			ShowImage(image[i], true)
 		end
-		image2[i] = CreateImage("AdmiralAssets\\pointerORIG", 16, 16, 9999, 4000, 4000, 0, 0, 0, 0, 4)
+		image2[i] = CreateImage(ImportPath.."\\pointerORIG", 16, 16, 9999, 4000, 4000, 0, 0, 0, 0, 4)
 		SetImageColor(image2[i], 0, 255, 0, 128)
 		SetImageRenderAlways(image2[i], true)
 		if GetLocalPlayer() ~= Player(pid) then

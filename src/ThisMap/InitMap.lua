@@ -24,7 +24,7 @@ function CreateGlue()
 	BlzFrameSetAllPoints(buttonIconFrame, buttonFrame)
 	BlzFrameSetTexture(buttonIconFrame, "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn", 0, true)
 	BlzFrameSetSize(buttonFrame,next,next)
-	BlzFrameSetAbsPoint(buttonFrame,FRAMEPOINT_CENTER,0.4,next/2)
+	BlzFrameSetAbsPoint(buttonFrame,FRAMEPOINT_CENTER,next/2,0.17)
 	local  this = CreateTrigger()
 	BlzTriggerRegisterFrameEvent(this, buttonFrame, FRAMEEVENT_CONTROL_CLICK)
 	local mark=MarkSystem

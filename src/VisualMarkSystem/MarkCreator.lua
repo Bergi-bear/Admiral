@@ -31,7 +31,7 @@ function MarkCreatorW(data)
 				CreateVisualPointerForUnitBySplat(hero,1,900//5,5,600//5)
 			end
 			data.MarkIsActivated=true--
-			data.Anchor=AddSpecialEffect("AdmiralAssets\\AnchorHD2",GetUnitXY(data.UnitHero))
+			data.Anchor=AddSpecialEffect(ImportPath.."\\AnchorHD2",GetUnitXY(data.UnitHero))
 			BlzSetSpecialEffectZ(data.Anchor,GetUnitZ(data.UnitHero)+200)
 			--BlzSetSpecialEffectPitch(data.Anchor,math.rad(-90))
 			local a=0
@@ -131,7 +131,8 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 	local hero=data.UnitHero
 	DestroyEffect(AddSpecialEffect("Abilities\\Spells\\NightElf\\Starfall\\StarfallTarget",x,y))
 	local zTerr=GetTerrainZ(x,y)
-	local z=1150
+	local z=1150+-220+zTerr
+	--print(zTerr)
 	local speed=40
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		z=z-speed
@@ -140,7 +141,7 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 			z=zTerr
 			DestroyTimer(GetExpiredTimer())
 			if GetTerrainZ(x,y)<=WaterZ then
-				DestroyEffect(AddSpecialEffect("AdmiralAssets\\Torrent1",x,y))
+				DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1",x,y))
 			else
 				cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)
 				if data.HasHat then
@@ -177,3 +178,4 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 
 	end)
 end
+
