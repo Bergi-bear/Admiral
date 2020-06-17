@@ -14,4 +14,31 @@ function InitMap()
 		BlzDestroyFrame(text)
 	end)
 	CreatePeonCountFrame()
+	CreateGlue()
+end
+
+function CreateGlue()
+	local next=0.039
+	local  buttonFrame = BlzCreateFrameByType("GLUEBUTTON", "FaceButton", BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), "", 0)
+	local  buttonIconFrame = BlzCreateFrameByType("BACKDROP", "FaceButtonIcon", buttonFrame, "", 0)
+	BlzFrameSetAllPoints(buttonIconFrame, buttonFrame)
+	BlzFrameSetTexture(buttonIconFrame, "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn", 0, true)
+	BlzFrameSetSize(buttonFrame,next,next)
+	BlzFrameSetAbsPoint(buttonFrame,FRAMEPOINT_CENTER,0.4,next/2)
+	local  this = CreateTrigger()
+	BlzTriggerRegisterFrameEvent(this, buttonFrame, FRAMEEVENT_CONTROL_CLICK)
+	local mark=MarkSystem
+	TriggerAddAction(this, function ()
+		BlzFrameSetEnable(buttonFrame, false)
+		BlzFrameSetEnable(buttonFrame, true)
+		if mark then
+			MarkSystem=false
+			print("маркеры выключены")
+			mark=false
+		else
+			mark=true
+			MarkSystem=true
+			print("маркеры включены")
+		end
+	end)
 end

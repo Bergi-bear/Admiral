@@ -100,6 +100,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 	local HookGroup = CreateGroup()
 	local data = HERO[GetPlayerId(GetOwningPlayer(hero))]
 	local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
+	local damage = GetHeroStr(hero, true) * AbilityStats.W.damage*data.AnchorSpinDamage
 	--print(TimerGetElapsed(GlobalTimer))
 	TimerStart(CreateTimer(), delay, false, function()
 		TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
@@ -139,6 +140,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 					end)
 				end
 				local px,py=MoveXY(x, y, -2*speed, angle)
+				PointContentDestructable(px,py,75,true,damage,hero)
 				GroupEnumUnitsInRange(perebor, px, py, 75, nil)
 				while true do
 					e = FirstOfGroup(perebor)
@@ -155,7 +157,6 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 					local enum = GetEnumUnit()
 					if not IsUnitInRange(enum, hero, 75) then
 						local nxe, nye = MoveXY(GetUnitX(enum), GetUnitY(enum), speed, angle)
-
 						SetUnitX(enum, nxe)
 						SetUnitY(enum, nye)
 					end
@@ -209,7 +210,7 @@ function JumpEffect(eff, speed, maxHeight, angle, distance, hero, flag, ZStart)
 
 
 					end
-					local damage = GetHeroStr(hero, true) * AbilityStats.W.damage*data.AnchorSpinDamage
+
 					DestroyTimer(GetExpiredTimer())
 					StunArea(hero, nx, ny, 150, 2)
 					JumpEffect(eff, 30, 0, angle - 180, distance, hero, 3)

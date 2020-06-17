@@ -58,6 +58,9 @@ function InitSpellTrigger()
 			-- Бросок якоря
 			local anchor = AddSpecialEffect("AdmiralAssets\\AnchorHD2", casterX, casterY)
 			local dist = DistanceBetweenXY(x, y, casterX, casterY)
+			TimerStart(CreateTimer(), 0.01, false, function()
+				BlzStartUnitAbilityCooldown(caster,SpellIDW,4)
+			end)
 			BlzSetSpecialEffectYaw(anchor, math.rad(angleCast))
 			BlzSetSpecialEffectZ(anchor, GetUnitZ(caster) + 200)
 			data.ChainEff = CreateEffectLighting3D(0, 0, 0, 0, 0, 0, 0, "AdmiralAssets\\ChainElement")
@@ -105,6 +108,9 @@ function InitSpellTrigger()
 						totalDamage = damage * multiplier
 						local totalHeal=damage*multiplierHeal
 						local isUnit = false
+						if CustomFrameSystem then
+							FrameBigSize(BlzGetAbilityIcon(SpellIDE), 0.1*k, 10,k)
+						end
 						GroupEnumUnitsInRange(perebor, casterX, casterY, attackRange, nil)
 
 						while true do
