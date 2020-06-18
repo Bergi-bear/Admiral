@@ -12,17 +12,6 @@ function InitUnitDeath()
 		if GetUnitTypeId(killer)==FourCC('nsko') then
 			killer=data.UnitHero
 		end
-		if IsUnitType(DeadUnit,UNIT_TYPE_HERO) then --герой умер
-			if CustomFrameSystem then
-				CreateCallingBar(DeadUnit,10,"Воскрешение")
-			end
-			local PD=GetOwningPlayer(DeadUnit)
-			TimerStart(CreateTimer(), 10, false, function()
-				ReviveHero(DeadUnit,GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD),true)
-				SelectUnitForPlayerSingle(DeadUnit,PD)
-				SetCameraPosition(GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD))
-			end)
-		end
 
 		if IsUnitType(killer,UNIT_TYPE_HERO) and data.HasHat then --герой убил и создаёт зомба
 			if BlzGetUnitAbilityCooldownRemaining(killer,SpellIDS)<=.01 and not IsUnitType(DeadUnit,UNIT_TYPE_MECHANICAL) and IsUnitRace(DeadUnit,RACE_ORC) then

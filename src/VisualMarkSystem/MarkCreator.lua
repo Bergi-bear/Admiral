@@ -89,7 +89,7 @@ function MarkCreatorE(data)
 	if UnitHaveReadyAbility(hero,SpellIDE) then
 		if not data.MarkIsActivated then
 			if MarkSystem then
-				CreateVisualConusForUnitBySplat(hero,1,360,1,150,235) --Создание конуса
+				CreateVisualConusForUnitBySplat(hero,1,360,1,150,235) --Создание конуса 150
 			end
 			data.MarkIsActivated=true
 		end
@@ -129,7 +129,7 @@ end
 
 function CreateFallCannonOnEffectPosition(data,angle,x,y)
 	local hero=data.UnitHero
-	DestroyEffect(AddSpecialEffect("Abilities\\Spells\\NightElf\\Starfall\\StarfallTarget",x,y))
+	DestroyEffect(AddSpecialEffect(ImportPath.."\\StarfallTarget",x,y))
 	local zTerr=GetTerrainZ(x,y)
 	local z=1150+-220+zTerr
 	--print(zTerr)
@@ -146,6 +146,7 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 				cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)
 				if data.HasHat then
 					StunArea(cannon,x,y,200,2)
+					DestroyEffectHD(AddSpecialEffect("Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster",x,y))
 				end
 			end
 

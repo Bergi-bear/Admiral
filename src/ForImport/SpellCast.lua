@@ -69,7 +69,8 @@ function InitSpellTrigger()
 
 		if spellId == SpellIDE then
 			-- Удар саблей
-			local attackRange = 180
+			local attackRange =2.2*BlzGetUnitWeaponRealField(caster,UNIT_WEAPON_RF_ATTACK_RANGE,0)--200 --UNIT_WEAPON_RF_ATTACK_RANGE
+			--print(attackRange)
 			BlzPauseUnitEx(caster, true)
 			TimerStart(CreateTimer(), 0.01, false, function()
 				if UnitAlive(caster) then
@@ -175,6 +176,11 @@ function InitSpellTrigger()
 			end
 			local curAngle = angleCast
 			local angleCast2 = angleCast
+			--SetFogStateRadius(GetOwningPlayer(caster), FOG_OF_WAR_VISIBLE, x, y, 1000, true)-- Небольгая подсветка
+			local range=500
+			SetRect(GlobalRect, x - range, y - range, x + range, y +range)
+			local FM=CreateFogModifierRectBJ(true, GetOwningPlayer(caster), FOG_OF_WAR_VISIBLE, GlobalRect)
+
 			TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 				if data.ReleaseLMB then
 					BlzStartUnitAbilityCooldown(caster, SpellIDR, BlzGetUnitAbilityCooldown(caster, SpellIDR, GetUnitAbilityLevel(caster, SpellIDR) - 1))
@@ -185,6 +191,7 @@ function InitSpellTrigger()
 						local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count // 2))), curAngle - 90)
 						BlzSetSpecialEffectPosition(cannon[i], nx, ny, GetTerrainZ(nx, ny))
 						BlzSetSpecialEffectYaw(cannon[i], math.rad(curAngle))
+
 						if GetTerrainZ(nx,ny)<=WaterZ then
 							BlzSetSpecialEffectColor(cannon[i],255,0,0)
 							--print("красный")
@@ -197,6 +204,9 @@ function InitSpellTrigger()
 				end
 				if not data.ReleaseLMB then
 					DestroyTimer(GetExpiredTimer())
+					TimerStart(CreateTimer(), 2, false, function()
+						DestroyFogModifier(FM)
+					end)
 					for i = 1, AbilityStats.R.count do
 						local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count // 2))), curAngle - 90)
 						CreateFallCannonOnEffectPosition(data, curAngle, nx, ny)
@@ -235,10 +245,12 @@ function InitSpellTrigger()
 						local hor = 1
 						if isHitLeftOrRight(nx) then
 							hor = -1
+							DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1", nx, ny))
 						end
 						local ver = 1
 						if isHitTopOrBottom(ny) then
 							ver = -1
+							DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1", nx, ny))
 						end
 						local vector = Vector:new((nx - xs) * hor, (ny - ys) * ver, nz - nz)
 						local yaw = vector:yaw()

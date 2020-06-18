@@ -205,7 +205,7 @@ SpellIDR = FourCC("A003") -- Пушки из ларца
 SpellIDS = FourCC("A004") -- Ярость адмирала
 SpellIDD = FourCC("A005") -- На гребне волны
 AdmiralHatItemID = FourCC('I000') -- Шляпа Адмирала
-ImportPath="AdmiralAssets"
+ImportPath="AdmiralAssets" -- Путь к папке импорта, не рекомендуется трогать, иначе придутся менять пути у тектур в моделях
 WaterZ = 170 -- Минимуальный уровень высоты, после которого начинается вода, это нужно для водных эффектов ,брызг и некоторых условий, введите введите очень мало значение, чтобы отключить воду
 OutPoint=6000 -- пространство за экраном, для резконого перемещения эффектов и уберсплатов, рекомендуеются изменять только на больших картах
 --Включение и отключение прочих систем true включено, false  отключено
@@ -389,7 +389,8 @@ function InitSpellTrigger()
 
 		if spellId == SpellIDE then
 			-- Удар саблей
-			local attackRange = 180
+			local attackRange =2.2*BlzGetUnitWeaponRealField(caster,UNIT_WEAPON_RF_ATTACK_RANGE,0)--200 --UNIT_WEAPON_RF_ATTACK_RANGE
+			--print(attackRange)
 			BlzPauseUnitEx(caster, true)
 			TimerStart(CreateTimer(), 0.01, false, function()
 				if UnitAlive(caster) then
@@ -495,6 +496,11 @@ function InitSpellTrigger()
 			end
 			local curAngle = angleCast
 			local angleCast2 = angleCast
+			--SetFogStateRadius(GetOwningPlayer(caster), FOG_OF_WAR_VISIBLE, x, y, 1000, true)-- Небольгая подсветка
+			local range=500
+			SetRect(GlobalRect, x - range, y - range, x + range, y +range)
+			local FM=CreateFogModifierRectBJ(true, GetOwningPlayer(caster), FOG_OF_WAR_VISIBLE, GlobalRect)
+
 			TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 				if data.ReleaseLMB then
 					BlzStartUnitAbilityCooldown(caster, SpellIDR, BlzGetUnitAbilityCooldown(caster, SpellIDR, GetUnitAbilityLevel(caster, SpellIDR) - 1))
@@ -505,6 +511,7 @@ function InitSpellTrigger()
 						local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count // 2))), curAngle - 90)
 						BlzSetSpecialEffectPosition(cannon[i], nx, ny, GetTerrainZ(nx, ny))
 						BlzSetSpecialEffectYaw(cannon[i], math.rad(curAngle))
+
 						if GetTerrainZ(nx,ny)<=WaterZ then
 							BlzSetSpecialEffectColor(cannon[i],255,0,0)
 							--print("красный")
@@ -517,6 +524,9 @@ function InitSpellTrigger()
 				end
 				if not data.ReleaseLMB then
 					DestroyTimer(GetExpiredTimer())
+					TimerStart(CreateTimer(), 2, false, function()
+						DestroyFogModifier(FM)
+					end)
 					for i = 1, AbilityStats.R.count do
 						local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count // 2))), curAngle - 90)
 						CreateFallCannonOnEffectPosition(data, curAngle, nx, ny)
@@ -555,10 +565,12 @@ function InitSpellTrigger()
 						local hor = 1
 						if isHitLeftOrRight(nx) then
 							hor = -1
+							DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1", nx, ny))
 						end
 						local ver = 1
 						if isHitTopOrBottom(ny) then
 							ver = -1
+							DestroyEffect(AddSpecialEffect(ImportPath.."\\Torrent1", nx, ny))
 						end
 						local vector = Vector:new((nx - xs) * hor, (ny - ys) * ver, nz - nz)
 						local yaw = vector:yaw()
@@ -1563,17 +1575,6 @@ function InitUnitDeath()
 		if GetUnitTypeId(killer)==FourCC('nsko') then
 			killer=data.UnitHero
 		end
-		if IsUnitType(DeadUnit,UNIT_TYPE_HERO) then --герой умер
-			if CustomFrameSystem then
-				CreateCallingBar(DeadUnit,10,"Воскрешение")
-			end
-			local PD=GetOwningPlayer(DeadUnit)
-			TimerStart(CreateTimer(), 10, false, function()
-				ReviveHero(DeadUnit,GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD),true)
-				SelectUnitForPlayerSingle(DeadUnit,PD)
-				SetCameraPosition(GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD))
-			end)
-		end
 
 		if IsUnitType(killer,UNIT_TYPE_HERO) and data.HasHat then --герой убил и создаёт зомба
 			if BlzGetUnitAbilityCooldownRemaining(killer,SpellIDS)<=.01 and not IsUnitType(DeadUnit,UNIT_TYPE_MECHANICAL) and IsUnitRace(DeadUnit,RACE_ORC) then
@@ -1831,6 +1832,18 @@ function InitUnitDeathMap()
 	TriggerRegisterAnyUnitEventBJ(gg_trg_DEADGUI, EVENT_PLAYER_UNIT_DEATH)
 	TriggerAddAction(gg_trg_DEADGUI, function()
 		local DeadUnit=GetTriggerUnit()
+
+		if IsUnitType(DeadUnit,UNIT_TYPE_HERO) then --герой умер
+			if CustomFrameSystem then
+				CreateCallingBar(DeadUnit,10,"Воскрешение")
+			end
+			local PD=GetOwningPlayer(DeadUnit)
+			TimerStart(CreateTimer(), 10, false, function()
+				ReviveHero(DeadUnit,GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD),true)
+				SelectUnitForPlayerSingle(DeadUnit,PD)
+				SetCameraPosition(GetPlayerStartLocationX(PD),GetPlayerStartLocationY(PD))
+			end)
+		end
 		if IsUnitType(DeadUnit,UNIT_TYPE_STRUCTURE) then
 			--print("Погибло здание")
 			local x,y=GetUnitXY(DeadUnit)
@@ -2264,7 +2277,7 @@ function MarkCreatorE(data)
 	if UnitHaveReadyAbility(hero,SpellIDE) then
 		if not data.MarkIsActivated then
 			if MarkSystem then
-				CreateVisualConusForUnitBySplat(hero,1,360,1,150,235) --Создание конуса
+				CreateVisualConusForUnitBySplat(hero,1,360,1,150,235) --Создание конуса 150
 			end
 			data.MarkIsActivated=true
 		end
@@ -2304,7 +2317,7 @@ end
 
 function CreateFallCannonOnEffectPosition(data,angle,x,y)
 	local hero=data.UnitHero
-	DestroyEffect(AddSpecialEffect("Abilities\\Spells\\NightElf\\Starfall\\StarfallTarget",x,y))
+	DestroyEffect(AddSpecialEffect(ImportPath.."\\StarfallTarget",x,y))
 	local zTerr=GetTerrainZ(x,y)
 	local z=1150+-220+zTerr
 	--print(zTerr)
@@ -2321,6 +2334,7 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 				cannon=CreateUnit(GetOwningPlayer(hero),CannonID,x,y,angle)
 				if data.HasHat then
 					StunArea(cannon,x,y,200,2)
+					DestroyEffectHD(AddSpecialEffect("Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster",x,y))
 				end
 			end
 
@@ -2353,6 +2367,8 @@ function CreateFallCannonOnEffectPosition(data,angle,x,y)
 
 	end)
 end
+
+
 do
 	Vector = {}
 	Vector.__index = Vector
