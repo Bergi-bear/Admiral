@@ -15,6 +15,7 @@ function InitMap()
 	end)
 	CreatePeonCountFrame()
 	CreateGlue()
+
 end
 
 function CreateGlue()

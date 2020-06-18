@@ -3,7 +3,6 @@ end
 
 function CreateAllItems()
     local itemID
-    BlzCreateItemWithSkin(FourCC("I000"), -1167.1, -2293.4, FourCC("I000"))
     BlzCreateItemWithSkin(FourCC("I000"), -537.8, -708.0, FourCC("I000"))
     BlzCreateItemWithSkin(FourCC("desc"), -1468.9, -2247.5, FourCC("desc"))
     BlzCreateItemWithSkin(FourCC("jpnt"), 534.9, 1519.5, FourCC("jpnt"))
@@ -196,8 +195,8 @@ function ArgBonus(data,spellId,cdAbility)
 		data.bonusCD = data.bonusCD - bonusAttack
 	end)
 end
-HeroID = FourCC("H000")--ID героя Адмирала пирата
-CannonID = FourCC("h001")--ID призываемой пушки
+HeroID = FourCC("H000") -- ID героя Адмирала пирата
+CannonID = FourCC("h001") -- ID призываемой пушки
 SpellIDQ = FourCC("A000") -- Выстрел из мушкета
 SpellIDW = FourCC("A001") -- Бросок якоря
 SpellIDE = FourCC("A002") -- Удар саблей
@@ -205,13 +204,14 @@ SpellIDR = FourCC("A003") -- Пушки из ларца
 SpellIDS = FourCC("A004") -- Ярость адмирала
 SpellIDD = FourCC("A005") -- На гребне волны
 AdmiralHatItemID = FourCC('I000') -- Шляпа Адмирала
-ImportPath="AdmiralAssets" -- Путь к папке импорта, не рекомендуется трогать, иначе придутся менять пути у тектур в моделях
-WaterZ = 170 -- Минимуальный уровень высоты, после которого начинается вода, это нужно для водных эффектов ,брызг и некоторых условий, введите введите очень мало значение, чтобы отключить воду
-OutPoint=6000 -- пространство за экраном, для резконого перемещения эффектов и уберсплатов, рекомендуеются изменять только на больших картах
---Включение и отключение прочих систем true включено, false  отключено
-MarkSystem = true -- Система подсветки радиуса способностей героев
+ImportPath="AdmiralAssets" -- Путь к папке импорта, не рекомендуется трогать, иначе придутся менять пути у текстур в моделях
+WaterZ = 170 -- Минимальный уровень высоты, после которого начинается вода, это нужно для водных эффектов ,брызг и некоторых условий, введите введите очень мало значение, чтобы отключить воду
+OutPoint=6000 -- пространство за экраном, для резкого перемещения эффектов и уберсплатов, рекомендуется изменять только на больших картах
+-- Включение и отключение прочих систем true включено, false  отключено
+MarkSystem = false -- Система подсветки радиуса способностей героев, изначально отключено из за графических багов
 TexTagSystem = true -- Система всплывающего текста
-CustomFrameSystem = true -- Система Фрейма увеличения пассивки, каста способностей и таймера вокрешения
+CustomFrameSystem = true -- Система увеличения фреймов, каст (поддержание) способностей и таймер воскрешения
+--Параметры способностей, которые можно изменять триггерно
 AbilityStats={
 	Q={
 		damage=5, -- множитель урона при выстреле, умноженный на силу атаки
@@ -222,16 +222,15 @@ AbilityStats={
 		damage=10 -- множитель урона при приземлении якоря, умноженный на силу героя
 	},
 	E={
-		damage=1 -- множитель урона ка каждое задетое сущестов
+		damage=1 -- множитель урона ка каждое задетое существо
 	},
 	R={
-		count=6 -- количетво призываемых пушек
+		count=6 -- количество призываемых пушек
 	},
 	S={
 		damage=20 -- бонус урон за каждую способность на перезарядке
 	},
 }
-
 
 GetPlayerMouseX = {}
 GetPlayerMouseY = {}
@@ -1455,7 +1454,9 @@ do
 			end
 			if id==SpellIDW then
 				local dmg= R2I(GetHeroStr(hero, true) * AbilityStats.W.damage)
+				local str= AbilityStats.W.damage
 				NativeString =string.gsub(NativeString,'dmg',dmg)
+				NativeString =string.gsub(NativeString,'str',str)
 				if hasHat then
 					NativeString=NativeString.."|cff5078f8".."\nУдерживайте якорь в режиме вращения, чтобы увеличить множитель финального урона. Максимальный множитель X 5. ("..R2I(dmg*5)..")".."|r"
 				end
@@ -1708,6 +1709,7 @@ function InitMap()
 	end)
 	CreatePeonCountFrame()
 	CreateGlue()
+
 end
 
 function CreateGlue()

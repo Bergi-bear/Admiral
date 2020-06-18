@@ -54,7 +54,9 @@ do
 			end
 			if id==SpellIDW then
 				local dmg= R2I(GetHeroStr(hero, true) * AbilityStats.W.damage)
+				local str= AbilityStats.W.damage
 				NativeString =string.gsub(NativeString,'dmg',dmg)
+				NativeString =string.gsub(NativeString,'str',str)
 				if hasHat then
 					NativeString=NativeString.."|cff5078f8".."\nУдерживайте якорь в режиме вращения, чтобы увеличить множитель финального урона. Максимальный множитель X 5. ("..R2I(dmg*5)..")".."|r"
 				end
