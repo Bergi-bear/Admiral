@@ -58,9 +58,6 @@ function InitSpellTrigger()
 			-- Бросок якоря
 			local anchor = AddSpecialEffect(ImportPath.."\\AnchorHD2", casterX, casterY)
 			local dist = DistanceBetweenXY(x, y, casterX, casterY)
-			TimerStart(CreateTimer(), 0.01, false, function()
-				--BlzStartUnitAbilityCooldown(caster,SpellIDW,4)-- uncomment for test
-			end)
 			BlzSetSpecialEffectYaw(anchor, math.rad(angleCast))
 			BlzSetSpecialEffectZ(anchor, GetUnitZ(caster) + 200)
 			data.ChainEff = CreateEffectLighting3D(0, 0, 0, 0, 0, 0, 0, ImportPath.."\\ChainElement")
@@ -184,6 +181,7 @@ function InitSpellTrigger()
 			TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 				if data.ReleaseLMB then
 					BlzStartUnitAbilityCooldown(caster, SpellIDR, BlzGetUnitAbilityCooldown(caster, SpellIDR, GetUnitAbilityLevel(caster, SpellIDR) - 1))
+					--BlzStartUnitAbilityCooldown(caster,spellId,4)-- uncomment for test
 					local xEnd, yEnd = MoveXY(x, y, -40, angleCast2)
 					angleCast = AngleBetweenXY(xEnd, yEnd, GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]) / bj_DEGTORAD
 					curAngle = lerpTheta(curAngle, angleCast, TIMER_PERIOD * 8)

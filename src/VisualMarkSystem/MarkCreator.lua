@@ -104,10 +104,50 @@ function MarkCreatorR(data)
 	if UnitHaveReadyAbility(hero,SpellIDR) then
 		if not data.MarkIsActivated then
 			--CreateVisualPointerForUnitBySplat(hero,1,1200//5,5,1200//5)
-			--CreateVisualCannon(data)
+			CreateVisualCannon(data)
 			data.MarkIsActivated=true
 		end
 	end
+end
+
+function CreateVisualCannon(data)
+	local cannon = {}
+	local hero=data.UnitHero
+	for i = 1, AbilityStats.R.count do
+		cannon[i] = AddSpecialEffect(ImportPath.."\\SiegeCannon", OutPoint, OutPoint)
+		BlzSetSpecialEffectAlpha(cannon[i], 40)
+		BlzSetSpecialEffectScale(cannon[i], 1.3)
+	end
+	local angleCast = AngleBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]) / bj_DEGTORAD
+	local curAngle=angleCast
+	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
+		local x,y=GetPlayerMouseX[data.pid],GetPlayerMouseY[data.pid]
+		angleCast = AngleBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]) / bj_DEGTORAD
+		curAngle = lerpTheta(curAngle, angleCast, TIMER_PERIOD * 8)
+		for i = 1, AbilityStats.R.count do
+			local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count // 2))), curAngle - 90)
+			BlzSetSpecialEffectPosition(cannon[i], nx, ny, GetTerrainZ(nx, ny))
+			BlzSetSpecialEffectYaw(cannon[i], math.rad(curAngle))
+
+			if GetTerrainZ(nx,ny)<=WaterZ then
+				BlzSetSpecialEffectColor(cannon[i],255,0,0)
+				--print("красный")
+				BlzSetSpecialEffectAlpha(cannon[i], 255)
+			else
+				BlzSetSpecialEffectColor(cannon[i],255,255,255)
+				BlzSetSpecialEffectAlpha(cannon[i], 40)
+			end
+		end
+		if not data.MarkIsActivated then
+			DestroyTimer(GetExpiredTimer())
+			for i = 1, AbilityStats.R.count do
+				BlzSetSpecialEffectPosition(cannon[i], OutPoint, OutPoint, 0)
+				DestroyEffect(cannon[i])
+			end
+			--print("пушки отменены маркер")
+		end
+	end)
+
 end
 
 
