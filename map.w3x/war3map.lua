@@ -314,6 +314,14 @@ function InitHEROTable()
 	end
 	TimerStart(GlobalTimer, TIMER_PERIOD, true, function()
 	end)
+	--[[
+	local a=0
+	TimerStart(CreateTimer(), 2, true, function()
+		local hero=HERO[0].UnitHero
+		SetUnitAnimationByIndex(hero,a)
+		print(a)
+		a=a+1
+	end)]]
 end
 
 
@@ -396,7 +404,11 @@ function InitSpellTrigger()
 						CreateCallingBar(caster, 0.2)
 					end
 					TimerStart(CreateTimer(), 0.2, false, function()
-						eff = AddSpecialEffectTarget(ImportPath.."\\animeslashfinal", caster, "weapon")
+						--eff = AddSpecialEffectTarget(ImportPath.."\\animeslashfinal", caster, "weapon")
+						eff = AddSpecialEffect(ImportPath.."\\animeslashfinal", GetUnitXY(caster))
+						BlzSetSpecialEffectZ(eff,GetUnitZ(caster)+40)
+						BlzSetSpecialEffectYaw(eff,math.rad(angleCast))
+
 						local e = nil
 						local k = 0
 						local damage = BlzGetUnitBaseDamage(caster, 0)+data.HeroGreenDamage
@@ -530,6 +542,13 @@ function InitSpellTrigger()
 						BlzSetSpecialEffectPosition(cannon[i], OutPoint, OutPoint, 0)
 						DestroyEffect(cannon[i])
 					end
+					--анимация взмаха сверху+
+					TimerStart(CreateTimer(), 0.01, false, function()
+						SetUnitAnimationByIndex(caster,5)
+						TimerStart(CreateTimer(), 0.6, false, function()
+							ResetUnitAnimation(caster)
+						end)
+					end)
 				end
 			end)
 
@@ -539,6 +558,7 @@ function InitSpellTrigger()
 			local effModel = "Units\\Creeps\\DragonSeaTurtle\\DragonSeaTurtle"
 			data.OnWater=true
 			local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
+			AddUnitAnimationProperties(caster,"swim",true)
 			TimerStart(CreateTimer(), delay, false, function()
 				local ship = AddSpecialEffect(effModel, OutPoint, OutPoint)
 				BlzSpecialEffectAddSubAnimation(ship, SUBANIM_TYPE_SWIM)
@@ -606,6 +626,7 @@ function InitSpellTrigger()
 						DestroyEffect(ship)
 						DestroyTimer(GetExpiredTimer())
 						ResetToGameCameraForPlayer(GetOwningPlayer(caster), 0)
+						AddUnitAnimationProperties(caster,"swim",false)
 						StopSound(soundMotor,false,false)
 					end
 				end)
@@ -2293,6 +2314,14 @@ function MarkCreatorR(data)
 		if not data.MarkIsActivated then
 			--CreateVisualPointerForUnitBySplat(hero,1,1200//5,5,1200//5)
 			CreateVisualCannon(data)
+			UnitAddAbility(hero, FourCC("Abun"))
+			IssueImmediateOrder(hero,"stop")
+			BlzPauseUnitEx(hero,true)
+
+			TimerStart(CreateTimer(), 0.1, false, function()
+				SetUnitAnimationByIndex(hero,3)
+				BlzPauseUnitEx(hero,false)
+			end)
 			data.MarkIsActivated=true
 		end
 	end
@@ -2312,6 +2341,9 @@ function CreateVisualCannon(data)
 		local x,y=GetPlayerMouseX[data.pid],GetPlayerMouseY[data.pid]
 		angleCast = AngleBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]) / bj_DEGTORAD
 		curAngle = lerpTheta(curAngle, angleCast, TIMER_PERIOD * 8)
+		if not data.OnWater then
+			SetUnitFacing(hero,curAngle)
+		end
 		for i = 1, AbilityStats.R.count do
 			local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count // 2))), curAngle - 90)
 			BlzSetSpecialEffectPosition(cannon[i], nx, ny, GetTerrainZ(nx, ny))
@@ -2328,6 +2360,10 @@ function CreateVisualCannon(data)
 		end
 		if not data.MarkIsActivated then
 			DestroyTimer(GetExpiredTimer())
+			ResetUnitAnimation(hero)
+			if not data.OnWater then
+				UnitRemoveAbility(hero, FourCC("Abun"))
+			end
 			for i = 1, AbilityStats.R.count do
 				BlzSetSpecialEffectPosition(cannon[i], OutPoint, OutPoint, 0)
 				DestroyEffect(cannon[i])

@@ -77,7 +77,11 @@ function InitSpellTrigger()
 						CreateCallingBar(caster, 0.2)
 					end
 					TimerStart(CreateTimer(), 0.2, false, function()
-						eff = AddSpecialEffectTarget(ImportPath.."\\animeslashfinal", caster, "weapon")
+						--eff = AddSpecialEffectTarget(ImportPath.."\\animeslashfinal", caster, "weapon")
+						eff = AddSpecialEffect(ImportPath.."\\animeslashfinal", GetUnitXY(caster))
+						BlzSetSpecialEffectZ(eff,GetUnitZ(caster)+40)
+						BlzSetSpecialEffectYaw(eff,math.rad(angleCast))
+
 						local e = nil
 						local k = 0
 						local damage = BlzGetUnitBaseDamage(caster, 0)+data.HeroGreenDamage
@@ -211,6 +215,13 @@ function InitSpellTrigger()
 						BlzSetSpecialEffectPosition(cannon[i], OutPoint, OutPoint, 0)
 						DestroyEffect(cannon[i])
 					end
+					--анимация взмаха сверху+
+					TimerStart(CreateTimer(), 0.01, false, function()
+						SetUnitAnimationByIndex(caster,5)
+						TimerStart(CreateTimer(), 0.6, false, function()
+							ResetUnitAnimation(caster)
+						end)
+					end)
 				end
 			end)
 
@@ -220,6 +231,7 @@ function InitSpellTrigger()
 			local effModel = "Units\\Creeps\\DragonSeaTurtle\\DragonSeaTurtle"
 			data.OnWater=true
 			local delay = TIMER_PERIOD - TimerGetElapsed(GlobalTimer)
+			AddUnitAnimationProperties(caster,"swim",true)
 			TimerStart(CreateTimer(), delay, false, function()
 				local ship = AddSpecialEffect(effModel, OutPoint, OutPoint)
 				BlzSpecialEffectAddSubAnimation(ship, SUBANIM_TYPE_SWIM)
@@ -287,6 +299,7 @@ function InitSpellTrigger()
 						DestroyEffect(ship)
 						DestroyTimer(GetExpiredTimer())
 						ResetToGameCameraForPlayer(GetOwningPlayer(caster), 0)
+						AddUnitAnimationProperties(caster,"swim",false)
 						StopSound(soundMotor,false,false)
 					end
 				end)

@@ -57,5 +57,13 @@ function InitHEROTable()
 	end
 	TimerStart(GlobalTimer, TIMER_PERIOD, true, function()
 	end)
+	--[[
+	local a=0
+	TimerStart(CreateTimer(), 2, true, function()
+		local hero=HERO[0].UnitHero
+		SetUnitAnimationByIndex(hero,a)
+		print(a)
+		a=a+1
+	end)]]
 end
 

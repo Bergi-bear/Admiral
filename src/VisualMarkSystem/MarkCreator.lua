@@ -105,6 +105,14 @@ function MarkCreatorR(data)
 		if not data.MarkIsActivated then
 			--CreateVisualPointerForUnitBySplat(hero,1,1200//5,5,1200//5)
 			CreateVisualCannon(data)
+			UnitAddAbility(hero, FourCC("Abun"))
+			IssueImmediateOrder(hero,"stop")
+			BlzPauseUnitEx(hero,true)
+
+			TimerStart(CreateTimer(), 0.1, false, function()
+				SetUnitAnimationByIndex(hero,3)
+				BlzPauseUnitEx(hero,false)
+			end)
 			data.MarkIsActivated=true
 		end
 	end
@@ -124,6 +132,9 @@ function CreateVisualCannon(data)
 		local x,y=GetPlayerMouseX[data.pid],GetPlayerMouseY[data.pid]
 		angleCast = AngleBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]) / bj_DEGTORAD
 		curAngle = lerpTheta(curAngle, angleCast, TIMER_PERIOD * 8)
+		if not data.OnWater then
+			SetUnitFacing(hero,curAngle)
+		end
 		for i = 1, AbilityStats.R.count do
 			local nx, ny = MoveXY(x, y, 75 * (i - ((AbilityStats.R.count // 2))), curAngle - 90)
 			BlzSetSpecialEffectPosition(cannon[i], nx, ny, GetTerrainZ(nx, ny))
@@ -140,6 +151,10 @@ function CreateVisualCannon(data)
 		end
 		if not data.MarkIsActivated then
 			DestroyTimer(GetExpiredTimer())
+			ResetUnitAnimation(hero)
+			if not data.OnWater then
+				UnitRemoveAbility(hero, FourCC("Abun"))
+			end
 			for i = 1, AbilityStats.R.count do
 				BlzSetSpecialEffectPosition(cannon[i], OutPoint, OutPoint, 0)
 				DestroyEffect(cannon[i])
