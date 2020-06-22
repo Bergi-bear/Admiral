@@ -60,7 +60,7 @@ function InitSpellTrigger()
 			local dist = DistanceBetweenXY(x, y, casterX, casterY)
 			BlzSetSpecialEffectYaw(anchor, math.rad(angleCast))
 			BlzSetSpecialEffectZ(anchor, GetUnitZ(caster) + 200)
-			data.ChainEff = CreateEffectLighting3D(0, 0, 0, 0, 0, 0, 0, ImportPath.."\\ChainElement")
+			data.ChainEff = CreateEffectLighting3D(0, 0, 0, 0, 0, 0, 0, ImportPath.."\\ChainElement",100)
 			JumpEffect(anchor, 20, 300, angleCast, dist, caster, 2, GetUnitZ(caster) + 200)
 		end
 
