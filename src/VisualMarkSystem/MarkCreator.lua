@@ -11,8 +11,13 @@ function MarkCreatorQ(data)
 	end
 	if UnitHaveReadyAbility(hero,SpellIDQ) then
 		if not data.MarkIsActivated then
-			if MarkSystem then
+			if  MarkSystem then --ЗАМЕНИТЬ ОБРАТНО
 				CreateVisualPointerForUnitBySplat(hero,1,1200//5,5,1200//5)
+				--print("q is press")
+				--TimerStart(CreateTimer(), .001,false, function()
+				---	--CreateVisualPointerForUnitByEff(hero,1,100,10)
+				--	CreateVisualPointerForUnit(hero,1,13,80)
+				--end)
 			end
 			data.MarkIsActivated=true
 		end
@@ -128,10 +133,15 @@ function CreateVisualCannon(data)
 	end
 	local angleCast = AngleBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]) / bj_DEGTORAD
 	local curAngle=angleCast
+	local distance=DistanceBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid])
+	local cutDistance=distance
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
-		local x,y=GetPlayerMouseX[data.pid],GetPlayerMouseY[data.pid]
+		--local x,y=GetPlayerMouseX[data.pid],GetPlayerMouseY[data.pid]
+		distance=DistanceBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid])
+		cutDistance=math.lerp(cutDistance,distance,TIMER_PERIOD * 8)
 		angleCast = AngleBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]) / bj_DEGTORAD
 		curAngle = lerpTheta(curAngle, angleCast, TIMER_PERIOD * 8)
+		local x,y=MoveXY(GetUnitX(hero),GetUnitY(hero),cutDistance,curAngle)
 		if not data.OnWater then
 			SetUnitFacing(hero,curAngle)
 		end

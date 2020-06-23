@@ -13,15 +13,14 @@
 ---@param minlong "Милимальное_число_отображаемых_блоков"ы
 function CreateVisualPointerForUnitByEff(hero,flag,long,step,minlong)
 	local effMain={}
-	local image={}
 	local pid=GetPlayerId(GetOwningPlayer(hero))
 	local data=HERO[pid]
 	--local step=50
 	local size=step/100
 	--local k=10
 	local LastMouseX=0
-	local blockname="s_cube1"
-	local arrowname="s_arr1"
+	local blockname=ImportPath.."s_cube1"
+	local arrowname=ImportPath.."s_arr1"
 
 	if GetLocalPlayer()~=Player(pid) then
 		blockname=""
@@ -34,15 +33,12 @@ function CreateVisualPointerForUnitByEff(hero,flag,long,step,minlong)
 		else
 			effMain[i]=AddSpecialEffect(blockname,5000,5000)
 		end
-		image[i]=CreateImage("pointer.dds",16,16,16,4000,4000,0,0,0,150,4)
-		SetImageColor(image[i],0,255,0,128)
-		SetImageRenderAlways(image[i], true)
-		ShowImage(image[i],true)
 		--print(size)
 		--Does the BlzSetSpecialEffectMatrixScale function work?
 		--BlzResetSpecialEffectMatrix(effMain[i])
 		--BlzSetSpecialEffectMatrixScale(effMain[i],size,0,0) --does not work
-		BlzSetSpecialEffectScale(effMain[i],size) -- is work
+
+		--BlzSetSpecialEffectScale(effMain[i],size) -- is work
 		BlzSetSpecialEffectAlpha(effMain[i],128)
 		BlzSetSpecialEffectColor(effMain[i],0,255,0)
 	end
@@ -69,7 +65,6 @@ function CreateVisualPointerForUnitByEff(hero,flag,long,step,minlong)
 			KillDestructable(ndblock[i])
 			ShowDestructable(ndblock[i],false)
 			KillDestructable(nd)
-			DestroyImage(image[i])
 			ShowDestructable(nd,false)
 			BlzSetSpecialEffectPosition(effMain[i],6000,6000,0)
 			DestroyEffect(effMain[i])
@@ -120,40 +115,21 @@ function CreateVisualPointerForUnitByEff(hero,flag,long,step,minlong)
 		for i=1,#effMain do
 			if i<block then
 				local nx,ny=MoveXY(xs,ys,(step)*i,curAngle)
-				--BlzSetSpecialEffectPosition(effMain[i],nx,ny,GetUnitZ(hero)-60*size) --100*size
-				--BlzSetSpecialEffectYaw(effMain[i], math.rad(curAngle))
+				BlzSetSpecialEffectPosition(effMain[i],nx,ny,GetUnitZ(hero)-60*size) --100*size
+				BlzSetSpecialEffectYaw(effMain[i], math.rad(curAngle))
 				--local cz,cy=GetUnitX(hero)-64-16,GetUnitY(hero)-64-16
 				nx,ny=MoveXY(xs-8-2,ys-8-2,(step)*i,curAngle)
 				--local angleSplat=data.LastTurn
 				--data.cx,data.cy=MoveXY(data.cx,data.cy,70,GetUnitFacing(hero))
 				local z=GetTerrainZ(nx,ny)
-				SetImagePosition(image[i],nx,ny,z)
-				--[[KillDestructable(ndblock[i])
-				ShowDestructable(ndblock[i],false)
-
-				print(z)
-				ndblock[i]=CreateDestructableZ(FourCC('B001'), nx,ny,z, curAngle, size, 1)]]
-
-				--SetFogStateRadius(GetOwningPlayer(hero), FOG_OF_WAR_VISIBLE, nx,ny, 500*size, true)
-			--print(GetUnitZ(hero))
 			else
 				if i==#effMain then
 					local nx,ny=MoveXY(xs,ys,(step)*block,curAngle)
 					BlzSetSpecialEffectPosition(effMain[i],nx,ny,GetUnitZ(hero)-60*size)
 					BlzSetSpecialEffectYaw(effMain[i], math.rad(curAngle))
-
 					nx,ny=MoveXY(xs-8-2,ys-8-2,(step)*i,curAngle)
-					SetImagePosition(image[i],nx,ny,0)
-					--
-					--[[KillDestructable(nd)
-					ShowDestructable(nd,false)
-					local z=GetTerrainZ(nx,ny)-65
-					print(z)
-					nd=CreateDestructableZ(FourCC('B000'), nx,ny,z, curAngle, size,1)]]
-					--SetFogStateRadius(GetOwningPlayer(hero), FOG_OF_WAR_VISIBLE, nx,ny, 200*size, true)
 				else
 					BlzSetSpecialEffectPosition(effMain[i],6000,6000,0)
-					SetImagePosition(image[i],6000,6000,0)
 				end
 
 			end
