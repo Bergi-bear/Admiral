@@ -1305,7 +1305,7 @@ function AngleBetweenUnits(caster,target)
 	return Atan2BJ(yb - ya, xb - xa)
 end
 
-function math.clamp (inb, low, high) --
+function math.clamp (inb, low, high)
 	return math.min( math.max(inb, low ), high )
 end
 
@@ -2346,9 +2346,11 @@ function CreateVisualCannon(data)
 	TimerStart(CreateTimer(), TIMER_PERIOD, true, function()
 		--local x,y=GetPlayerMouseX[data.pid],GetPlayerMouseY[data.pid]
 		distance=DistanceBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid])
-		cutDistance=math.lerp(cutDistance,distance,TIMER_PERIOD * 8)
+		cutDistance=math.lerp(cutDistance,distance,TIMER_PERIOD * 80)
+		--cutDistance=distance
 		angleCast = AngleBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]) / bj_DEGTORAD
-		curAngle = lerpTheta(curAngle, angleCast, TIMER_PERIOD * 8)
+		curAngle = lerpTheta(curAngle, angleCast, TIMER_PERIOD * 80)
+		--curAngle=angleCast
 		local x,y=MoveXY(GetUnitX(hero),GetUnitY(hero),cutDistance,curAngle)
 		if not data.OnWater then
 			SetUnitFacing(hero,curAngle)

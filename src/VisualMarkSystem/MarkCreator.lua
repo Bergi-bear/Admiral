@@ -139,8 +139,10 @@ function CreateVisualCannon(data)
 		--local x,y=GetPlayerMouseX[data.pid],GetPlayerMouseY[data.pid]
 		distance=DistanceBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid])
 		cutDistance=math.lerp(cutDistance,distance,TIMER_PERIOD * 8)
+		--cutDistance=distance
 		angleCast = AngleBetweenXY(GetUnitX(hero), GetUnitY(hero), GetPlayerMouseX[data.pid], GetPlayerMouseY[data.pid]) / bj_DEGTORAD
 		curAngle = lerpTheta(curAngle, angleCast, TIMER_PERIOD * 8)
+		--curAngle=angleCast
 		local x,y=MoveXY(GetUnitX(hero),GetUnitY(hero),cutDistance,curAngle)
 		if not data.OnWater then
 			SetUnitFacing(hero,curAngle)

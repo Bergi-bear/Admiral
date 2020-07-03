@@ -218,7 +218,7 @@ function AngleBetweenUnits(caster,target)
 	return Atan2BJ(yb - ya, xb - xa)
 end
 
-function math.clamp (inb, low, high) --
+function math.clamp (inb, low, high)
 	return math.min( math.max(inb, low ), high )
 end
 
