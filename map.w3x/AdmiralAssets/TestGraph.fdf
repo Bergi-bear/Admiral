@@ -1,0 +1,11 @@
+Frame "SIMPLESTATUSBAR" "Chk" {
+	Frame "SIMPLEFRAME" "" {
+		DecorateFileNames,
+		SetAllPoints,
+		Layer "ARTWORK" {
+			String "graph"{
+				Text "SD",
+			}
+		}
+	}
+}

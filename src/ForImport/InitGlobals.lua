@@ -15,6 +15,10 @@ do
 		InitSoundsA()--Создаём звуки
 		InitUnitDeath()-- инициализация смерти
 		InitMap()
+		if BlzLoadTOCFile(ImportPath.."\\Main.toc") then
+		else
+			print("ошибка загрузки fdf")
+		end
 	end
 end
 

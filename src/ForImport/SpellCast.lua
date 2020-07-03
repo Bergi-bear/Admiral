@@ -236,8 +236,15 @@ function InitSpellTrigger()
 				local ship = AddSpecialEffect(effModel, OutPoint, OutPoint)
 				BlzSpecialEffectAddSubAnimation(ship, SUBANIM_TYPE_SWIM)
 				UnitAddAbility(caster, FourCC("Abun"))
-				local sec=0
 
+				if isSD=="SD" then
+					--print("графика "..isSD)
+				else
+					--print("уменьшение черепахи в HD")
+					BlzSetSpecialEffectScale(ship,0.5)
+				end
+
+				local sec=0
 				local tl = Location(GetUnitXY(hero))
 				PlaySoundAtPointBJ(soundMotor, 100, tl, 0)
 				RemoveLocation(tl)

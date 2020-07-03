@@ -4,10 +4,6 @@
 --- DateTime: 03.06.2020 17:02
 ---
 function CreateCallingBar(u, cd, text)
-	if BlzLoadTOCFile(ImportPath.."\\Main.toc") then
-	else
-		--	print("ошибка загрузки fdf")
-	end
 	if not text then
 		text = "Подготовка"
 	end
@@ -22,6 +18,7 @@ function CreateCallingBar(u, cd, text)
 	end
 	BlzFrameSetTexture(bar, "Replaceabletextures\\Teamcolor\\Teamcolor0" .. (GetConvertedPlayerId(GetOwningPlayer(u)) - 1) .. ".blp", 0, true)
 	BlzFrameSetTexture(BlzGetFrameByName("MyFakeBarBorder", 0), ImportPath.."\\MyBarBorder.blp", 0, true)
+	--print(BlzFrameGetText(BlzGetFrameByName("MyFakeBarTitle", 0)))
 	BlzFrameSetText(BlzGetFrameByName("MyFakeBarTitle", 0), text)--‡ Сердце ™ щит
 	local lefttext = BlzGetFrameByName("MyFakeBarLeftText", 0)
 	local righttext = BlzGetFrameByName("MyFakeBarRightText", 0)
